@@ -1,0 +1,1 @@
+[HW:/servo/play:{"recording":"happy_wiggle"}][HW:/led/effect:{"color":[0,200,80],"duration_ms":2000,"effect":"pulse","speed":1.2,"transient":true}]

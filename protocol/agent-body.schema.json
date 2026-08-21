@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/marctheshark3/agent-body-protocol/protocol/agent-body.schema.json",
+  "title": "Agent Body Protocol Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["v", "event", "ts"],
+  "properties": {
+    "v": {"const": 1},
+    "event": {
+      "enum": [
+        "started",
+        "thinking",
+        "waiting_for_user",
+        "permission_required",
+        "blocked",
+        "tests_passed",
+        "tests_failed",
+        "completed",
+        "quiet"
+      ]
+    },
+    "ts": {"type": "string", "format": "date-time"},
+    "source": {
+      "enum": ["claude-code", "codex", "hermes", "opencode", "github-actions", "manual"]
+    },
+    "agent": {"type": "string", "minLength": 1, "maxLength": 80},
+    "summary": {"type": "string", "maxLength": 140},
+    "detail": {"type": "string", "maxLength": 2000},
+    "consent": {"enum": ["off", "ask", "yes"]},
+    "mode": {"enum": ["normal", "focus", "night"]}
+  }
+}

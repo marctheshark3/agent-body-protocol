@@ -1,0 +1,1 @@
+[HW:/servo/aim:{"direction":"user"}][HW:/led/effect:{"color":[255,150,0],"effect":"pulse","speed":0.5,"transient":true}]

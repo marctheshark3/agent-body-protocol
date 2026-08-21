@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""Minimal stdio MCP tool exposing agent_body_emit."""
+
+from __future__ import annotations
+
+import json
+import sys
+from datetime import datetime, timezone
+from urllib.request import Request, urlopen
+
+TOOL = {
+    "name": "agent_body_emit",
+    "description": "Emit a coding-agent lifecycle event to a local Agent Body mapper.",
+    "inputSchema": {
+        "type": "object",
+        "required": ["event"],
+        "properties": {
+            "event": {"type": "string"},
+            "summary": {"type": "string", "maxLength": 140},
+            "mode": {"enum": ["normal", "focus", "night"]},
+            "consent": {"enum": ["off", "ask", "yes"]}
+        }
+    }
+}
+
+
+def emit(arguments: dict) -> dict:
+    event = {
+        "v": 1,
+        "event": arguments["event"],
+        "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "source": "hermes",
+        "mode": arguments.get("mode", "normal"),
+        "consent": arguments.get("consent", "ask"),
+    }
+    if arguments.get("summary"):
+        event["summary"] = arguments["summary"]
+    request = Request("http://127.0.0.1:5051/event", data=json.dumps(event).encode(), headers={"Content-Type": "application/json"}, method="POST")
+    with urlopen(request, timeout=2) as response:
+        return json.loads(response.read())
+
+
+def handle(message: dict) -> dict | None:
+    method = message.get("method")
+    request_id = message.get("id")
+    if request_id is None:
+        return None
+    if method == "initialize":
+        result = {"protocolVersion": "2025-03-26", "capabilities": {"tools": {}}, "serverInfo": {"name": "agent-body-protocol", "version": "0.1.0"}}
+    elif method == "tools/list":
+        result = {"tools": [TOOL]}
+    elif method == "tools/call" and message.get("params", {}).get("name") == "agent_body_emit":
+        output = emit(message["params"].get("arguments", {}))
+        result = {"content": [{"type": "text", "text": json.dumps(output)}]}
+    else:
+        return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32601, "message": "Method not found"}}
+    return {"jsonrpc": "2.0", "id": request_id, "result": result}
+
+
+def main() -> None:
+    for line in sys.stdin:
+        if not line.strip():
+            continue
+        response = handle(json.loads(line))
+        if response is not None:
+            print(json.dumps(response, separators=(",", ":")), flush=True)
+
+
+if __name__ == "__main__":
+    main()

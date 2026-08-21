@@ -1,0 +1,1 @@
+[HW:/emotion:{"emotion":"listening","intensity":0.6}][HW:/servo/aim:{"direction":"user"}][HW:/led/effect:{"color":[255,150,0],"effect":"pulse","speed":0.7,"transient":true}]

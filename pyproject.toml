@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-body-protocol"
+version = "0.1.0"
+description = "A tiny event contract that gives coding agents physical body language"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Marc Mailloux"}]
+
+[project.scripts]
+agent-body = "mapper.agent_body:main"
+
+[tool.setuptools]
+packages = ["mapper"]

@@ -1,0 +1,1 @@
+[HW:/led/effect:{"color":[0,80,255],"effect":"breathing","speed":0.3,"transient":true}]

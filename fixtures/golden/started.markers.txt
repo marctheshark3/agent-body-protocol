@@ -1,0 +1,1 @@
+[HW:/led/effect/stop:{"transient":true}][HW:/led/solid:{"color":[48,48,48],"transient":true}]
