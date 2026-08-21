@@ -30,6 +30,21 @@ python3 -m unittest discover -s tests -v
 
 The record contains the exact markers that would be dispatched. Golden files for all nine events live in `fixtures/golden/`.
 
+## Live HAL validation
+
+Validated on 2026-08-21 against the Autonomous OS Lamp simulator running live with `HAL_SIMULATE=1` on `127.0.0.1:5001`:
+
+- HAL health: `status=ok`; servo, LED, camera, audio, sensing, voice, TTS, and music reported healthy.
+- Simulator page returned `Autonomous Lamp`.
+- All nine events dispatched **19 HAL requests; 19 returned HTTP 200**.
+- Exact request/response evidence is checked in at `docs/HAL-LIVE.json`.
+
+Re-run the proof with:
+
+```bash
+python3 scripts/validate_hal.py http://127.0.0.1:5001
+```
+
 ## Run against Autonomous OS
 
 In Autonomous OS:

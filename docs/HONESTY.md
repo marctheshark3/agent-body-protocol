@@ -11,10 +11,11 @@
 - Blocked help offers have a 15-minute cooldown and never emit typing or credential actions.
 - The CLI can record all output without a device or network.
 
-## Proven only when `make sim` is actually running
+## Proven by a live Autonomous OS simulator run
 
-- HAL accepts the generated route/payload pairs.
-- The Autonomous OS simulator visibly renders the LED and motion sequence.
+On 2026-08-21, HAL ran with `HAL_SIMULATE=1` on loopback. `/health` reported the Lamp simulator healthy and `/simulator` returned the Autonomous Lamp visualizer. The live validation posted all nine mapped events: 19 route requests, 19 HTTP 200 responses. See `HAL-LIVE.json` for exact paths, payloads, and responses.
+
+This validates the live HAL route/payload contract and simulator execution. The literal `make sim` target was not invoked on this host because its full dependency sync requires system PortAudio headers; the same HAL simulation mode was started directly with Uvicorn.
 
 ## Not claimed
 

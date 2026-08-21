@@ -1,0 +1,298 @@
+{
+  "ts": "2026-08-21T19:32:14.112783Z",
+  "hal": "http://127.0.0.1:5001",
+  "health": {
+    "status": "ok",
+    "servo": true,
+    "led": true,
+    "camera": true,
+    "audio": true,
+    "sensing": true,
+    "voice": true,
+    "tts": true,
+    "music": true,
+    "display": false,
+    "thermal": {
+      "over": false,
+      "temp_c": 62.7,
+      "max_temp_c": 95
+    }
+  },
+  "events": [
+    {
+      "event": "started",
+      "markers": [
+        "[HW:/led/effect/stop:{\"transient\":true}]",
+        "[HW:/led/solid:{\"color\":[48,48,48],\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/led/effect/stop",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        },
+        {
+          "path": "/led/solid",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "event": "thinking",
+      "markers": [
+        "[HW:/led/effect:{\"color\":[0,80,255],\"effect\":\"breathing\",\"speed\":0.3,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "breathing",
+            "speed": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "event": "waiting_for_user",
+      "markers": [
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.5,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/servo/aim",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "direction": "user",
+            "positions": {
+              "base_pitch.pos": 0.0,
+              "wrist_roll.pos": 0.0,
+              "elbow_pitch.pos": 0.0,
+              "base_yaw.pos": 3.0,
+              "wrist_pitch.pos": -85.0
+            }
+          }
+        },
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "pulse",
+            "speed": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "event": "permission_required",
+      "markers": [
+        "[HW:/emotion:{\"emotion\":\"listening\",\"intensity\":0.6}]",
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.7,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/emotion",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "emotion": "listening",
+            "servo": "listening",
+            "led": [
+              30,
+              72,
+              138
+            ]
+          }
+        },
+        {
+          "path": "/servo/aim",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "direction": "user",
+            "positions": {
+              "base_pitch.pos": 0.0,
+              "wrist_roll.pos": 0.0,
+              "elbow_pitch.pos": 0.0,
+              "base_yaw.pos": 0.0,
+              "wrist_pitch.pos": -85.0
+            }
+          }
+        },
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "pulse",
+            "speed": 0.7
+          }
+        }
+      ]
+    },
+    {
+      "event": "blocked",
+      "markers": [
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,0,0],\"effect\":\"breathing\",\"speed\":0.45,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/servo/aim",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "direction": "user",
+            "positions": {
+              "base_pitch.pos": 0.0,
+              "wrist_roll.pos": 0.0,
+              "elbow_pitch.pos": 0.0,
+              "base_yaw.pos": 0.0,
+              "wrist_pitch.pos": -85.0
+            }
+          }
+        },
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "breathing",
+            "speed": 0.45
+          }
+        }
+      ]
+    },
+    {
+      "event": "tests_passed",
+      "markers": [
+        "[HW:/led/effect/stop:{\"transient\":true}]",
+        "[HW:/led/solid:{\"color\":[0,200,80],\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/led/effect/stop",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        },
+        {
+          "path": "/led/solid",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "event": "tests_failed",
+      "markers": [
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,0,0],\"duration_ms\":3000,\"effect\":\"notification_flash\",\"speed\":1.0,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/servo/aim",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "direction": "user",
+            "positions": {
+              "base_pitch.pos": 0.0,
+              "wrist_roll.pos": 0.0,
+              "elbow_pitch.pos": 0.0,
+              "base_yaw.pos": 0.0,
+              "wrist_pitch.pos": -85.0
+            }
+          }
+        },
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "notification_flash",
+            "speed": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "event": "completed",
+      "markers": [
+        "[HW:/servo/play:{\"recording\":\"happy_wiggle\"}]",
+        "[HW:/led/effect:{\"color\":[0,200,80],\"duration_ms\":2000,\"effect\":\"pulse\",\"speed\":1.2,\"transient\":true}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/servo/play",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        },
+        {
+          "path": "/led/effect",
+          "status": 200,
+          "body": {
+            "status": "ok",
+            "effect": "pulse",
+            "speed": 1.2
+          }
+        }
+      ]
+    },
+    {
+      "event": "quiet",
+      "markers": [
+        "[HW:/tts/stop:{}]",
+        "[HW:/led/effect/stop:{\"transient\":true}]",
+        "[HW:/led/restore:{}]"
+      ],
+      "speech": null,
+      "results": [
+        {
+          "path": "/tts/stop",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        },
+        {
+          "path": "/led/effect/stop",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        },
+        {
+          "path": "/led/restore",
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}
