@@ -13,5 +13,8 @@ authors = [{name = "Marc Mailloux"}]
 [project.scripts]
 agent-body = "mapper.agent_body:main"
 
+[project.optional-dependencies]
+test = ["jsonschema"]
+
 [tool.setuptools]
 packages = ["mapper"]

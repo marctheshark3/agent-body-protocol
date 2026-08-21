@@ -23,7 +23,7 @@ Every LED write is transient. Focus/night modes are silent. No mapping drives ra
 ## Quick proof — no hardware or network
 
 ```bash
-python3 -m pip install -e .
+python3 -m pip install -e '.[test]'
 agent-body post --event thinking --record /tmp/thinking.json
 python3 -m unittest discover -s tests -v
 ```

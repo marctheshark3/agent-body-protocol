@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timezone
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 EVENTS = {
@@ -28,7 +28,7 @@ TOOL = {
         "type": "object",
         "required": ["event"],
         "properties": {
-            "event": {"type": "string"},
+            "event": {"enum": sorted(EVENTS)},
             "summary": {"type": "string", "maxLength": 140},
             "mode": {"enum": ["normal", "focus", "night"]},
             "consent": {"enum": ["off", "ask", "yes"]}
@@ -52,8 +52,11 @@ def emit(arguments: dict) -> dict:
     if arguments.get("summary"):
         event["summary"] = arguments["summary"]
     request = Request("http://127.0.0.1:5051/event", data=json.dumps(event).encode(), headers={"Content-Type": "application/json"}, method="POST")
-    with urlopen(request, timeout=2) as response:
-        return json.loads(response.read())
+    try:
+        with urlopen(request, timeout=2) as response:
+            return json.loads(response.read())
+    except HTTPError as exc:
+        raise URLError(f"mapper HTTP {exc.code}") from exc
 
 
 def handle(message: dict) -> dict | None:
@@ -70,8 +73,8 @@ def handle(message: dict) -> dict | None:
             output = emit(message["params"].get("arguments", {}))
         except ValueError as exc:
             return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32602, "message": str(exc)}}
-        except URLError as exc:
-            return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32000, "message": f"mapper unreachable: {exc}"}}
+        except (URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
+            return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32000, "message": str(exc)}}
         result = {"content": [{"type": "text", "text": json.dumps(output)}]}
     else:
         return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32601, "message": "Method not found"}}
@@ -82,7 +85,11 @@ def main() -> None:
     for line in sys.stdin:
         if not line.strip():
             continue
-        response = handle(json.loads(line))
+        try:
+            message = json.loads(line)
+            response = handle(message if isinstance(message, dict) else {})
+        except Exception as exc:
+            response = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": str(exc)}}
         if response is not None:
             print(json.dumps(response, separators=(",", ":")), flush=True)
 

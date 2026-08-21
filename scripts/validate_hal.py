@@ -47,6 +47,9 @@ def main() -> int:
     base = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5001").rstrip("/")
     with urlopen(base + "/health", timeout=5) as response:
         health = json.loads(response.read())
+    if health.get("status") != "ok":
+        print(json.dumps({"health": health, "health_ok": False}, indent=2))
+        return 1
     evidence = {
         "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "hal": base,
@@ -63,7 +66,11 @@ def main() -> int:
             "speech": mapped.speech,
             "results": results,
         })
-        if any(item.get("status", 0) >= 400 or item.get("status", 0) == 0 for item in results):
+        if any(
+            item.get("status", 0) != 200
+            or (isinstance(item.get("body"), dict) and item["body"].get("status") not in {None, "ok"})
+            for item in results
+        ):
             failed += 1
     out = ROOT / "docs" / "HAL-LIVE.json"
     out.write_text(json.dumps(evidence, indent=2) + "\n")
