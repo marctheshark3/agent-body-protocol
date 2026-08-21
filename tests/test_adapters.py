@@ -27,6 +27,9 @@ class AdapterTests(unittest.TestCase):
             ("Notification", {"message": "Claude needs you"}, "permission_required"),
             ("Stop", {"result": "14 tests passed"}, "tests_passed"),
             ("Stop", {"result": "2 tests failed"}, "tests_failed"),
+            ("Stop", {"result": "10 failed, 2 passed"}, "tests_failed"),
+            ("Stop", {"result": "0 failed, 10 passed"}, "tests_passed"),
+            ("Stop", {"result": "Tests failed: 2; tests passed: 8"}, "tests_failed"),
             ("Stop", {"result": "done"}, "completed"),
             ("PostToolUseFailure", {}, "blocked"),
         )
@@ -40,6 +43,15 @@ class AdapterTests(unittest.TestCase):
 
     def test_hermes_notification_has_no_response(self):
         self.assertIsNone(self.hermes.handle({"jsonrpc": "2.0", "method": "notifications/initialized"}))
+
+    def test_hermes_invalid_event_is_jsonrpc_error(self):
+        response = self.hermes.handle({
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "agent_body_emit", "arguments": {}},
+        })
+        self.assertEqual(-32602, response["error"]["code"])
 
 
 if __name__ == "__main__":

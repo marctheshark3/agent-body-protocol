@@ -6,7 +6,20 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime, timezone
+from urllib.error import URLError
 from urllib.request import Request, urlopen
+
+EVENTS = {
+    "started",
+    "thinking",
+    "waiting_for_user",
+    "permission_required",
+    "blocked",
+    "tests_passed",
+    "tests_failed",
+    "completed",
+    "quiet",
+}
 
 TOOL = {
     "name": "agent_body_emit",
@@ -25,9 +38,12 @@ TOOL = {
 
 
 def emit(arguments: dict) -> dict:
+    name = arguments.get("event")
+    if name not in EVENTS:
+        raise ValueError("event must be one of the nine protocol events")
     event = {
         "v": 1,
-        "event": arguments["event"],
+        "event": name,
         "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "source": "hermes",
         "mode": arguments.get("mode", "normal"),
@@ -50,7 +66,12 @@ def handle(message: dict) -> dict | None:
     elif method == "tools/list":
         result = {"tools": [TOOL]}
     elif method == "tools/call" and message.get("params", {}).get("name") == "agent_body_emit":
-        output = emit(message["params"].get("arguments", {}))
+        try:
+            output = emit(message["params"].get("arguments", {}))
+        except ValueError as exc:
+            return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32602, "message": str(exc)}}
+        except URLError as exc:
+            return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32000, "message": f"mapper unreachable: {exc}"}}
         result = {"content": [{"type": "text", "text": json.dumps(output)}]}
     else:
         return {"jsonrpc": "2.0", "id": request_id, "error": {"code": -32601, "message": "Method not found"}}
