@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Call Sam — two-sim ring</title>
+<style>
+  :root { --bg:#0e1116; --ink:#ece8df; --muted:#8b95a1; --line:#2a313a; --amber:#ff9600; --green:#00c850; --panel:#171c23; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 system-ui,sans-serif; }
+  header { padding:18px 22px 8px; }
+  h1 { margin:0 0 6px; font-size:1.35rem; }
+  .muted { color:var(--muted); }
+  .wrap { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:12px 22px 22px; }
+  .house { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; min-height:420px; }
+  .screen { height:220px; border-radius:12px; background:#0a0c10; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .screen.on { outline:2px solid var(--green); }
+  .screen.ring { outline:2px solid var(--amber); animation:pulse 1s infinite; }
+  .blob { width:88px; height:88px; border-radius:50%; background:#2c3540; }
+  .blob.sam { background:radial-gradient(circle at 30% 30%, #d2a657, #6b4e16); }
+  .blob.pat { background:radial-gradient(circle at 30% 30%, #7dcea0, #1f4d38); }
+  video { width:100%; height:100%; object-fit:cover; display:none; }
+  .screen.live video { display:block; }
+  .screen.live .blob { display:none; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  button { background:#222933; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; cursor:pointer; }
+  button.primary { background:#3a2a10; border-color:#7a5414; color:#ffd089; }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:12px; }
+  pre { background:#0a0c10; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12px; overflow:auto; max-height:160px; }
+  @keyframes pulse { 50% { outline-color:transparent; } }
+  @media (max-width:800px){ .wrap { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Call Sam</h1>
+  <p class="muted">Two-sim ring. Synthetic contact. Lamp events only — this is not a shipping FaceTime product and not a real second house.</p>
+  <p>Phase: <span id="phase" class="pill">idle</span> · HAL drive is server-side on loopback.</p>
+</header>
+<div class="wrap">
+  <section class="house" id="near">
+    <h2>Near house — Pat</h2>
+    <div class="screen" id="near-screen"><div class="blob pat"></div><video id="near-video" playsinline muted></video></div>
+    <p>Body event: <code id="near-event">—</code></p>
+    <div class="row">
+      <button class="primary" data-act="start">Call Sam</button>
+      <button data-act="invite">Send invite</button>
+      <button data-act="hangup">Hang up</button>
+      <button data-local="near">Local preview</button>
+    </div>
+  </section>
+  <section class="house" id="far">
+    <h2>Far house — Sam</h2>
+    <div class="screen" id="far-screen"><div class="blob sam"></div><video id="far-video" playsinline muted></video></div>
+    <p>Body event: <code id="far-event">—</code></p>
+    <div class="row">
+      <button class="primary" data-act="accept">Accept</button>
+      <button data-act="decline">Decline</button>
+      <button data-act="reset">Reset</button>
+      <button data-local="far">Local preview</button>
+    </div>
+  </section>
+</div>
+<section style="padding:0 22px 28px">
+  <h3>Last action</h3>
+  <pre id="log">idle</pre>
+</section>
+<script>
+const phaseEl = document.getElementById("phase");
+const logEl = document.getElementById("log");
+function paint(session) {
+  phaseEl.textContent = session.phase;
+  document.getElementById("near-event").textContent = session.near.event || "—";
+  document.getElementById("far-event").textContent = session.far.event || "—";
+  const ns = document.getElementById("near-screen");
+  const fs = document.getElementById("far-screen");
+  ns.classList.toggle("on", session.near.screen_open);
+  fs.classList.toggle("on", session.far.screen_open);
+  ns.classList.toggle("ring", session.phase === "confirm" || session.phase === "ringing");
+  fs.classList.toggle("ring", session.phase === "ringing");
+}
+async function act(name) {
+  const r = await fetch("/api/" + name, {method:"POST"});
+  const data = await r.json();
+  logEl.textContent = JSON.stringify(data, null, 2);
+  if (data.session) paint(data.session);
+}
+document.querySelectorAll("[data-act]").forEach((b) => b.onclick = () => act(b.dataset.act));
+document.querySelectorAll("[data-local]").forEach((b) => b.onclick = async () => {
+  const side = b.dataset.local;
+  const video = document.getElementById(side + "-video");
+  const screen = document.getElementById(side + "-screen");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+    video.srcObject = stream;
+    await video.play();
+    screen.classList.add("live");
+  } catch (e) {
+    logEl.textContent = "Local preview stayed on this browser only and failed: " + e;
+  }
+});
+fetch("/api/state").then(r => r.json()).then(d => paint(d.session));
+</script>
+</body>
+</html>

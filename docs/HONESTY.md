@@ -24,3 +24,4 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - This repo does not implement Autonomous Buddy, Grok, or `AgentGateway`.
 - v0 does not provide a public webhook or cloud tunnel.
 - v0 test success uses LED only; it avoids the known raw-pitch landmine.
+- Call Sam is a two-sim ring scenario. It is not a shipping video product, not a real second house, and not a family FaceTime. Public fixtures use the name Sam only.

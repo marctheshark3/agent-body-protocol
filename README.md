@@ -96,6 +96,14 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 - **CI sentinel:** test result becomes green or diagnostic red without narration.
 - **Pair-programming rubber duck:** thinking stays alive but quiet; permissions turn the body toward the user.
 - **Help Mode:** a blocked agent asks once, then guides a synthetic forgot-password screen without touching the secret field.
+- **Call Sam (scenario):** two simulated houses ring through the same nine events. Paired-screen stub opens only after accept. Not a shipping video call.
+
+Run the interactive two-sim UI on loopback:
+
+```bash
+PYTHONPATH=. python3 demos/call-sam/serve.py
+# http://127.0.0.1:5055/
+```
 
 ## Repository map
 

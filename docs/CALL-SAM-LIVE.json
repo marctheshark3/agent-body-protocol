@@ -1,0 +1,205 @@
+{
+  "contact": "Sam",
+  "hal": "http://127.0.0.1:5001",
+  "final": {
+    "contact": "Sam",
+    "phase": "ended",
+    "media_allowed": false,
+    "near": {
+      "house": "near",
+      "event": "quiet",
+      "screen_open": false,
+      "camera_on": false,
+      "mic_on": false
+    },
+    "far": {
+      "house": "far",
+      "event": "quiet",
+      "screen_open": false,
+      "camera_on": false,
+      "mic_on": false
+    }
+  },
+  "steps": [
+    {
+      "action": "start",
+      "emitted": [
+        {
+          "house": "near",
+          "event": "permission_required",
+          "markers": [
+            "[HW:/emotion:{\"emotion\":\"listening\",\"intensity\":0.6}]",
+            "[HW:/servo/aim:{\"direction\":\"user\"}]",
+            "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.7,\"transient\":true}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/emotion",
+              "status": 200
+            },
+            {
+              "path": "/servo/aim",
+              "status": 200
+            },
+            {
+              "path": "/led/effect",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "phase": "confirm"
+    },
+    {
+      "action": "invite",
+      "emitted": [
+        {
+          "house": "near",
+          "event": "waiting_for_user",
+          "markers": [
+            "[HW:/servo/aim:{\"direction\":\"user\"}]",
+            "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.5,\"transient\":true}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/servo/aim",
+              "status": 200
+            },
+            {
+              "path": "/led/effect",
+              "status": 200
+            }
+          ]
+        },
+        {
+          "house": "far",
+          "event": "permission_required",
+          "markers": [
+            "[HW:/emotion:{\"emotion\":\"listening\",\"intensity\":0.6}]",
+            "[HW:/servo/aim:{\"direction\":\"user\"}]",
+            "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.7,\"transient\":true}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/emotion",
+              "status": 200
+            },
+            {
+              "path": "/servo/aim",
+              "status": 200
+            },
+            {
+              "path": "/led/effect",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "phase": "ringing"
+    },
+    {
+      "action": "accept",
+      "emitted": [
+        {
+          "house": "near",
+          "event": "quiet",
+          "markers": [
+            "[HW:/tts/stop:{}]",
+            "[HW:/led/effect/stop:{\"transient\":true}]",
+            "[HW:/led/restore:{}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/tts/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/effect/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/restore",
+              "status": 200
+            }
+          ]
+        },
+        {
+          "house": "far",
+          "event": "quiet",
+          "markers": [
+            "[HW:/tts/stop:{}]",
+            "[HW:/led/effect/stop:{\"transient\":true}]",
+            "[HW:/led/restore:{}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/tts/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/effect/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/restore",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "phase": "in_call"
+    },
+    {
+      "action": "hangup",
+      "emitted": [
+        {
+          "house": "near",
+          "event": "quiet",
+          "markers": [
+            "[HW:/tts/stop:{}]",
+            "[HW:/led/effect/stop:{\"transient\":true}]",
+            "[HW:/led/restore:{}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/tts/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/effect/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/restore",
+              "status": 200
+            }
+          ]
+        },
+        {
+          "house": "far",
+          "event": "quiet",
+          "markers": [
+            "[HW:/tts/stop:{}]",
+            "[HW:/led/effect/stop:{\"transient\":true}]",
+            "[HW:/led/restore:{}]"
+          ],
+          "dispatched": [
+            {
+              "path": "/tts/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/effect/stop",
+              "status": 200
+            },
+            {
+              "path": "/led/restore",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "phase": "ended"
+    }
+  ]
+}
