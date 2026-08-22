@@ -75,6 +75,8 @@ class DemoState:
         markers = markers_for(name)
         target = self.far_hal if house == "far" else self.hal
         dispatched = dispatch_soft(markers, target) if target else []
+        body = self.far_body if house == "far" else self.near_body
+        body.apply_markers(markers, name)
         record = {
             "action": f"skill_{name}",
             "skill": name,

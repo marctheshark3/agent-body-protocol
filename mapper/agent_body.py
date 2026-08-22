@@ -121,6 +121,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.hal:
             payload["dispatched"] = dispatch_soft(payload["markers"], args.hal)
         print(json.dumps(payload, separators=(",", ":")))
+        if args.hal:
+            failed = [
+                item
+                for item in payload.get("dispatched") or []
+                if int(item.get("status") or 0) < 200 or int(item.get("status") or 0) >= 300
+            ]
+            return 1 if failed else 0
         return 0
     payload = _result_payload(_event(args))
     before = read_body(args.hal) if args.command == "post" and args.hal else {"ok": False, "error": "no_hal"}

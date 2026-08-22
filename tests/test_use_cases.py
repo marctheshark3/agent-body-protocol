@@ -64,6 +64,13 @@ class ScenarioBodies(unittest.TestCase):
         self.assertEqual("completed", body.event)
         self.assertGreater(body.color[1], body.color[0])
 
+    def test_dance_skill_moves_virtual_neck(self):
+        body = VirtualBody("near")
+        rest = dict(body.pose)
+        body.apply_markers(['[HW:/servo/play:{"recording":"happy_wiggle"}]'], "dance")
+        self.assertEqual("dance", body.event)
+        self.assertNotEqual(rest, body.pose)
+
 
 if __name__ == "__main__":
     unittest.main()
