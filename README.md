@@ -6,6 +6,8 @@ Agent Body Protocol is a small runtime-neutral contract that makes a physical ag
 
 It consumes Autonomous OS's existing `make sim`. It does not rebuild HAL, fork Buddy, or implement a Grok runtime.
 
+Public gist (idea file): https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
+
 ## The contract
 
 - `started` — dim white, silent
