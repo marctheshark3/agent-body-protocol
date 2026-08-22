@@ -23,12 +23,27 @@ Every LED write is transient. Focus/night modes are silent. No mapping drives ra
 ## Quick proof — no hardware or network
 
 ```bash
-python3 -m pip install -e .
+python3 -m pip install -e '.[test]'
 agent-body post --event thinking --record /tmp/thinking.json
 python3 -m unittest discover -s tests -v
 ```
 
 The record contains the exact markers that would be dispatched. Golden files for all nine events live in `fixtures/golden/`.
+
+## Live HAL validation
+
+Validated on 2026-08-21 against the Autonomous OS Lamp simulator running live with `HAL_SIMULATE=1` on `127.0.0.1:5001`:
+
+- HAL health: `status=ok`; servo, LED, camera, audio, sensing, voice, TTS, and music reported healthy.
+- Simulator page returned `Autonomous Lamp`.
+- All nine events dispatched **19 HAL requests; 19 returned HTTP 200**.
+- Exact request/response evidence is checked in at `docs/HAL-LIVE.json`.
+
+Re-run the proof with:
+
+```bash
+python3 scripts/validate_hal.py http://127.0.0.1:5001
+```
 
 ## Run against Autonomous OS
 
@@ -76,18 +91,27 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 `tests/test_help_rails.py` fails if any blocked mapping emits credential or typing actions.
 
-## Three demos
+## Demos
 
-- **CI sentinel:** test result becomes green or diagnostic red without narration.
-- **Pair-programming rubber duck:** thinking stays alive but quiet; permissions turn the body toward the user.
-- **Help Mode:** a blocked agent asks once, then guides a synthetic forgot-password screen without touching the secret field.
+- **CI sentinel:** `CI pass` / `CI fail` on the lab page.
+- **Pair-programming rubber duck:** thinking stays quiet; permissions turn the body.
+- **Help Mode:** `blocked` → consent → point at Send reset link. Never types the secret.
+- **Two lamps:** Call Sam. Pat waits, Sam rings.
+- **No answer:** leave a 140-char note on Sam’s paired screen.
+- **In-call talk:** sanitized transcript on the other screen. Audio stays in the browser.
+
+```bash
+PYTHONPATH=. python3 demos/call-sam/serve.py
+# http://127.0.0.1:5055/
+PYTHONPATH=. python3 scripts/validate_e2e.py
+```
 
 ## Repository map
 
 - `protocol/` — JSON Schema and examples
 - `mapper/` — deterministic mapper, state policy, loopback server, HAL client, CLI
 - `fixtures/golden/` — exact expected marker sequences
-- `skills/` — drop-in Agent Body, work-light, and build-scribe skills
+- `skills/` — drop-in Agent Body, work-light, build-scribe, and motion-aim skills
 - `adapters/` — Claude Code and Hermes adapters
 - `docs/HONESTY.md` — what the demo does and does not prove
 

@@ -7,6 +7,7 @@ Building a body language for coding agents on Lamp.
 Not a new simulator — yours already exists. A protocol: tests pass → green, stuck → one offer to help. Claude / Codex / Hermes emit the same events.
 
 Repo this weekend.
+https://github.com/marctheshark3/agent-body-protocol
 
 ## Ship reply
 

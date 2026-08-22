@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ABP use-case lab</title>
+<style>
+  :root { --bg:#0e1116; --ink:#ece8df; --muted:#8b95a1; --line:#2a313a; --amber:#ff9600; --green:#00c850; --panel:#171c23; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 system-ui,sans-serif; }
+  header, .uses { padding:16px 22px 0; }
+  h1 { margin:0 0 6px; font-size:1.3rem; }
+  .muted { color:var(--muted); }
+  .wrap { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:12px 22px; }
+  .house, .panel { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; }
+  .stage { height:260px; border-radius:12px; background:#07090c; border:1px solid var(--line); position:relative; overflow:hidden; }
+  .stage.ring { outline:2px solid var(--amber); animation:pulse 1s infinite; }
+  .stage.on { outline:2px solid var(--green); }
+  .readout { font:12px/1.35 ui-monospace,monospace; color:#9aa4ae; white-space:pre-wrap; margin:10px 0 0; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  button, select { background:#222933; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; cursor:pointer; }
+  button.primary { background:#3a2a10; border-color:#7a5414; color:#ffd089; }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:12px; }
+  input, textarea { width:100%; background:#0a0c10; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px; }
+  pre { background:#0a0c10; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12px; overflow:auto; max-height:140px; }
+  .screen { margin-top:8px; border:1px dashed #2e5a42; border-radius:10px; padding:8px; min-height:52px; font-size:13px; }
+  @keyframes pulse { 50% { outline-color:transparent; } }
+  @media (max-width:900px){ .wrap { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Use-case lab — two lamps, not FaceTime</h1>
+  <p class="muted">Mic stays in this browser. Two official HAL sims: Pat :5001, Sam :5002. RL does not sit in this loop.</p>
+  <p>Phase: <span id="phase" class="pill">idle</span> · Help: <span id="help-phase" class="pill">idle</span></p>
+</header>
+<section class="uses">
+  <div class="row">
+    <button data-scene="ci_pass">CI pass</button>
+    <button data-scene="ci_fail">CI fail</button>
+    <button data-scene="rubber_duck">Rubber duck</button>
+    <button data-scene="night_think">Night think</button>
+    <button data-scene="help">Help Mode stuck</button>
+    <button class="primary" data-act="dial">Call Sam</button>
+    <button data-act="accept">Accept</button>
+    <button data-act="decline">Decline</button>
+    <button data-act="no_answer">No answer</button>
+    <button data-act="hangup">Hang up</button>
+    <button data-act="reset">Reset</button>
+  </div>
+</section>
+<div class="wrap">
+  <section class="house">
+    <h2>Pat’s lamp</h2>
+    <div class="stage" id="near-stage"><canvas id="near-c" width="520" height="260"></canvas></div>
+    <p class="readout" id="near-read">idle</p>
+    <div class="screen" id="near-screen">paired screen closed</div>
+    <iframe id="near-sim" title="Pat HAL" src="about:blank" style="width:100%;height:220px;border:1px solid #2a313a;border-radius:10px;margin-top:10px;background:#000"></iframe>
+  </section>
+  <section class="house">
+    <h2>Sam’s lamp</h2>
+    <div class="stage" id="far-stage"><canvas id="far-c" width="520" height="260"></canvas></div>
+    <p class="readout" id="far-read">idle</p>
+    <div class="screen" id="far-screen">paired screen closed</div>
+    <iframe id="far-sim" title="Sam HAL" src="about:blank" style="width:100%;height:220px;border:1px solid #2a313a;border-radius:10px;margin-top:10px;background:#000"></iframe>
+  </section>
+</div>
+<div class="wrap">
+  <section class="panel">
+    <h3>Talk / leave a message</h3>
+    <p class="muted">In-call: text appears on the other screen. No-answer: leave a 140-char note. Audio is never uploaded.</p>
+    <textarea id="say" rows="3" placeholder="hey sam — tests are green"></textarea>
+    <div class="row">
+      <button class="primary" id="talk">Send to Sam’s screen</button>
+      <button id="msg">Leave message</button>
+      <button id="mic">Hold to dictate</button>
+    </div>
+  </section>
+  <section class="panel">
+    <h3>Help Mode — forgot password</h3>
+    <pre id="help-screen">synthetic screen</pre>
+    <div class="row">
+      <button id="help-yes">Yes, help</button>
+      <button id="help-point">Point at reset</button>
+      <button id="help-done">Done</button>
+      <button id="help-no">No thanks</button>
+    </div>
+  </section>
+</div>
+<section class="uses">
+  <h3>Scratch the nine events on Pat</h3>
+  <div class="row" id="events"></div>
+  <pre id="log">idle</pre>
+</section>
+<script>
+const EVENTS = ["started","thinking","waiting_for_user","permission_required","blocked","tests_passed","tests_failed","completed","quiet"];
+const joints = ["base_yaw.pos","base_pitch.pos","elbow_pitch.pos","wrist_pitch.pos","wrist_roll.pos"];
+const host = location.hostname || "127.0.0.1";
+document.getElementById("near-sim").src = `${location.protocol}//${host}:5001/simulator`;
+document.getElementById("far-sim").src = `${location.protocol}//${host}:5002/simulator`;
+EVENTS.forEach((name) => {
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.onclick = () => post("/api/emit", {event:name, house:"near"});
+  document.getElementById("events").appendChild(b);
+});
+
+function vivid(rgb) {
+  const m = Math.max(1, ...rgb);
+  return rgb.map((c) => Math.min(255, Math.round(c * (210 / m))));
+}
+
+function lamp(canvas, body, t) {
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const pose = body.pose || {};
+  const yaw = (pose["base_yaw.pos"]||0) * Math.PI/180;
+  const bp = (pose["base_pitch.pos"]||0) * Math.PI/180;
+  const ep = (pose["elbow_pitch.pos"]||0) * Math.PI/180;
+  const wp = (pose["wrist_pitch.pos"]||0) * Math.PI/180;
+  const wr = (pose["wrist_roll.pos"]||0) * Math.PI/180;
+  const base = {x: w*0.38 + yaw*36, y: h*0.90};
+  const shoulder = {x: base.x + Math.sin(bp)*16, y: base.y - 64};
+  const elbow = {x: shoulder.x + Math.sin(bp+ep)*10, y: shoulder.y - 58};
+  const wrist = {x: elbow.x + Math.sin(bp+ep+wp)*8, y: elbow.y - 40};
+  const head = {x: wrist.x + Math.sin(wr)*6, y: wrist.y - 26};
+  let rgb = body.color || [0,0,0];
+  if (body.effect) {
+    const k = 0.28 + 0.72 * (0.5 + 0.5 * Math.sin(t * (body.effect === "breathing" ? 3 : 8)));
+    rgb = rgb.map((c) => Math.round(c * k));
+  }
+  const lit = Math.max(...(body.color||[0,0,0])) > 0;
+  const show = lit ? vivid(rgb) : [42,48,56];
+  ctx.strokeStyle = "#d7cbb3";
+  ctx.lineCap = "round";
+  ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(base.x-24, base.y+6); ctx.lineTo(base.x+24, base.y+6); ctx.stroke();
+  ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(shoulder.x, shoulder.y); ctx.stroke();
+  ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(shoulder.x, shoulder.y); ctx.lineTo(elbow.x, elbow.y); ctx.stroke();
+  ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(elbow.x, elbow.y); ctx.lineTo(wrist.x, wrist.y); ctx.stroke();
+  if (lit) { ctx.shadowColor = `rgb(${show.join(",")})`; ctx.shadowBlur = 32; }
+  ctx.fillStyle = `rgb(${show.join(",")})`;
+  ctx.beginPath(); ctx.ellipse(head.x, head.y, 26, 20, 0, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#ece8df";
+  ctx.font = "12px ui-monospace,monospace";
+  ctx.fillText(body.event || "idle", 12, 20);
+}
+
+function screenCopy(house) {
+  if (!house.screen_open) return "paired screen closed";
+  if (house.message) return "message waiting: " + house.message;
+  if (house.heard) return "heard: " + house.heard;
+  return "call open — faces live on the phone, not the shade";
+}
+
+function paint(data) {
+  if (!data.session) return;
+  document.getElementById("phase").textContent = data.session.phase;
+  document.getElementById("help-phase").textContent = (data.help && data.help.phase) || "idle";
+  document.getElementById("near-stage").classList.toggle("ring", data.session.phase === "confirm" || data.session.phase === "ringing");
+  document.getElementById("far-stage").classList.toggle("ring", data.session.phase === "ringing");
+  document.getElementById("near-stage").classList.toggle("on", data.session.near.screen_open);
+  document.getElementById("far-stage").classList.toggle("on", data.session.far.screen_open);
+  document.getElementById("near-screen").textContent = screenCopy(data.session.near);
+  document.getElementById("far-screen").textContent = screenCopy(data.session.far);
+  if (data.help) {
+    document.getElementById("help-screen").textContent =
+      (data.help.screen || []).join("\n") + "\n\n" + (data.help.speech || "") +
+      (data.help.pointed ? "\npointing at: " + data.help.pointed : "");
+  }
+}
+
+async function post(url, body) {
+  const r = await fetch(url, {
+    method: "POST",
+    headers: body ? {"content-type":"application/json"} : {},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await r.json();
+  document.getElementById("log").textContent = JSON.stringify(data, null, 2);
+  paint(data);
+  return data;
+}
+
+document.querySelectorAll("[data-act]").forEach((b) => b.onclick = () => post("/api/"+b.dataset.act));
+document.querySelectorAll("[data-scene]").forEach((b) => b.onclick = () => post("/api/scenario", {name:b.dataset.scene}));
+document.getElementById("talk").onclick = () => post("/api/talk", {text: document.getElementById("say").value, speaker:"near"});
+document.getElementById("msg").onclick = () => post("/api/message", {text: document.getElementById("say").value});
+document.getElementById("help-yes").onclick = () => post("/api/help/consent_yes");
+document.getElementById("help-point").onclick = () => post("/api/help/point_reset");
+document.getElementById("help-done").onclick = () => post("/api/help/done");
+document.getElementById("help-no").onclick = () => post("/api/help/refuse");
+
+const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+document.getElementById("mic").onclick = () => {
+  if (!Rec) { document.getElementById("say").placeholder = "no speech API here — type instead"; return; }
+  const rec = new Rec();
+  rec.lang = "en-US";
+  rec.onresult = (e) => {
+    document.getElementById("say").value = e.results[0][0].transcript;
+  };
+  rec.start();
+};
+
+async function tick() {
+  const data = await fetch("/api/state").then(r => r.json());
+  paint(data);
+  const t = Date.now()/1000;
+  lamp(document.getElementById("near-c"), data.near_body, t);
+  lamp(document.getElementById("far-c"), data.far_body, t);
+  const fmt = (b) => joints.map(j => `${j.replace(".pos","")} ${Math.round((b.pose||{})[j]||0)}°`).join("  ") + `\n${b.event||"idle"} ${b.hex} ${b.effect||"solid"}`;
+  document.getElementById("near-read").textContent = fmt(data.near_body);
+  document.getElementById("far-read").textContent = fmt(data.far_body);
+}
+setInterval(() => tick().catch(() => {}), 160);
+tick();
+</script>
+</body>
+</html>

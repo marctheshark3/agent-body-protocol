@@ -5,9 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
+
+_FAILED = re.compile(r"\b(?:tests? failed|failed tests|\d+\s+failed)\b")
+_ZERO_FAILED = re.compile(r"\b0\s+failed\b")
+_PASSED = re.compile(r"\b(?:tests? passed|passed tests)\b")
 
 
 def classify(hook: str, payload: dict) -> str:
@@ -21,10 +26,12 @@ def classify(hook: str, payload: dict) -> str:
     if hook in {"PostToolUseFailure", "SubagentStopFailure"}:
         return "blocked"
     if hook == "Stop":
-        if any(token in text for token in ("tests passed", "test passed", "0 failed", "passed,")):
-            return "tests_passed"
-        if any(token in text for token in ("tests failed", "test failed", "failed,")):
+        failed = bool(_FAILED.search(text)) and not _ZERO_FAILED.search(text)
+        passed = bool(_PASSED.search(text) or _ZERO_FAILED.search(text))
+        if failed:
             return "tests_failed"
+        if passed:
+            return "tests_passed"
         return "completed"
     return "thinking"
 

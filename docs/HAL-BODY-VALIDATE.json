@@ -1,0 +1,269 @@
+{
+  "ok": true,
+  "failures": [],
+  "health": {
+    "status": "ok",
+    "servo": true,
+    "led": true,
+    "camera": true,
+    "audio": true,
+    "sensing": true,
+    "voice": true,
+    "tts": true,
+    "music": true,
+    "display": false,
+    "thermal": {
+      "over": false,
+      "temp_c": 63.7,
+      "max_temp_c": 95
+    }
+  },
+  "steps": [
+    {
+      "name": "led_solid_green",
+      "before": {
+        "led_count": 64,
+        "on": false,
+        "color": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000",
+        "brightness": 0.0,
+        "effect": null,
+        "scene": null
+      },
+      "after": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          0,
+          40,
+          16
+        ],
+        "hex": "#002810",
+        "brightness": 0.157,
+        "effect": null,
+        "scene": null
+      }
+    },
+    {
+      "name": "aim_left",
+      "changed": [
+        "base_yaw.pos"
+      ],
+      "positions": {
+        "base_pitch.pos": -20.0,
+        "wrist_roll.pos": 0.0,
+        "elbow_pitch.pos": 32.0,
+        "base_yaw.pos": -90.0,
+        "wrist_pitch.pos": 0.0
+      }
+    },
+    {
+      "name": "aim_user",
+      "changed": [
+        "base_pitch.pos",
+        "elbow_pitch.pos",
+        "wrist_pitch.pos"
+      ],
+      "positions": {
+        "base_pitch.pos": 0.0,
+        "wrist_roll.pos": 0.0,
+        "elbow_pitch.pos": 0.0,
+        "base_yaw.pos": -90.0,
+        "wrist_pitch.pos": -85.0
+      }
+    }
+  ],
+  "events": {
+    "thinking": {
+      "markers": [
+        "[HW:/led/effect:{\"color\":[0,80,255],\"effect\":\"breathing\",\"speed\":0.3,\"transient\":true}]"
+      ],
+      "dispatched": [
+        {
+          "path": "/led/effect",
+          "status": 200
+        }
+      ],
+      "led": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          0,
+          80,
+          255
+        ],
+        "hex": "#0050ff",
+        "brightness": 1.0,
+        "effect": "breathing",
+        "scene": null
+      },
+      "positions": {
+        "base_pitch.pos": 0.0,
+        "wrist_roll.pos": 0.0,
+        "elbow_pitch.pos": 0.0,
+        "base_yaw.pos": -90.0,
+        "wrist_pitch.pos": -85.0
+      }
+    },
+    "permission_required": {
+      "markers": [
+        "[HW:/emotion:{\"emotion\":\"listening\",\"intensity\":0.6}]",
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,150,0],\"effect\":\"pulse\",\"speed\":0.7,\"transient\":true}]"
+      ],
+      "dispatched": [
+        {
+          "path": "/emotion",
+          "status": 200
+        },
+        {
+          "path": "/servo/aim",
+          "status": 200
+        },
+        {
+          "path": "/led/effect",
+          "status": 200
+        }
+      ],
+      "led": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          255,
+          150,
+          0
+        ],
+        "hex": "#ff9600",
+        "brightness": 1.0,
+        "effect": "pulse",
+        "scene": null
+      },
+      "positions": {
+        "base_pitch.pos": 1.160276,
+        "wrist_roll.pos": 0.163257,
+        "elbow_pitch.pos": 2.742227,
+        "base_yaw.pos": -0.129947,
+        "wrist_pitch.pos": 0.0
+      }
+    },
+    "tests_passed": {
+      "markers": [
+        "[HW:/led/effect/stop:{\"transient\":true}]",
+        "[HW:/led/solid:{\"color\":[0,200,80],\"transient\":true}]"
+      ],
+      "dispatched": [
+        {
+          "path": "/led/effect/stop",
+          "status": 200
+        },
+        {
+          "path": "/led/solid",
+          "status": 200
+        }
+      ],
+      "led": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          0,
+          40,
+          16
+        ],
+        "hex": "#002810",
+        "brightness": 0.157,
+        "effect": null,
+        "scene": null
+      },
+      "positions": {
+        "base_pitch.pos": 24.04891,
+        "wrist_roll.pos": 0.214842,
+        "elbow_pitch.pos": 36.387136,
+        "base_yaw.pos": -9.787646,
+        "wrist_pitch.pos": -1.894558
+      }
+    },
+    "tests_failed": {
+      "markers": [
+        "[HW:/servo/aim:{\"direction\":\"user\"}]",
+        "[HW:/led/effect:{\"color\":[255,0,0],\"duration_ms\":3000,\"effect\":\"notification_flash\",\"speed\":1.0,\"transient\":true}]"
+      ],
+      "dispatched": [
+        {
+          "path": "/servo/aim",
+          "status": 200
+        },
+        {
+          "path": "/led/effect",
+          "status": 200
+        }
+      ],
+      "led": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          255,
+          0,
+          0
+        ],
+        "hex": "#ff0000",
+        "brightness": 1.0,
+        "effect": "notification_flash",
+        "scene": null
+      },
+      "positions": {
+        "base_pitch.pos": 37.407672,
+        "wrist_roll.pos": 13.258764,
+        "elbow_pitch.pos": 49.638048,
+        "base_yaw.pos": -14.855578,
+        "wrist_pitch.pos": -46.007352
+      }
+    },
+    "quiet": {
+      "markers": [
+        "[HW:/tts/stop:{}]",
+        "[HW:/led/effect/stop:{\"transient\":true}]",
+        "[HW:/led/restore:{}]"
+      ],
+      "dispatched": [
+        {
+          "path": "/tts/stop",
+          "status": 200
+        },
+        {
+          "path": "/led/effect/stop",
+          "status": 200
+        },
+        {
+          "path": "/led/restore",
+          "status": 200
+        }
+      ],
+      "led": {
+        "led_count": 64,
+        "on": true,
+        "color": [
+          0,
+          40,
+          16
+        ],
+        "hex": "#002810",
+        "brightness": 0.157,
+        "effect": null,
+        "scene": null
+      },
+      "positions": {
+        "base_pitch.pos": 37.574998,
+        "wrist_roll.pos": 52.683189,
+        "elbow_pitch.pos": 49.805439,
+        "base_yaw.pos": -14.863699,
+        "wrist_pitch.pos": -60.602465
+      }
+    }
+  },
+  "hal": "http://127.0.0.1:5001",
+  "ts": "2026-08-22T01:18:26.027543Z"
+}

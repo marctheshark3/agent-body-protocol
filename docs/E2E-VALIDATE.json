@@ -1,0 +1,108 @@
+{
+  "ts": "2026-08-22T12:02:22.255165Z",
+  "units": {
+    "ok": true,
+    "ran": 43,
+    "failures": 0,
+    "errors": 0,
+    "tail": "...........................................\n----------------------------------------------------------------------\nRan 43 tests in 1.006s\n\nOK\n"
+  },
+  "mapper": {
+    "ok": true,
+    "failures": [],
+    "bodies": {
+      "started": {
+        "hex": "#303030",
+        "effect": null,
+        "event": "started"
+      },
+      "thinking": {
+        "hex": "#0050ff",
+        "effect": "breathing",
+        "event": "thinking"
+      },
+      "waiting_for_user": {
+        "hex": "#ff9600",
+        "effect": "pulse",
+        "event": "waiting_for_user"
+      },
+      "permission_required": {
+        "hex": "#ff9600",
+        "effect": "pulse",
+        "event": "permission_required"
+      },
+      "blocked": {
+        "hex": "#ff0000",
+        "effect": "breathing",
+        "event": "blocked"
+      },
+      "tests_passed": {
+        "hex": "#00c850",
+        "effect": null,
+        "event": "tests_passed"
+      },
+      "tests_failed": {
+        "hex": "#ff0000",
+        "effect": "notification_flash",
+        "event": "tests_failed"
+      },
+      "completed": {
+        "hex": "#00c850",
+        "effect": "pulse",
+        "event": "completed"
+      },
+      "quiet": {
+        "hex": "#000000",
+        "effect": null,
+        "event": "quiet"
+      }
+    }
+  },
+  "use_cases": {
+    "ok": true,
+    "cases": {
+      "two_lamp_ring": true,
+      "in_call_talk": true,
+      "no_answer_message": true,
+      "help_mode": true,
+      "ci_pass": true,
+      "rubber_duck": true
+    }
+  },
+  "live": {
+    "ok": true,
+    "hal_health": 200,
+    "demo_state": 200,
+    "health": {
+      "status": "ok",
+      "servo": true,
+      "led": true,
+      "camera": true,
+      "audio": true,
+      "sensing": true,
+      "voice": true,
+      "tts": true,
+      "music": true,
+      "display": false,
+      "thermal": {
+        "over": false,
+        "temp_c": 48.0,
+        "max_temp_c": 95
+      }
+    },
+    "demo": {
+      "dial": 200,
+      "phase": "ringing",
+      "near": "waiting_for_user",
+      "far": "permission_required",
+      "no_answer": 200,
+      "message": 200,
+      "left": "Call me when you land.",
+      "talk": 200,
+      "heard": "hey sam",
+      "help": 200,
+      "help_event": "blocked"
+    }
+  },
+  "ok": true
+}

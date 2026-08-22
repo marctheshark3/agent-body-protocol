@@ -9,6 +9,45 @@ from typing import Any
 from .hal_client import dispatch
 from .policy import BodyPolicy
 
+ALLOWED = {"v", "event", "ts", "source", "agent", "summary", "detail", "consent", "mode"}
+EVENTS = {
+    "started",
+    "thinking",
+    "waiting_for_user",
+    "permission_required",
+    "blocked",
+    "tests_passed",
+    "tests_failed",
+    "completed",
+    "quiet",
+}
+SOURCES = {"claude-code", "codex", "hermes", "opencode", "github-actions", "manual"}
+MODES = {"normal", "focus", "night"}
+CONSENTS = {"off", "ask", "yes"}
+
+
+def validate_event(event: Any) -> dict[str, Any]:
+    if not isinstance(event, dict):
+        raise ValueError("event must be a JSON object")
+    extra = set(event) - ALLOWED
+    if extra:
+        raise ValueError(f"unknown fields: {sorted(extra)}")
+    if event.get("v") != 1 or event.get("event") not in EVENTS or not isinstance(event.get("ts"), str) or "T" not in event["ts"]:
+        raise ValueError("event requires v=1, a known event, and an ISO timestamp")
+    if "source" in event and event["source"] not in SOURCES:
+        raise ValueError("unknown source")
+    if "mode" in event and event["mode"] not in MODES:
+        raise ValueError("unknown mode")
+    if "consent" in event and event["consent"] not in CONSENTS:
+        raise ValueError("unknown consent")
+    if "summary" in event and (not isinstance(event["summary"], str) or len(event["summary"]) > 140):
+        raise ValueError("summary must be a string of at most 140 characters")
+    if "detail" in event and (not isinstance(event["detail"], str) or len(event["detail"]) > 2000):
+        raise ValueError("detail must be a string of at most 2000 characters")
+    if "agent" in event and (not isinstance(event["agent"], str) or not 1 <= len(event["agent"]) <= 80):
+        raise ValueError("agent must be 1-80 characters")
+    return event
+
 
 class EventHandler(BaseHTTPRequestHandler):
     policy = BodyPolicy()
@@ -20,9 +59,7 @@ class EventHandler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
-            event: dict[str, Any] = json.loads(self.rfile.read(length))
-            if event.get("v") != 1 or not isinstance(event.get("event"), str) or not isinstance(event.get("ts"), str):
-                raise ValueError("event requires v=1, event, and ts")
+            event = validate_event(json.loads(self.rfile.read(length)))
             result = self.policy.apply(event)
             dispatched = dispatch(result.output.markers, self.hal_url) if self.hal_url and result.output.markers else []
             self._json(200, {
