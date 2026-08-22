@@ -1,0 +1,15 @@
+Software agents already have a life cycle. They start. They think. They wait. They ask permission. They get stuck. Tests pass or fail. They finish. Today that life lives in a terminal. Hardware has no word for it.
+
+Agent Body Protocol is the missing cable. Nine named events. Four named verbs. A coding agent speaks them. The Lamp already knows how to move.
+
+The language is light and pose. Started is dim white. Thinking is slow blue. Waiting and permission are amber, looking at you. Blocked is red, and it asks once. Tests passed is safety-clamped green. Tests failed is a red flash. Completed is a short wiggle. Quiet restores the room.
+
+Scenario one. CI is running. The lamp thinks in blue. Tests pass. Green. You never opened a dashboard.
+
+Scenario two. The agent wants to push. Amber. It turns toward you. One question. Not a monologue.
+
+Scenario three. You are stuck. Red breath. Want help? Yes means point at reset. It never types a password.
+
+The joints are the exam. Look drops the wrist to minus eighty-five. Dance moves four joints. Follow five-hundreds without a person. That is honest.
+
+This is not a Grok runtime. Not Isaac. Not FaceTime on the shade. Claude, Hermes, and Codex can plug in. Tomorrow the same URL is a household Lamp. People add skills the body already has. They do not train a second brain to wiggle servos.

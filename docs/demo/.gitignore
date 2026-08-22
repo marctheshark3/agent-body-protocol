@@ -8,6 +8,11 @@ clips.txt
 pclips.txt
 vo.mp3
 vo-proof.mp3
+vo-story.mp3
+sclip*.mp4
+story-silent.mp4
+story-pad.mp4
+sclips.txt
 frames/06-pat-sim.png
 frames/07-look-sim.png
 __pycache__/

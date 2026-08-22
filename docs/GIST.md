@@ -9,8 +9,10 @@ Agent Body Protocol is a small, runtime-neutral contract: nine named events and 
 Repo: https://github.com/marctheshark3/agent-body-protocol
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
-**Proof video (30s, live HAL receipts):**
-https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-proof.mp4
+**Story (98s):** concept → nine-event language → three scenarios → joint exam → what people add.
+https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-story.mp4
+
+Joint receipts (the exam): https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-proof.mp4
 
 Recorded 2026-08-22 against official `HAL_SIMULATE`. `tests_passed` LED `#000000 → #007830`. Look wrist `0 → -85`. Follow `/servo/track` **500** (no person). Dance four joints. HTTP 200 is not a pass — the receipt is the delta.
 
