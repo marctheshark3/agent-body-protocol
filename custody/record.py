@@ -7,6 +7,9 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+# Live Autonomous OS bootstrap reads this after F1.
+DEFAULT_LIVE_PATH = Path("/var/lib/lamp/custody.json")
+
 
 @dataclass
 class CustodyRecord:
