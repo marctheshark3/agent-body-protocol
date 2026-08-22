@@ -45,3 +45,5 @@ PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.
 Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym.
 
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
+
+**Lab demo (25s):** `docs/demo/abp-lab-demo.mp4` — live HAL, loopback stills. Dance 200. Look 200. Not the CAD WebGL view (headless cannot load the 54 MB mesh).
