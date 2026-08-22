@@ -46,5 +46,5 @@ Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is 
 
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
-**Story (98s):** `docs/demo/abp-story.mp4` — concept, nine colors, three scenarios, joints, add-ons.
+**Story (~94s):** `docs/demo/abp-story.mp4` — concept, nine colors, three scenarios, joints, add-ons.
 **Exam (30s):** `docs/demo/abp-proof.mp4` — live HAL receipts.

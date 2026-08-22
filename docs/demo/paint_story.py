@@ -76,10 +76,10 @@ def cable() -> None:
     img, d = card()
     d.text((64, 70), "The missing cable", fill=GOLD, font=font(22))
     layers = [
-        ("Brain", "Claude · Hermes · Codex · CI"),
-        ("USB-C", "nine events + four verbs"),
-        ("Body", "HAL  /led  /servo/aim  /play  /track"),
-        ("World", "Pat sim · Sam sim · household Lamp later"),
+        ("Brain", "any coding agent, or CI"),
+        ("Protocol", "nine events + four verbs"),
+        ("Body", "lights, look, dance, follow"),
+        ("World", "simulator today · real lamp later"),
     ]
     y = 140
     for title_s, sub in layers:
@@ -118,7 +118,7 @@ def scene(name: str, filename: str, human: str, lamp: str, color: tuple[int, int
     d.text((840, 150), "Lamp", fill=GOLD, font=font(16))
     d.text((840, 190), lamp, fill=INK, font=font(24))
     d.text((64, 380), footer, fill=INK, font=font(26))
-    d.text((64, 640), "Live HAL language. Not a chat overlay on the shade.", fill=MUTED, font=font(18))
+    d.text((64, 640), "Color and pose. Not a chat bubble on the lamp.", fill=MUTED, font=font(18))
     save(img, filename)
 
 
@@ -126,9 +126,9 @@ def exam() -> None:
     img, d = card()
     d.text((64, 50), "The joints are the exam", fill=INK, font=font(36))
     rows = [
-        ("look", "wrist 0° → −85°", "/servo/aim  200"),
-        ("dance", "four joints move", "/servo/play  200"),
-        ("follow", "no person in sim", "/servo/track  500  honest"),
+        ("look", "head tips toward you", "wrist 0° → −85°"),
+        ("dance", "four joints move", "a short celebration"),
+        ("follow", "needs a person in view", "without one, it says it cannot"),
     ]
     y = 160
     for title_s, a, b in rows:
@@ -144,17 +144,17 @@ def future() -> None:
     img, d = card()
     d.text((64, 50), "What people add next", fill=INK, font=font(36))
     items = [
-        "Claude / Hermes / Codex adapters — same nine events",
-        "GitHub Actions webhook — CI becomes a body",
-        "Same --hal URL on a household Lamp",
-        "New skills only if HAL already has the verb",
-        "Not a Grok runtime. Not Isaac. Not FaceTime.",
+        "Adapters for the coding agent you already use",
+        "CI that turns the lamp green or red",
+        "The same commands on a real lamp later",
+        "New skills only if the body already has the move",
+        "No second model to drive each joint",
     ]
     y = 150
     for item in items:
         d.text((64, y), "▸  " + item, fill=INK, font=font(26))
         y += 70
-    d.text((64, 620), "Do not train a second brain to wiggle five servos.", fill=GOLD, font=font(22))
+    d.text((64, 620), "Teach the protocol. Do not re-teach the motors.", fill=GOLD, font=font(22))
     save(img, "09-future.png")
 
 
@@ -172,7 +172,7 @@ def main() -> None:
     cable()
     language()
     scene(
-        "Scenario 1  ·  CI sentinel",
+        "Scenario 1  ·  tests running",
         "05a-ci-think.png",
         "“run the suite”",
         "thinking",
@@ -180,7 +180,7 @@ def main() -> None:
         "Slow blue. The agent is working. You do not open a dashboard.",
     )
     scene(
-        "Scenario 1  ·  CI sentinel",
+        "Scenario 1  ·  tests running",
         "05-ci.png",
         "“run the suite”",
         "tests_passed",

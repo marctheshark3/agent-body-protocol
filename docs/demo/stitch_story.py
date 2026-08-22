@@ -7,17 +7,17 @@ story = demo / "story"
 vo = demo / "vo-story.mp3"
 # timed to the 98s VO
 beats = [
-    ("01-hook.png", 13.5),
+    ("01-hook.png", 12.0),
     ("02-gap.png", 8.0),
-    ("03-stack.png", 10.0),
-    ("04-language.png", 18.5),
+    ("03-stack.png", 9.0),
+    ("04-language.png", 17.0),
     ("05a-ci-think.png", 5.0),
     ("05-ci.png", 6.0),
-    ("06-perm.png", 9.0),
-    ("07-help.png", 10.0),
+    ("06-perm.png", 8.0),
+    ("07-help.png", 9.0),
     ("08-exam.png", 8.0),
-    ("09-future.png", 8.0),
-    ("10-end.png", 4.5),
+    ("09-future.png", 7.0),
+    ("10-end.png", 4.6),
 ]
 clips = []
 for i, (name, sec) in enumerate(beats):
