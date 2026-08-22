@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Call Sam — articulated proof</title>
+<title>Call Sam — two lamps</title>
 <style>
   :root { --bg:#0e1116; --ink:#ece8df; --muted:#8b95a1; --line:#2a313a; --amber:#ff9600; --green:#00c850; --panel:#171c23; }
   * { box-sizing:border-box; }
@@ -13,7 +13,7 @@
   .muted { color:var(--muted); }
   .wrap { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:12px 22px; }
   .house { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; }
-  .stage { height:280px; border-radius:12px; background:#0a0c10; border:1px solid var(--line); position:relative; overflow:hidden; }
+  .stage { height:300px; border-radius:12px; background:#07090c; border:1px solid var(--line); position:relative; overflow:hidden; }
   .stage.ring { outline:2px solid var(--amber); animation:pulse 1s infinite; }
   .stage.on { outline:2px solid var(--green); }
   .readout { font:12px/1.35 ui-monospace,monospace; color:#9aa4ae; white-space:pre; margin:10px 0 0; }
@@ -21,31 +21,31 @@
   button { background:#222933; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; cursor:pointer; }
   button.primary { background:#3a2a10; border-color:#7a5414; color:#ffd089; }
   .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:12px; }
-  pre { background:#0a0c10; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12px; overflow:auto; max-height:180px; }
+  pre { background:#0a0c10; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12px; overflow:auto; max-height:160px; }
   @keyframes pulse { 50% { outline-color:transparent; } }
   @media (max-width:900px){ .wrap { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 <header>
-  <h1>Call Sam — articulated proof body</h1>
-  <p class="muted">This page draws five live HAL joints and the LED color. Official <code>/simulator</code> CAD is a rigid mesh with camera-orbit fake motion and a 3D LED that never reads <code>/led/color</code>. That is their visualizer, not the protocol.</p>
-  <p>Phase: <span id="phase" class="pill">idle</span> · HAL: <span id="hal" class="pill">…</span></p>
+  <h1>Two lamps, one call</h1>
+  <p class="muted">Pat and Sam are separate bodies. Only Pat’s events hit the live HAL. Accept is quiet-body + paired screens — not FaceTime chrome on the shade.</p>
+  <p>Phase: <span id="phase" class="pill">idle</span></p>
 </header>
 <div class="wrap">
   <section class="house">
-    <h2>Near house — Pat</h2>
-    <div class="stage" id="near-stage"><canvas id="near-c" width="480" height="280"></canvas></div>
-    <p class="readout" id="near-read">waiting</p>
+    <h2>Pat’s lamp (near)</h2>
+    <div class="stage" id="near-stage"><canvas id="near-c" width="520" height="300"></canvas></div>
+    <p class="readout" id="near-read">idle</p>
     <div class="row">
       <button class="primary" data-act="dial">Call Sam</button>
       <button data-act="hangup">Hang up</button>
     </div>
   </section>
   <section class="house">
-    <h2>Far house — Sam</h2>
-    <div class="stage" id="far-stage"><canvas id="far-c" width="480" height="280"></canvas></div>
-    <p class="readout" id="far-read">waiting</p>
+    <h2>Sam’s lamp (far)</h2>
+    <div class="stage" id="far-stage"><canvas id="far-c" width="520" height="300"></canvas></div>
+    <p class="readout" id="far-read">idle</p>
     <div class="row">
       <button class="primary" data-act="accept">Accept</button>
       <button data-act="decline">Decline</button>
@@ -54,7 +54,7 @@
   </section>
 </div>
 <section style="padding:0 22px 10px">
-  <h3>Scratch the nine events on the live body</h3>
+  <h3>Scratch events on Pat only</h3>
   <div class="row" id="events"></div>
 </section>
 <section style="padding:0 22px 28px">
@@ -66,61 +66,77 @@ const EVENTS = ["started","thinking","waiting_for_user","permission_required","b
 const joints = ["base_yaw.pos","base_pitch.pos","elbow_pitch.pos","wrist_pitch.pos","wrist_roll.pos"];
 const phaseEl = document.getElementById("phase");
 const logEl = document.getElementById("log");
-const halEl = document.getElementById("hal");
-const ev = document.getElementById("events");
 EVENTS.forEach((name) => {
   const b = document.createElement("button");
   b.textContent = name;
-  b.onclick = () => post("/api/emit", {event:name});
-  ev.appendChild(b);
+  b.onclick = () => post("/api/emit", {event:name, house:"near"});
+  document.getElementById("events").appendChild(b);
 });
 
-function lamp(canvas, pose, led, label) {
+function vivid(rgb) {
+  const m = Math.max(1, ...rgb);
+  return rgb.map((c) => Math.min(255, Math.round(c * (210 / m))));
+}
+
+function lamp(canvas, body, sessionHouse, t) {
   const ctx = canvas.getContext("2d");
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0,0,w,h);
+  const pose = body.pose || {};
   const yaw = (pose["base_yaw.pos"]||0) * Math.PI/180;
   const bp = (pose["base_pitch.pos"]||0) * Math.PI/180;
   const ep = (pose["elbow_pitch.pos"]||0) * Math.PI/180;
   const wp = (pose["wrist_pitch.pos"]||0) * Math.PI/180;
   const wr = (pose["wrist_roll.pos"]||0) * Math.PI/180;
-  const base = {x: w*0.5 + yaw*40, y: h*0.88};
-  const shoulder = {x: base.x + Math.sin(bp)*18, y: base.y - 70};
-  const elbow = {x: shoulder.x + Math.sin(bp+ep)*10, y: shoulder.y - 72};
-  const wrist = {x: elbow.x + Math.sin(bp+ep+wp)*8, y: elbow.y - 48};
-  const head = {x: wrist.x + Math.sin(wr)*6, y: wrist.y - 28};
-  const [r,g,b] = led;
-  const lit = Math.max(r,g,b) > 4;
-  ctx.strokeStyle = "#cfc6b4";
-  ctx.lineWidth = 10;
-  ctx.lineCap = "round";
-  ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(shoulder.x, shoulder.y); ctx.stroke();
-  ctx.lineWidth = 8;
-  ctx.beginPath(); ctx.moveTo(shoulder.x, shoulder.y); ctx.lineTo(elbow.x, elbow.y); ctx.stroke();
-  ctx.lineWidth = 6;
-  ctx.beginPath(); ctx.moveTo(elbow.x, elbow.y); ctx.lineTo(wrist.x, wrist.y); ctx.stroke();
-  if (lit) {
-    ctx.shadowColor = `rgb(${r},${g},${b})`;
-    ctx.shadowBlur = 28;
+  const base = {x: w*0.38 + yaw*36, y: h*0.90};
+  const shoulder = {x: base.x + Math.sin(bp)*16, y: base.y - 74};
+  const elbow = {x: shoulder.x + Math.sin(bp+ep)*10, y: shoulder.y - 70};
+  const wrist = {x: elbow.x + Math.sin(bp+ep+wp)*8, y: elbow.y - 46};
+  const head = {x: wrist.x + Math.sin(wr)*6, y: wrist.y - 30};
+  let rgb = body.color || [0,0,0];
+  if (body.effect === "pulse" || body.effect === "breathing" || body.effect === "notification_flash") {
+    const k = 0.28 + 0.72 * (0.5 + 0.5 * Math.sin(t * (body.effect === "breathing" ? 3 : 8)));
+    rgb = rgb.map((c) => Math.round(c * k));
   }
-  ctx.fillStyle = lit ? `rgb(${r},${g},${b})` : "#2a313a";
-  ctx.beginPath(); ctx.ellipse(head.x, head.y, 26, 22, 0, 0, Math.PI*2); ctx.fill();
+  const lit = Math.max(...(body.color||[0,0,0])) > 0;
+  const show = lit ? vivid(rgb) : [42,48,56];
+  ctx.strokeStyle = "#d7cbb3";
+  ctx.lineCap = "round";
+  ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(base.x-28, base.y+8); ctx.lineTo(base.x+28, base.y+8); ctx.stroke();
+  ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(shoulder.x, shoulder.y); ctx.stroke();
+  ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(shoulder.x, shoulder.y); ctx.lineTo(elbow.x, elbow.y); ctx.stroke();
+  ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(elbow.x, elbow.y); ctx.lineTo(wrist.x, wrist.y); ctx.stroke();
+  if (lit) { ctx.shadowColor = `rgb(${show.join(",")})`; ctx.shadowBlur = 36; }
+  ctx.fillStyle = `rgb(${show.join(",")})`;
+  ctx.beginPath(); ctx.ellipse(head.x, head.y, 30, 24, 0, 0, Math.PI*2); ctx.fill();
   ctx.shadowBlur = 0;
+  ctx.fillStyle = lit ? "#111" : "#1b2026";
+  ctx.beginPath(); ctx.ellipse(head.x, head.y+4, 14, 8, 0, 0, Math.PI*2); ctx.fill();
+  if (sessionHouse.screen_open) {
+    ctx.fillStyle = "#0f1410";
+    ctx.fillRect(w-168, 18, 150, 96);
+    ctx.strokeStyle = "#00c850";
+    ctx.strokeRect(w-168, 18, 150, 96);
+    ctx.fillStyle = "#7dcea0";
+    ctx.beginPath(); ctx.arc(w-93, 58, 18, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#ece8df";
+    ctx.font = "11px ui-monospace,monospace";
+    ctx.fillText("paired screen", w-158, 104);
+  }
   ctx.fillStyle = "#ece8df";
   ctx.font = "12px ui-monospace,monospace";
-  ctx.fillText(label, 12, 20);
+  ctx.fillText(body.event || "idle", 12, 22);
+  ctx.fillText(body.effect ? body.effect + " " + (body.hex||"") : (body.hex||"#000000"), 12, 38);
 }
 
-function paintSession(session) {
+function paint(data) {
+  const session = data.session;
+  if (!session) return;
   phaseEl.textContent = session.phase;
-  const ns = document.getElementById("near-stage");
-  const fs = document.getElementById("far-stage");
-  ns.classList.toggle("ring", session.phase === "confirm" || session.phase === "ringing");
-  fs.classList.toggle("ring", session.phase === "ringing");
-  ns.classList.toggle("on", session.near.screen_open);
-  fs.classList.toggle("on", session.far.screen_open);
-  document.getElementById("near-read").textContent = `event ${session.near.event||"—"} · screen ${session.near.screen_open}`;
-  document.getElementById("far-read").textContent = `event ${session.far.event||"—"} · screen ${session.far.screen_open}`;
+  document.getElementById("near-stage").classList.toggle("ring", session.phase === "confirm" || session.phase === "ringing");
+  document.getElementById("far-stage").classList.toggle("ring", session.phase === "ringing");
+  document.getElementById("near-stage").classList.toggle("on", session.near.screen_open);
+  document.getElementById("far-stage").classList.toggle("on", session.far.screen_open);
 }
 
 async function post(url, body) {
@@ -131,35 +147,25 @@ async function post(url, body) {
   });
   const data = await r.json();
   logEl.textContent = JSON.stringify(data, null, 2);
-  if (data.session) paintSession(data.session);
   if (data.error) logEl.textContent = data.error + "\n" + logEl.textContent;
+  paint(data);
 }
 
 document.querySelectorAll("[data-act]").forEach((b) => b.onclick = () => post("/api/"+b.dataset.act));
 
+let last = null;
 async function tick() {
-  try {
-    const [state, color, pos, health] = await Promise.all([
-      fetch("/api/state").then(r => r.json()),
-      fetch("/hal/led/color").then(r => r.json()),
-      fetch("/hal/servo/position").then(r => r.json()),
-      fetch("/hal/health").then(r => r.json()),
-    ]);
-    paintSession(state.session);
-    const pose = pos.positions || {};
-    const led = color.color || [0,0,0];
-    lamp(document.getElementById("near-c"), pose, led, color.effect || color.hex || "led");
-    lamp(document.getElementById("far-c"), pose, led, color.effect || color.hex || "led");
-    document.getElementById("near-read").textContent =
-      joints.map(j => `${j.replace(".pos","")} ${Math.round(pose[j]||0)}°`).join("  ") +
-      `\nLED ${color.hex} ${color.effect||"solid"} on=${color.on}`;
-    document.getElementById("far-read").textContent = document.getElementById("near-read").textContent;
-    halEl.textContent = health.led && health.servo ? "live" : "degraded";
-  } catch (e) {
-    halEl.textContent = "unreachable";
-  }
+  const data = await fetch("/api/state").then(r => r.json());
+  last = data;
+  paint(data);
+  const t = Date.now()/1000;
+  lamp(document.getElementById("near-c"), data.near_body, data.session.near, t);
+  lamp(document.getElementById("far-c"), data.far_body, data.session.far, t);
+  const fmt = (b) => joints.map(j => `${j.replace(".pos","")} ${Math.round((b.pose||{})[j]||0)}°`).join("  ") + `\n${b.event||"idle"} ${b.hex} ${b.effect||"solid"}`;
+  document.getElementById("near-read").textContent = fmt(data.near_body);
+  document.getElementById("far-read").textContent = fmt(data.far_body);
 }
-setInterval(tick, 250);
+setInterval(() => tick().catch(() => {}), 120);
 tick();
 </script>
 </body>

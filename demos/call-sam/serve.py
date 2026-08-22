@@ -17,6 +17,7 @@ from urllib.request import urlopen
 from mapper.call_session import CallSession
 from mapper.hal_client import dispatch
 from mapper.map import map_event
+from mapper.virtual_body import VirtualBody
 
 ROOT = Path(__file__).resolve().parent
 INDEX = ROOT / "index.html"
@@ -28,10 +29,22 @@ class DemoState:
         self.session = CallSession()
         self.hal = hal
         self.log: list[dict] = []
+        self.near_body = VirtualBody("near")
+        self.far_body = VirtualBody("far")
 
     def reset(self) -> None:
         self.session = CallSession()
         self.log = []
+        self.near_body.reset()
+        self.far_body.reset()
+
+    def snapshot(self) -> dict:
+        return {
+            "session": self.session.snapshot(),
+            "near_body": self.near_body.snapshot(),
+            "far_body": self.far_body.snapshot(),
+            "log": self.log[-12:],
+        }
 
     def act(self, name: str) -> dict:
         method = {
@@ -44,8 +57,9 @@ class DemoState:
         }[name]
         return self._record(name, method())
 
-    def emit(self, event_name: str, source: str = "manual") -> dict:
-        return self._record("emit", [(source, event_name)])
+    def emit(self, event_name: str, house: str = "near") -> dict:
+        target = "far" if house == "far" else "near"
+        return self._record("emit", [(target, event_name)])
 
     def _record(self, name: str, emitted: list[tuple[str, str]]) -> dict:
         bodies = []
@@ -60,7 +74,12 @@ class DemoState:
                 "consent": "ask",
             }
             output = map_event(event)
-            dispatched = dispatch(output.markers, self.hal) if self.hal else []
+            body = self.far_body if house == "far" else self.near_body
+            body.apply(event_name)
+            # One HAL cannot be two houses. Drive only the near lamp.
+            dispatched = []
+            if self.hal and house == "near":
+                dispatched = dispatch(output.markers, self.hal)
             bodies.append(
                 {
                     "house": house,
@@ -68,9 +87,16 @@ class DemoState:
                     "markers": list(output.markers),
                     "speech": output.speech,
                     "dispatched": dispatched,
+                    "body": body.snapshot(),
                 }
             )
-        record = {"action": name, "emitted": bodies, "session": self.session.snapshot()}
+        record = {
+            "action": name,
+            "emitted": bodies,
+            "session": self.session.snapshot(),
+            "near_body": self.near_body.snapshot(),
+            "far_body": self.far_body.snapshot(),
+        }
         self.log.append(record)
         return record
 
@@ -96,7 +122,7 @@ def make_handler(state: DemoState):
                 self._send(200, INDEX.read_text(), "text/html; charset=utf-8")
                 return
             if path == "/api/state":
-                self._send(200, {"session": state.session.snapshot(), "log": state.log[-12:]})
+                self._send(200, state.snapshot())
                 return
             if path.startswith("/hal/"):
                 self._proxy_hal("/" + path[len("/hal/"):])
@@ -127,14 +153,15 @@ def make_handler(state: DemoState):
             }
             if path == "/api/reset":
                 state.reset()
-                self._send(200, {"session": state.session.snapshot(), "log": []})
+                self._send(200, state.snapshot())
                 return
             if path == "/api/emit":
                 length = int(self.headers.get("Content-Length") or 0)
                 body = json.loads(self.rfile.read(length) or b"{}")
                 event_name = str(body.get("event") or "")
+                house = str(body.get("house") or "near")
                 try:
-                    self._send(200, state.emit(event_name))
+                    self._send(200, state.emit(event_name, house))
                 except (ValueError, KeyError) as exc:
                     self._send(400, {"error": str(exc), "session": state.session.snapshot()})
                 return
