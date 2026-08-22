@@ -31,7 +31,7 @@
 <body>
 <header>
   <h1>Use-case lab — two lamps, not FaceTime</h1>
-  <p class="muted">Mic stays in this browser. Transcripts are short sanitized text on the paired screen. Shade is a creature. Contact is Sam.</p>
+  <p class="muted">Mic stays in this browser. Two official HAL sims: Pat :5001, Sam :5002. RL does not sit in this loop.</p>
   <p>Phase: <span id="phase" class="pill">idle</span> · Help: <span id="help-phase" class="pill">idle</span></p>
 </header>
 <section class="uses">
@@ -55,12 +55,14 @@
     <div class="stage" id="near-stage"><canvas id="near-c" width="520" height="260"></canvas></div>
     <p class="readout" id="near-read">idle</p>
     <div class="screen" id="near-screen">paired screen closed</div>
+    <iframe id="near-sim" title="Pat HAL" src="about:blank" style="width:100%;height:220px;border:1px solid #2a313a;border-radius:10px;margin-top:10px;background:#000"></iframe>
   </section>
   <section class="house">
     <h2>Sam’s lamp</h2>
     <div class="stage" id="far-stage"><canvas id="far-c" width="520" height="260"></canvas></div>
     <p class="readout" id="far-read">idle</p>
     <div class="screen" id="far-screen">paired screen closed</div>
+    <iframe id="far-sim" title="Sam HAL" src="about:blank" style="width:100%;height:220px;border:1px solid #2a313a;border-radius:10px;margin-top:10px;background:#000"></iframe>
   </section>
 </div>
 <div class="wrap">
@@ -93,6 +95,9 @@
 <script>
 const EVENTS = ["started","thinking","waiting_for_user","permission_required","blocked","tests_passed","tests_failed","completed","quiet"];
 const joints = ["base_yaw.pos","base_pitch.pos","elbow_pitch.pos","wrist_pitch.pos","wrist_roll.pos"];
+const host = location.hostname || "127.0.0.1";
+document.getElementById("near-sim").src = `${location.protocol}//${host}:5001/simulator`;
+document.getElementById("far-sim").src = `${location.protocol}//${host}:5002/simulator`;
 EVENTS.forEach((name) => {
   const b = document.createElement("button");
   b.textContent = name;

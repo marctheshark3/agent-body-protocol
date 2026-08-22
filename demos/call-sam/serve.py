@@ -33,10 +33,11 @@ SCENARIOS = {
 
 
 class DemoState:
-    def __init__(self, hal: str | None):
+    def __init__(self, hal: str | None, far_hal: str | None = None):
         self.session = CallSession()
         self.help = HelpMode()
         self.hal = hal
+        self.far_hal = far_hal
         self.log: list[dict] = []
         self.near_body = VirtualBody("near")
         self.far_body = VirtualBody("far")
@@ -54,6 +55,8 @@ class DemoState:
             "help": self.help.snapshot(),
             "near_body": self.near_body.snapshot(),
             "far_body": self.far_body.snapshot(),
+            "near_hal": self.hal,
+            "far_hal": self.far_hal,
             "log": self.log[-12:],
             "uses": [
                 "nine_events",
@@ -132,9 +135,8 @@ class DemoState:
             output = map_event(event)
             body = self.far_body if house == "far" else self.near_body
             body.apply(event_name)
-            dispatched = []
-            if self.hal and house == "near":
-                dispatched = dispatch(output.markers, self.hal)
+            target = self.far_hal if house == "far" else self.hal
+            dispatched = dispatch(output.markers, target) if target else []
             bodies.append(
                 {
                     "house": house,
@@ -250,13 +252,16 @@ def main() -> int:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5055)
     parser.add_argument("--hal", default="http://127.0.0.1:5001")
+    parser.add_argument("--far-hal", default="http://127.0.0.1:5002")
     parser.add_argument("--no-hal", action="store_true")
     args = parser.parse_args()
     if args.host not in {"127.0.0.1", "localhost", "::1"}:
         raise SystemExit("call-sam demo binds loopback only")
-    state = DemoState(None if args.no_hal else args.hal)
+    near = None if args.no_hal else args.hal
+    far = None if args.no_hal else args.far_hal
+    state = DemoState(near, far)
     server = ThreadingHTTPServer((args.host, args.port), make_handler(state))
-    print(f"Use-case demo http://{args.host}:{args.port}/  HAL={state.hal or 'off'}")
+    print(f"Use-case demo http://{args.host}:{args.port}/  near={state.hal or 'off'} far={state.far_hal or 'off'}")
     server.serve_forever()
     return 0
 
