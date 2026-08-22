@@ -10,7 +10,9 @@ import json
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.request import urlopen
 
 from mapper.call_session import CallSession
 from mapper.hal_client import dispatch
@@ -18,6 +20,7 @@ from mapper.map import map_event
 
 ROOT = Path(__file__).resolve().parent
 INDEX = ROOT / "index.html"
+HAL_GETS = {"/health", "/led/color", "/servo/position"}
 
 
 class DemoState:
@@ -28,16 +31,23 @@ class DemoState:
 
     def reset(self) -> None:
         self.session = CallSession()
+        self.log = []
 
     def act(self, name: str) -> dict:
         method = {
             "start": self.session.start,
             "invite": self.session.invite,
+            "dial": self.session.dial,
             "accept": self.session.accept,
             "decline": self.session.decline,
             "hangup": self.session.hangup,
         }[name]
-        emitted = method()
+        return self._record(name, method())
+
+    def emit(self, event_name: str, source: str = "manual") -> dict:
+        return self._record("emit", [(source, event_name)])
+
+    def _record(self, name: str, emitted: list[tuple[str, str]]) -> dict:
         bodies = []
         for house, event_name in emitted:
             event = {
@@ -75,6 +85,7 @@ def make_handler(state: DemoState):
             raw = data.encode()
             self.send_response(code)
             self.send_header("Content-Type", content_type)
+            self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Length", str(len(raw)))
             self.end_headers()
             self.wfile.write(raw)
@@ -87,24 +98,48 @@ def make_handler(state: DemoState):
             if path == "/api/state":
                 self._send(200, {"session": state.session.snapshot(), "log": state.log[-12:]})
                 return
+            if path.startswith("/hal/"):
+                self._proxy_hal("/" + path[len("/hal/"):])
+                return
             self._send(404, {"error": "not found"})
+
+        def _proxy_hal(self, path: str) -> None:
+            if path not in HAL_GETS or not state.hal:
+                self._send(404, {"error": "hal path not proxied"})
+                return
+            try:
+                with urlopen(state.hal.rstrip("/") + path, timeout=2) as response:
+                    payload = json.loads(response.read())
+                self._send(200, payload)
+            except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+                self._send(502, {"error": str(exc)})
 
         def do_POST(self) -> None:
             path = urlparse(self.path).path
             actions = {
                 "/api/start": "start",
                 "/api/invite": "invite",
+                "/api/dial": "dial",
                 "/api/accept": "accept",
                 "/api/decline": "decline",
                 "/api/hangup": "hangup",
                 "/api/reset": "reset",
             }
-            if path not in actions:
-                self._send(404, {"error": "not found"})
-                return
             if path == "/api/reset":
                 state.reset()
                 self._send(200, {"session": state.session.snapshot(), "log": []})
+                return
+            if path == "/api/emit":
+                length = int(self.headers.get("Content-Length") or 0)
+                body = json.loads(self.rfile.read(length) or b"{}")
+                event_name = str(body.get("event") or "")
+                try:
+                    self._send(200, state.emit(event_name))
+                except (ValueError, KeyError) as exc:
+                    self._send(400, {"error": str(exc), "session": state.session.snapshot()})
+                return
+            if path not in actions:
+                self._send(404, {"error": "not found"})
                 return
             try:
                 self._send(200, state.act(actions[path]))

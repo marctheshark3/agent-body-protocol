@@ -5,7 +5,8 @@ This is a skill, not a tenth event. Video never rides these events.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from copy import deepcopy
+from dataclasses import asdict, dataclass, field
 from typing import Literal
 
 House = Literal["near", "far"]
@@ -47,7 +48,15 @@ class CallSession:
     far: HouseState = field(default_factory=lambda: HouseState("far"))
     media_allowed: bool = False
 
+    def reset(self) -> None:
+        self.phase = "idle"
+        self.media_allowed = False
+        self.near = HouseState("near")
+        self.far = HouseState("far")
+
     def start(self) -> list[tuple[House, str]]:
+        if self.phase == "ended":
+            self.reset()
         if self.phase != "idle":
             raise ValueError("call already in progress")
         self.phase = "confirm"
@@ -58,6 +67,14 @@ class CallSession:
             raise ValueError("invite requires a local confirm")
         self.phase = "ringing"
         return self._apply("ringing")
+
+    def dial(self) -> list[tuple[House, str]]:
+        """One-click demo: the click is local confirm, then the far house rings."""
+        emitted: list[tuple[House, str]] = []
+        if self.phase in {"idle", "ended"}:
+            emitted.extend(self.start())
+        emitted.extend(self.invite())
+        return emitted
 
     def accept(self) -> list[tuple[House, str]]:
         if self.phase != "ringing":
@@ -89,8 +106,8 @@ class CallSession:
             "contact": self.contact,
             "phase": self.phase,
             "media_allowed": self.media_allowed,
-            "near": self.near.__dict__,
-            "far": self.far.__dict__,
+            "near": deepcopy(asdict(self.near)),
+            "far": deepcopy(asdict(self.far)),
         }
 
     def _close_media(self) -> None:

@@ -61,6 +61,35 @@ class CallSessionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             CallSession().accept()
 
+    def test_snapshot_does_not_mutate_after_later_actions(self):
+        session = CallSession()
+        session.start()
+        snap = session.snapshot()
+        session.decline()
+        self.assertEqual("confirm", snap["phase"])
+        self.assertEqual("permission_required", snap["near"]["event"])
+
+    def test_start_after_ended_restarts(self):
+        session = CallSession()
+        session.start()
+        session.decline()
+        emitted = session.start()
+        self.assertEqual("confirm", session.phase)
+        self.assertEqual([("near", "permission_required")], emitted)
+
+    def test_dial_rings_far_house(self):
+        session = CallSession()
+        emitted = session.dial()
+        self.assertEqual("ringing", session.phase)
+        self.assertEqual(
+            [
+                ("near", "permission_required"),
+                ("near", "waiting_for_user"),
+                ("far", "permission_required"),
+            ],
+            emitted,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
