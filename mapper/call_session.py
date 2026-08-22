@@ -1,6 +1,6 @@
 """Consented two-house call mapped onto the nine ABP events.
 
-This is a skill, not a tenth event. Video never rides these events.
+This is a skill, not a tenth event. Video and raw audio never ride these events.
 """
 
 from __future__ import annotations
@@ -10,10 +10,11 @@ from dataclasses import asdict, dataclass, field
 from typing import Literal
 
 House = Literal["near", "far"]
-Phase = Literal["idle", "confirm", "ringing", "in_call", "ended"]
+Phase = Literal["idle", "confirm", "ringing", "in_call", "ended", "missed"]
 
 # Public fixtures use synthetic names only.
 CONTACT = "Sam"
+MAX_NOTE = 140
 
 NEAR_EVENTS = {
     "confirm": "permission_required",
@@ -21,6 +22,8 @@ NEAR_EVENTS = {
     "accept": "quiet",
     "decline": "quiet",
     "hangup": "quiet",
+    "no_answer": "waiting_for_user",
+    "leave_message": "completed",
 }
 FAR_EVENTS = {
     "confirm": None,
@@ -28,7 +31,21 @@ FAR_EVENTS = {
     "accept": "quiet",
     "decline": "quiet",
     "hangup": "quiet",
+    "no_answer": "quiet",
+    "leave_message": "waiting_for_user",
 }
+
+
+def sanitize_note(text: str) -> str:
+    note = " ".join(str(text or "").split())
+    lowered = note.lower()
+    if any(token in lowered for token in ("password", "passwd", "otp", "ssn", "recovery code")):
+        raise ValueError("message rejected: looks like a secret")
+    if len(note) > MAX_NOTE:
+        note = note[:MAX_NOTE].rstrip()
+    if not note:
+        raise ValueError("empty message")
+    return note
 
 
 @dataclass
@@ -38,6 +55,8 @@ class HouseState:
     screen_open: bool = False
     camera_on: bool = False
     mic_on: bool = False
+    heard: str | None = None
+    message: str | None = None
 
 
 @dataclass
@@ -55,7 +74,7 @@ class CallSession:
         self.far = HouseState("far")
 
     def start(self) -> list[tuple[House, str]]:
-        if self.phase == "ended":
+        if self.phase in {"ended", "missed"}:
             self.reset()
         if self.phase != "idle":
             raise ValueError("call already in progress")
@@ -71,7 +90,7 @@ class CallSession:
     def dial(self) -> list[tuple[House, str]]:
         """One-click demo: the click is local confirm, then the far house rings."""
         emitted: list[tuple[House, str]] = []
-        if self.phase in {"idle", "ended"}:
+        if self.phase in {"idle", "ended", "missed"}:
             emitted.extend(self.start())
         emitted.extend(self.invite())
         return emitted
@@ -99,7 +118,38 @@ class CallSession:
             raise ValueError("hangup requires an active call")
         self.phase = "ended"
         self._close_media()
+        self.near.mic_on = False
+        self.far.mic_on = False
         return self._apply("hangup")
+
+    def no_answer(self) -> list[tuple[House, str]]:
+        if self.phase != "ringing":
+            raise ValueError("no-answer requires a ring")
+        self.phase = "missed"
+        self._close_media()
+        return self._apply("no_answer")
+
+    def leave_message(self, text: str) -> list[tuple[House, str]]:
+        if self.phase not in {"ringing", "missed"}:
+            raise ValueError("leave-message requires a missed or ringing call")
+        note = sanitize_note(text)
+        if self.phase == "ringing":
+            self._apply("no_answer")
+        self.phase = "missed"
+        self.far.message = note
+        self.far.screen_open = True
+        self.near.mic_on = False
+        return self._apply("leave_message")
+
+    def talk(self, text: str, speaker: House = "near") -> None:
+        if self.phase != "in_call" or not self.media_allowed:
+            raise ValueError("talk requires an accepted call")
+        note = sanitize_note(text)
+        source = self.near if speaker == "near" else self.far
+        other = self.far if speaker == "near" else self.near
+        source.mic_on = True
+        other.heard = note
+        other.screen_open = True
 
     def snapshot(self) -> dict:
         return {

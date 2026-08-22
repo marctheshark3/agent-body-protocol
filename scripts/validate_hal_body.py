@@ -94,19 +94,19 @@ def run(hal: str) -> dict:
     assert_true(g[1] > 0, "green channel stayed 0", failures)
     steps.append({"name": "led_solid_green", "before": dark["led"], "after": green["led"]})
 
-    post(hal, "/servo/aim", {"direction": "center", "duration": 0.1})
-    time.sleep(0.2)
+    post(hal, "/servo/aim", {"direction": "center", "duration": 0.6})
+    time.sleep(0.8)
     center = snapshot(hal)["positions"]
-    post(hal, "/servo/aim", {"direction": "left", "duration": 0.1})
-    time.sleep(0.2)
+    post(hal, "/servo/aim", {"direction": "left", "duration": 0.6})
+    time.sleep(0.8)
     left = snapshot(hal)["positions"]
     yaw_only = changed_joints(center, left)
     assert_true("base_yaw.pos" in yaw_only, f"left aim did not move base_yaw: {yaw_only}", failures)
     assert_true(left["base_yaw.pos"] < -20, f"left yaw not left: {left['base_yaw.pos']}", failures)
     steps.append({"name": "aim_left", "changed": yaw_only, "positions": left})
 
-    post(hal, "/servo/aim", {"direction": "user", "duration": 0.1})
-    time.sleep(0.2)
+    post(hal, "/servo/aim", {"direction": "user", "duration": 0.6})
+    time.sleep(0.8)
     user = snapshot(hal)["positions"]
     wrist = changed_joints(left, user)
     assert_true("wrist_pitch.pos" in wrist, f"user aim did not move wrist independently: {wrist}", failures)

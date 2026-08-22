@@ -1,6 +1,7 @@
-"""Loopback Call Sam demo: two-house UI + optional live HAL.
+"""Loopback use-case demo: two lamps, help mode, nine events.
 
-Binds 127.0.0.1 only. Synthetic contact. Not a shipping video product.
+Binds 127.0.0.1 only. Synthetic contact. Audio never leaves the browser except
+as a short sanitized transcript posted to /api/talk or /api/message.
 """
 
 from __future__ import annotations
@@ -16,17 +17,25 @@ from urllib.request import urlopen
 
 from mapper.call_session import CallSession
 from mapper.hal_client import dispatch
+from mapper.help_mode import HelpMode
 from mapper.map import map_event
 from mapper.virtual_body import VirtualBody
 
 ROOT = Path(__file__).resolve().parent
 INDEX = ROOT / "index.html"
 HAL_GETS = {"/health", "/led/color", "/servo/position"}
+SCENARIOS = {
+    "ci_pass": [("near", "started"), ("near", "thinking"), ("near", "tests_passed"), ("near", "completed")],
+    "ci_fail": [("near", "started"), ("near", "thinking"), ("near", "tests_failed")],
+    "rubber_duck": [("near", "started"), ("near", "thinking"), ("near", "permission_required")],
+    "night_think": [("near", "thinking")],
+}
 
 
 class DemoState:
     def __init__(self, hal: str | None):
         self.session = CallSession()
+        self.help = HelpMode()
         self.hal = hal
         self.log: list[dict] = []
         self.near_body = VirtualBody("near")
@@ -34,6 +43,7 @@ class DemoState:
 
     def reset(self) -> None:
         self.session = CallSession()
+        self.help = HelpMode()
         self.log = []
         self.near_body.reset()
         self.far_body.reset()
@@ -41,9 +51,19 @@ class DemoState:
     def snapshot(self) -> dict:
         return {
             "session": self.session.snapshot(),
+            "help": self.help.snapshot(),
             "near_body": self.near_body.snapshot(),
             "far_body": self.far_body.snapshot(),
             "log": self.log[-12:],
+            "uses": [
+                "nine_events",
+                "ci_sentinel",
+                "rubber_duck",
+                "help_mode",
+                "two_lamp_call",
+                "no_answer_message",
+                "in_call_talk_on_screen",
+            ],
         }
 
     def act(self, name: str) -> dict:
@@ -54,12 +74,48 @@ class DemoState:
             "accept": self.session.accept,
             "decline": self.session.decline,
             "hangup": self.session.hangup,
+            "no_answer": self.session.no_answer,
         }[name]
         return self._record(name, method())
+
+    def leave_message(self, text: str) -> dict:
+        return self._record("leave_message", self.session.leave_message(text))
+
+    def talk(self, text: str, speaker: str = "near") -> dict:
+        house = "far" if speaker == "far" else "near"
+        self.session.talk(text, house)
+        record = {
+            "action": "talk",
+            "emitted": [],
+            "session": self.session.snapshot(),
+            "near_body": self.near_body.snapshot(),
+            "far_body": self.far_body.snapshot(),
+            "help": self.help.snapshot(),
+        }
+        self.log.append(record)
+        return record
 
     def emit(self, event_name: str, house: str = "near") -> dict:
         target = "far" if house == "far" else "near"
         return self._record("emit", [(target, event_name)])
+
+    def scenario(self, name: str) -> dict:
+        if name == "help":
+            return self.help_act("stuck")
+        if name not in SCENARIOS:
+            raise ValueError(f"unknown scenario {name}")
+        return self._record(name, list(SCENARIOS[name]))
+
+    def help_act(self, name: str) -> dict:
+        method = {
+            "stuck": self.help.stuck,
+            "consent_yes": self.help.consent_yes,
+            "point_reset": self.help.point_reset,
+            "done": self.help.done,
+            "refuse": self.help.refuse,
+        }[name]
+        event_name = method()
+        return self._record(f"help_{name}", [("near", event_name)])
 
     def _record(self, name: str, emitted: list[tuple[str, str]]) -> dict:
         bodies = []
@@ -70,13 +126,12 @@ class DemoState:
                 "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 "source": "manual",
                 "summary": f"{house}:{self.session.contact}:{name}",
-                "mode": "normal",
+                "mode": "night" if name == "night_think" else "normal",
                 "consent": "ask",
             }
             output = map_event(event)
             body = self.far_body if house == "far" else self.near_body
             body.apply(event_name)
-            # One HAL cannot be two houses. Drive only the near lamp.
             dispatched = []
             if self.hal and house == "near":
                 dispatched = dispatch(output.markers, self.hal)
@@ -96,6 +151,7 @@ class DemoState:
             "session": self.session.snapshot(),
             "near_body": self.near_body.snapshot(),
             "far_body": self.far_body.snapshot(),
+            "help": self.help.snapshot(),
         }
         self.log.append(record)
         return record
@@ -115,6 +171,10 @@ def make_handler(state: DemoState):
             self.send_header("Content-Length", str(len(raw)))
             self.end_headers()
             self.wfile.write(raw)
+
+        def _read_json(self) -> dict:
+            length = int(self.headers.get("Content-Length") or 0)
+            return json.loads(self.rfile.read(length) or b"{}")
 
         def do_GET(self) -> None:
             path = urlparse(self.path).path
@@ -149,29 +209,38 @@ def make_handler(state: DemoState):
                 "/api/accept": "accept",
                 "/api/decline": "decline",
                 "/api/hangup": "hangup",
-                "/api/reset": "reset",
+                "/api/no_answer": "no_answer",
             }
-            if path == "/api/reset":
-                state.reset()
-                self._send(200, state.snapshot())
-                return
-            if path == "/api/emit":
-                length = int(self.headers.get("Content-Length") or 0)
-                body = json.loads(self.rfile.read(length) or b"{}")
-                event_name = str(body.get("event") or "")
-                house = str(body.get("house") or "near")
-                try:
-                    self._send(200, state.emit(event_name, house))
-                except (ValueError, KeyError) as exc:
-                    self._send(400, {"error": str(exc), "session": state.session.snapshot()})
-                return
-            if path not in actions:
-                self._send(404, {"error": "not found"})
-                return
             try:
+                if path == "/api/reset":
+                    state.reset()
+                    self._send(200, state.snapshot())
+                    return
+                if path == "/api/emit":
+                    body = self._read_json()
+                    self._send(200, state.emit(str(body.get("event") or ""), str(body.get("house") or "near")))
+                    return
+                if path == "/api/scenario":
+                    body = self._read_json()
+                    self._send(200, state.scenario(str(body.get("name") or "")))
+                    return
+                if path.startswith("/api/help/"):
+                    self._send(200, state.help_act(path.rsplit("/", 1)[-1]))
+                    return
+                if path == "/api/message":
+                    body = self._read_json()
+                    self._send(200, state.leave_message(str(body.get("text") or "")))
+                    return
+                if path == "/api/talk":
+                    body = self._read_json()
+                    self._send(200, state.talk(str(body.get("text") or ""), str(body.get("speaker") or "near")))
+                    return
+                if path not in actions:
+                    self._send(404, {"error": "not found"})
+                    return
                 self._send(200, state.act(actions[path]))
-            except ValueError as exc:
-                self._send(400, {"error": str(exc), "session": state.session.snapshot()})
+            except (ValueError, KeyError) as exc:
+                self._send(400, {"error": str(exc), **state.snapshot()})
 
     return Handler
 
@@ -187,7 +256,7 @@ def main() -> int:
         raise SystemExit("call-sam demo binds loopback only")
     state = DemoState(None if args.no_hal else args.hal)
     server = ThreadingHTTPServer((args.host, args.port), make_handler(state))
-    print(f"Call Sam demo http://{args.host}:{args.port}/  HAL={state.hal or 'off'}")
+    print(f"Use-case demo http://{args.host}:{args.port}/  HAL={state.hal or 'off'}")
     server.serve_forever()
     return 0
 
