@@ -13,6 +13,7 @@ from .map import map_event
 from .motion import ALLOWED_DIRECTIONS, aim
 from .policy import BodyPolicy
 from .serve import serve
+from .skills import SKILLS, dispatch_soft, markers_for
 from .trajectory import read_body, record
 from .transfer import SETTLE_S, replay
 
@@ -77,6 +78,10 @@ def build_parser() -> argparse.ArgumentParser:
     xfer.add_argument("--hal", required=True)
     xfer.add_argument("--out", type=Path, default=Path("/tmp/abp-transfer.jsonl"))
     xfer.add_argument("--house", default="sam")
+    skill = sub.add_parser("skill")
+    skill.add_argument("--name", required=True, choices=sorted(SKILLS))
+    skill.add_argument("--hal")
+    skill.add_argument("--house", default="pat")
     return parser
 
 
@@ -109,6 +114,12 @@ def main(argv: list[str] | None = None) -> int:
             )
         if args.record:
             args.record.write_text(json.dumps(payload, indent=2) + "\n")
+        print(json.dumps(payload, separators=(",", ":")))
+        return 0
+    if args.command == "skill":
+        payload = {"skill": args.name, "markers": markers_for(args.name)}
+        if args.hal:
+            payload["dispatched"] = dispatch_soft(payload["markers"], args.hal)
         print(json.dumps(payload, separators=(",", ":")))
         return 0
     payload = _result_payload(_event(args))

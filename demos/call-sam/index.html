@@ -47,7 +47,12 @@
     <button data-act="no_answer">No answer</button>
     <button data-act="hangup">Hang up</button>
     <button data-act="reset">Reset</button>
+    <button class="primary" data-skill="look">Look</button>
+    <button class="primary" data-skill="follow">Follow</button>
+    <button class="primary" data-skill="dance">Dance</button>
+    <button data-skill="stop">Stop</button>
   </div>
+  <p class="muted">Look / Dance / Stop hit Pat’s HAL now. Follow is the official <code>/servo/track</code> — sim has no person, so it will often 500. That is honest.</p>
 </section>
 <div class="wrap">
   <section class="house">
@@ -185,6 +190,7 @@ async function post(url, body) {
 
 document.querySelectorAll("[data-act]").forEach((b) => b.onclick = () => post("/api/"+b.dataset.act));
 document.querySelectorAll("[data-scene]").forEach((b) => b.onclick = () => post("/api/scenario", {name:b.dataset.scene}));
+document.querySelectorAll("[data-skill]").forEach((b) => b.onclick = () => post("/api/skill", {name:b.dataset.skill, house:"near"}));
 document.getElementById("talk").onclick = () => post("/api/talk", {text: document.getElementById("say").value, speaker:"near"});
 document.getElementById("msg").onclick = () => post("/api/message", {text: document.getElementById("say").value});
 document.getElementById("help-yes").onclick = () => post("/api/help/consent_yes");

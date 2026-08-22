@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Body Protocol Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'JetBrains Mono', monospace; background: #020617; min-height: 100vh; padding: 2rem; color: white; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin: 0 0 1.5rem 1.75rem; }
+    .diagram-container { background: rgba(15, 23, 42, 0.5); border-radius: 1rem; border: 1px solid #1e293b; padding: 1.5rem; overflow-x: auto; }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-row"><div class="pulse-dot"></div><h1>Agent Body Protocol</h1></div>
+    <p class="subtitle">Brain → named verbs → HAL. HAL is the driver, not a sensor. Pat and Sam are two copies of that driver.</p>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 560">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <rect x="24" y="24" width="952" height="140" rx="12" fill="rgba(8, 51, 68, 0.25)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="40" y="46" fill="#22d3ee" font-size="10" font-weight="600">BRAIN — emit named state, never joints</text>
+        <rect x="48" y="64" width="200" height="76" rx="6" fill="#0f172a"/><rect x="48" y="64" width="200" height="76" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="148" y="96" fill="white" font-size="12" font-weight="600" text-anchor="middle">Claude / Hermes / CI</text>
+        <text x="148" y="116" fill="#94a3b8" font-size="9" text-anchor="middle">thinking · tests_passed</text>
+        <rect x="280" y="64" width="200" height="76" rx="6" fill="#0f172a"/><rect x="280" y="64" width="200" height="76" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="380" y="96" fill="white" font-size="12" font-weight="600" text-anchor="middle">Lab :5055</text>
+        <text x="380" y="116" fill="#94a3b8" font-size="9" text-anchor="middle">Call Sam · 9 events · skills</text>
+        <rect x="512" y="64" width="200" height="76" rx="6" fill="#0f172a"/><rect x="512" y="64" width="200" height="76" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="612" y="96" fill="white" font-size="12" font-weight="600" text-anchor="middle">MCP / CLI</text>
+        <text x="612" y="116" fill="#94a3b8" font-size="9" text-anchor="middle">agent-body emit · skill</text>
+        <rect x="744" y="64" width="200" height="76" rx="6" fill="#0f172a"/><rect x="744" y="64" width="200" height="76" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="844" y="96" fill="white" font-size="12" font-weight="600" text-anchor="middle">NOT here</text>
+        <text x="844" y="116" fill="#fda4af" font-size="9" text-anchor="middle">set_joint · Isaac · Grok</text>
+
+        <rect x="24" y="192" width="952" height="140" rx="12" fill="rgba(6, 78, 59, 0.18)" stroke="#34d399" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="40" y="214" fill="#34d399" font-size="10" font-weight="600">USB-C — Agent Body Protocol</text>
+        <rect x="48" y="232" width="280" height="76" rx="6" fill="#0f172a"/><rect x="48" y="232" width="280" height="76" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="188" y="264" fill="white" font-size="12" font-weight="600" text-anchor="middle">9 events → mapper</text>
+        <text x="188" y="284" fill="#94a3b8" font-size="9" text-anchor="middle">exact [HW:] · quiet by default</text>
+        <rect x="360" y="232" width="280" height="76" rx="6" fill="#0f172a"/><rect x="360" y="232" width="280" height="76" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="500" y="264" fill="white" font-size="12" font-weight="600" text-anchor="middle">look · follow · dance · stop</text>
+        <text x="500" y="284" fill="#94a3b8" font-size="9" text-anchor="middle">stock HAL routes · no RL</text>
+        <rect x="672" y="232" width="272" height="76" rx="6" fill="#0f172a"/><rect x="672" y="232" width="272" height="76" rx="6" fill="rgba(251, 146, 60, 0.25)" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="808" y="264" fill="white" font-size="12" font-weight="600" text-anchor="middle">transfer JSONL</text>
+        <text x="808" y="284" fill="#94a3b8" font-size="9" text-anchor="middle">Pat log → Sam replay · exam</text>
+
+        <rect x="24" y="360" width="952" height="140" rx="12" fill="rgba(120, 53, 15, 0.14)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="40" y="382" fill="#fbbf24" font-size="10" font-weight="600">BODY — HAL (driver, not a sensor)</text>
+        <rect x="48" y="400" width="210" height="76" rx="6" fill="#0f172a"/><rect x="48" y="400" width="210" height="76" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="153" y="432" fill="white" font-size="12" font-weight="600" text-anchor="middle">HAL HTTP</text>
+        <text x="153" y="452" fill="#94a3b8" font-size="9" text-anchor="middle">/servo /led /track /play</text>
+        <rect x="290" y="400" width="200" height="76" rx="6" fill="#0f172a"/><rect x="290" y="400" width="200" height="76" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="390" y="432" fill="white" font-size="12" font-weight="600" text-anchor="middle">Pat :5001</text>
+        <text x="390" y="452" fill="#94a3b8" font-size="9" text-anchor="middle">sim Lamp A</text>
+        <rect x="522" y="400" width="200" height="76" rx="6" fill="#0f172a"/><rect x="522" y="400" width="200" height="76" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="622" y="432" fill="white" font-size="12" font-weight="600" text-anchor="middle">Sam :5002</text>
+        <text x="622" y="452" fill="#94a3b8" font-size="9" text-anchor="middle">sim Lamp B</text>
+        <rect x="754" y="400" width="190" height="76" rx="6" fill="#0f172a"/><rect x="754" y="400" width="190" height="76" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="849" y="432" fill="white" font-size="12" font-weight="600" text-anchor="middle">Real Lamp</text>
+        <text x="849" y="452" fill="#94a3b8" font-size="9" text-anchor="middle">same --hal later</text>
+
+        <line x1="148" y1="140" x2="188" y2="232" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="380" y1="140" x2="500" y2="232" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="188" y1="308" x2="153" y2="400" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="500" y1="308" x2="390" y2="400" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="808" y1="308" x2="622" y2="400" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+      </svg>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-header"><div class="card-dot cyan"></div><h3>Nouns</h3></div>
+        <ul>
+          <li>• HAL = robot driver API, not a sensor</li>
+          <li>• Pat / Sam = two pretend houses</li>
+          <li>• /simulator = 3D preview, not Isaac</li>
+        </ul>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-dot emerald"></div><h3>Shipped</h3></div>
+        <ul>
+          <li>• 9 events → exact [HW:]</li>
+          <li>• look / dance / stop live on Pat</li>
+          <li>• transfer exam Pat → Sam</li>
+        </ul>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-dot rose"></div><h3>Not claimed</h3></div>
+        <ul>
+          <li>• No trained RL policy</li>
+          <li>• Follow needs a real camera</li>
+          <li>• No Grok runtime, no set_joint</li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer">agent-body-protocol • Week 5 companion • HAL_SIMULATE</p>
+  </div>
+</body>
+</html>
