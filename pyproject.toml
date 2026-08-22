@@ -17,4 +17,4 @@ agent-body = "mapper.agent_body:main"
 test = ["jsonschema"]
 
 [tool.setuptools]
-packages = ["mapper"]
+packages = ["mapper", "custody"]
