@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .hal_client import dispatch
 from .map import map_event
+from .motion import ALLOWED_DIRECTIONS, aim
 from .policy import BodyPolicy
 from .serve import serve
 
@@ -61,6 +62,10 @@ def build_parser() -> argparse.ArgumentParser:
     server.add_argument("--host", default="127.0.0.1")
     server.add_argument("--port", type=int, default=5051)
     server.add_argument("--hal")
+    aimer = sub.add_parser("aim")
+    aimer.add_argument("--direction", required=True, choices=ALLOWED_DIRECTIONS)
+    aimer.add_argument("--record", type=Path)
+    aimer.add_argument("--hal", help="HAL base URL; omit for record-only evidence")
     return parser
 
 
@@ -68,6 +73,14 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "serve":
         serve(args.host, args.port, args.hal)
+        return 0
+    if args.command == "aim":
+        payload = {"direction": args.direction, "markers": aim(args.direction)}
+        if args.hal:
+            payload["dispatched"] = dispatch(payload["markers"], args.hal)
+        if args.record:
+            args.record.write_text(json.dumps(payload, indent=2) + "\n")
+        print(json.dumps(payload, separators=(",", ":")))
         return 0
     payload = _result_payload(_event(args))
     if args.command == "post" and args.hal:

@@ -59,6 +59,14 @@ class CliTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
 
+    def test_aim_record_is_named_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            record = Path(directory) / "aim.json"
+            self.assertEqual(0, main(["aim", "--direction", "user", "--record", str(record)]))
+            payload = json.loads(record.read_text())
+            self.assertEqual(['[HW:/servo/aim:{"direction":"user"}]'], payload["markers"])
+            self.assertNotIn("base_yaw", record.read_text())
+
     def test_validate_event_rejects_invalid_mode(self):
         with self.assertRaises(ValueError):
             validate_event({

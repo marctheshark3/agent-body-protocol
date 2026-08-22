@@ -27,3 +27,4 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - Call Sam is a two-sim ring scenario. It is not a shipping video product, not a real second house, and not a family FaceTime. Public fixtures use the name Sam only.
 - In-call “talk” and missed-call notes are sanitized text on a paired-screen stub. Browser mic stays local. Audio/video never ride ABP or MQTT.
 - Real-time A/V belongs on a phone/tablet companion (or FaceTime). Do not put faces on the Lamp shade (`display: false`).
+- Motion-aim is a named `/servo/aim` slot. `ABP_AIM_POLICY=learned` falls back to named presets until a module exists. No `set_joint` MCP. No training in this repo.

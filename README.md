@@ -111,7 +111,7 @@ PYTHONPATH=. python3 scripts/validate_e2e.py
 - `protocol/` — JSON Schema and examples
 - `mapper/` — deterministic mapper, state policy, loopback server, HAL client, CLI
 - `fixtures/golden/` — exact expected marker sequences
-- `skills/` — drop-in Agent Body, work-light, and build-scribe skills
+- `skills/` — drop-in Agent Body, work-light, build-scribe, and motion-aim skills
 - `adapters/` — Claude Code and Hermes adapters
 - `docs/HONESTY.md` — what the demo does and does not prove
 
