@@ -29,3 +29,4 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - Real-time A/V belongs on a phone/tablet companion (or FaceTime). Do not put faces on the Lamp shade (`display: false`).
 - Motion-aim is a named `/servo/aim` slot. `ABP_AIM_POLICY=learned` falls back to named presets until a module exists. No `set_joint` MCP. No training in this repo.
 - The trajectory logger (`agent-body aim|post --log`) records command + `/led/color` + `/servo/position` JSONL. `agent-body transfer` replays those markers onto another HAL and reports joint/LED gap. That is **API sim-to-real** (same `[HW:]`, different body). Not Isaac. Not a trained policy. A real Lamp is the same `--hal` later.
+- Named skills (`look` / `follow` / `dance` / `stop`) are USB-C onto **stock HAL routes**. Dance is `happy_wiggle`. Follow is official `/servo/track`. HAL_SIMULATE has no person — track often 500s. No RL in this repo.

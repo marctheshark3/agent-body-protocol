@@ -19,6 +19,7 @@ from mapper.call_session import CallSession
 from mapper.hal_client import dispatch
 from mapper.help_mode import HelpMode
 from mapper.map import map_event
+from mapper.skills import dispatch_soft, markers_for
 from mapper.virtual_body import VirtualBody
 
 ROOT = Path(__file__).resolve().parent
@@ -66,8 +67,31 @@ class DemoState:
                 "two_lamp_call",
                 "no_answer_message",
                 "in_call_talk_on_screen",
+                "look_follow_dance_stop",
             ],
         }
+
+    def skill(self, name: str, house: str = "near") -> dict:
+        markers = markers_for(name)
+        target = self.far_hal if house == "far" else self.hal
+        dispatched = dispatch_soft(markers, target) if target else []
+        record = {
+            "action": f"skill_{name}",
+            "skill": name,
+            "house": "far" if house == "far" else "near",
+            "markers": markers,
+            "dispatched": dispatched,
+            "session": self.session.snapshot(),
+            "near_body": self.near_body.snapshot(),
+            "far_body": self.far_body.snapshot(),
+            "help": self.help.snapshot(),
+            "note": (
+                "follow needs a camera; HAL_SIMULATE often 500s on /servo/track. "
+                "dance/look/stop use stock HAL verbs."
+            ),
+        }
+        self.log.append(record)
+        return record
 
     def act(self, name: str) -> dict:
         method = {
@@ -236,6 +260,10 @@ def make_handler(state: DemoState):
                 if path == "/api/talk":
                     body = self._read_json()
                     self._send(200, state.talk(str(body.get("text") or ""), str(body.get("speaker") or "near")))
+                    return
+                if path == "/api/skill":
+                    body = self._read_json()
+                    self._send(200, state.skill(str(body.get("name") or ""), str(body.get("house") or "near")))
                     return
                 if path not in actions:
                     self._send(404, {"error": "not found"})

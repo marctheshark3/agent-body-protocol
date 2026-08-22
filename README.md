@@ -99,10 +99,14 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 - **Two lamps:** Call Sam. Pat waits, Sam rings.
 - **No answer:** leave a 140-char note on Sam’s paired screen.
 - **In-call talk:** sanitized transcript on the other screen. Audio stays in the browser.
+- **Look / Dance / Stop:** stock HAL verbs on Pat. **Follow** is official `/servo/track` (sim often 500s — no person).
+
+See `docs/ARCHITECTURE.md` for mermaid + noun table.
 
 ```bash
 PYTHONPATH=. python3 demos/call-sam/serve.py
 # http://127.0.0.1:5055/
+PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
 PYTHONPATH=. python3 scripts/validate_e2e.py
 ```
 
@@ -116,8 +120,11 @@ PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --h
 - `protocol/` — JSON Schema and examples
 - `mapper/` — deterministic mapper, state policy, loopback server, HAL client, CLI
 - `fixtures/golden/` — exact expected marker sequences
-- `skills/` — drop-in Agent Body, work-light, build-scribe, and motion-aim skills
+- `skills/` — drop-in Agent Body, work-light, build-scribe, motion-aim, look/follow/dance/stop
 - `adapters/` — Claude Code and Hermes adapters
 - `docs/HONESTY.md` — what the demo does and does not prove
+- `docs/ARCHITECTURE.md` — mermaid, nouns, layers
+- `docs/architecture.html` — dark architecture diagram
+- `docs/SIM-TO-REAL.md` — API replay, not Isaac
 
 MIT licensed. Built as a companion extension for Autonomous OS Week 5.

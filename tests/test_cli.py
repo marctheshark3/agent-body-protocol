@@ -70,6 +70,11 @@ class CliTests(unittest.TestCase):
             self.assertEqual("no_hal", row["before"]["error"])
             self.assertNotIn("wrist_pitch", json.dumps(row["command"]))
 
+    def test_skill_dance_is_stock_play(self):
+        with tempfile.TemporaryDirectory() as directory:
+            # stdout only; no HAL
+            self.assertEqual(0, main(["skill", "--name", "dance"]))
+
     def test_aim_record_is_named_only(self):
         with tempfile.TemporaryDirectory() as directory:
             record = Path(directory) / "aim.json"
