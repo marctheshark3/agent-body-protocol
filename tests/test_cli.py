@@ -59,6 +59,17 @@ class CliTests(unittest.TestCase):
             server.shutdown()
             server.server_close()
 
+    def test_aim_log_without_hal_still_writes_schema(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "traj.jsonl"
+            self.assertEqual(0, main(["aim", "--direction", "user", "--log", str(log)]))
+            row = json.loads(log.read_text().splitlines()[0])
+            self.assertEqual("abp.trajectory/v1", row["schema"])
+            self.assertEqual("aim", row["kind"])
+            self.assertEqual("user", row["command"]["direction"])
+            self.assertEqual("no_hal", row["before"]["error"])
+            self.assertNotIn("wrist_pitch", json.dumps(row["command"]))
+
     def test_aim_record_is_named_only(self):
         with tempfile.TemporaryDirectory() as directory:
             record = Path(directory) / "aim.json"
