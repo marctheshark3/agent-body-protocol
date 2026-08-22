@@ -32,6 +32,14 @@ class CustodyDemoTests(unittest.TestCase):
         self.assertNotIn("liveness", text)
         self.assertNotIn("tpm", text)
 
+    def test_signed_update_does_not_reopen_leftover(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run("10.0.0.8", "10.0.0.9", Path(tmp))
+        self.assertTrue(result["signed_apply"])
+        self.assertTrue(result["leftover_after_ota"])
+        self.assertTrue(result["vendor_camera_denied"])
+        self.assertTrue(result["frozen_refuse"])
+
 
 if __name__ == "__main__":
     unittest.main()

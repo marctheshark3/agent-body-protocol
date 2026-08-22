@@ -15,6 +15,7 @@ from custody.presence import bind
 from custody.receipts import ReceiptStore
 from custody.record import CustodyRecord
 from custody.refuse import REFUSE
+from custody.vendor import VENDOR_CAMERA, apply_update, freeze, pull
 
 FAKE_OWNER = "Pat Demo"
 FAKE_INSTALLER = "Riley Setup"
@@ -43,6 +44,11 @@ def run(body_host: str, leftover_host: str, out: Path) -> dict:
     owner_turn = enforce({"v": 1, "event": "started", "ts": "2026-08-22T18:00:00Z"}, bind(rec, face="pat-face").subject)
     stranger_turn = enforce({"v": 1, "event": "started", "ts": "2026-08-22T18:00:00Z"}, bind(rec, face="crowd").subject)
     phrase = bind(rec, phrase="oak-lamp", camera_miss=True)
+    applied = apply_update(rec, store, artifact="lamp-os-2", signed=True)
+    leftover_after = surface.probe(client, CAMERA, store, rec)
+    vendor_cam = pull(rec, store, VENDOR_CAMERA)
+    freeze(rec, "owner")
+    frozen = apply_update(rec, store, artifact="lamp-os-3", signed=True)
     blob = json.dumps(store.list()).lower()
     for name in HOUSEHOLD:
         if name in blob:
@@ -53,6 +59,10 @@ def run(body_host: str, leftover_host: str, out: Path) -> dict:
         "owner_served": owner_turn.allowed,
         "stranger_refuse": stranger_turn.speech == REFUSE,
         "phrase_source": phrase.source,
+        "signed_apply": applied["ok"] is True,
+        "leftover_after_ota": leftover_after["ok"] is False,
+        "vendor_camera_denied": vendor_cam["ok"] is False,
+        "frozen_refuse": frozen["ok"] is False,
         "receipts": store.list(),
         "installer": FAKE_INSTALLER,
     }

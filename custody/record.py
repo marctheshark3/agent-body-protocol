@@ -17,6 +17,8 @@ class CustodyRecord:
     owner_phrase: str | None = None
     leftover_closed: bool = False
     revoked_buddy_tokens: list[str] = field(default_factory=list)
+    ota_frozen: bool = False
+    last_applied: str | None = None
 
     def to_json(self) -> dict[str, Any]:
         return asdict(self)
@@ -31,6 +33,8 @@ class CustodyRecord:
             owner_phrase=data.get("owner_phrase"),
             leftover_closed=bool(data.get("leftover_closed", False)),
             revoked_buddy_tokens=list(data.get("revoked_buddy_tokens") or []),
+            ota_frozen=bool(data.get("ota_frozen", False)),
+            last_applied=data.get("last_applied"),
         )
 
     def save(self, path: Path) -> None:
