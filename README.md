@@ -106,6 +106,11 @@ PYTHONPATH=. python3 demos/call-sam/serve.py
 PYTHONPATH=. python3 scripts/validate_e2e.py
 ```
 
+```bash
+PYTHONPATH=. python3 -m mapper.agent_body aim --direction user --log /tmp/abp-traj.jsonl
+PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --hal http://127.0.0.1:5002
+```
+
 ## Repository map
 
 - `protocol/` — JSON Schema and examples

@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "count": 2,
+  "rows": [
+    {
+      "cmd": {
+        "direction": "center"
+      },
+      "gap": {
+        "max_joint_deg": 0.0,
+        "joints": {
+          "base_pitch.pos": 0.0,
+          "elbow_pitch.pos": 0.0,
+          "wrist_pitch.pos": 0.0,
+          "wrist_roll.pos": 0.0
+        },
+        "led_hex_match": false,
+        "within_threshold": true
+      },
+      "sam_yaw": 90.0
+    },
+    {
+      "cmd": {
+        "direction": "user"
+      },
+      "gap": {
+        "max_joint_deg": 0.0,
+        "joints": {
+          "base_pitch.pos": 0.0,
+          "elbow_pitch.pos": 0.0,
+          "wrist_pitch.pos": 0.0,
+          "wrist_roll.pos": 0.0
+        },
+        "led_hex_match": false,
+        "within_threshold": true
+      },
+      "sam_yaw": 90.0
+    }
+  ],
+  "mode": "HAL_SIMULATE Pat:5001 -> Sam:5002",
+  "note": "yaw preserved on user/center; scored non-yaw joints"
+}
