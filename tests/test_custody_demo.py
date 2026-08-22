@@ -39,6 +39,8 @@ class CustodyDemoTests(unittest.TestCase):
         self.assertTrue(result["leftover_after_ota"])
         self.assertTrue(result["vendor_camera_denied"])
         self.assertTrue(result["frozen_refuse"])
+        self.assertTrue(result["peer_event"])
+        self.assertTrue(result["peer_camera_denied"])
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ from custody.receipts import ReceiptStore
 from custody.record import CustodyRecord
 from custody.refuse import REFUSE
 from custody.vendor import VENDOR_CAMERA, apply_update, freeze, pull
+from custody.peer import accept as accept_peer
 
 FAKE_OWNER = "Pat Demo"
 FAKE_INSTALLER = "Riley Setup"
@@ -47,6 +48,8 @@ def run(body_host: str, leftover_host: str, out: Path) -> dict:
     applied = apply_update(rec, store, artifact="lamp-os-2", signed=True)
     leftover_after = surface.probe(client, CAMERA, store, rec)
     vendor_cam = pull(rec, store, VENDOR_CAMERA)
+    peer_event = accept_peer(rec, store, kind="event", media="led", event="tests_passed")
+    peer_cam = accept_peer(rec, store, kind="camera", media="ir")
     freeze(rec, "owner")
     frozen = apply_update(rec, store, artifact="lamp-os-3", signed=True)
     blob = json.dumps(store.list()).lower()
@@ -62,6 +65,8 @@ def run(body_host: str, leftover_host: str, out: Path) -> dict:
         "signed_apply": applied["ok"] is True,
         "leftover_after_ota": leftover_after["ok"] is False,
         "vendor_camera_denied": vendor_cam["ok"] is False,
+        "peer_event": peer_event["ok"] is True,
+        "peer_camera_denied": peer_cam["ok"] is False,
         "frozen_refuse": frozen["ok"] is False,
         "receipts": store.list(),
         "installer": FAKE_INSTALLER,

@@ -11,3 +11,6 @@ Same-host leftover is refused. Receipts land on the body path, not the installer
 
 After handoff, a signed vendor artifact may apply. Unsigned or frozen offers refuse. Vendor cannot pull camera. Apply cannot reopen leftover.
 
+A peer lamp may offer a nine-event chirp or a sealed artifact over LED or IR. It cannot take camera, mic, or servos. That is not a live IR PHY claim.
+
+
