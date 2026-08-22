@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ABP proof — live HAL</title>
+<style>
+  :root { --bg:#0b0d11; --ink:#f2eee6; --muted:#8b95a1; --line:#2a313a; --pass:#3dd68c; --fail:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:18px/1.35 ui-sans-serif,system-ui,sans-serif; }
+  header { padding:18px 24px 8px; }
+  h1 { margin:0; font-size:28px; letter-spacing:-0.03em; }
+  .sub { color:var(--muted); margin:6px 0 0; font-size:14px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; padding:12px 24px; }
+  button { background:#1b212a; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:10px 14px; cursor:pointer; font:inherit; }
+  button.primary { background:#2a2110; border-color:#7a5414; color:#ffd089; }
+  main { display:grid; grid-template-columns: 280px 1fr 320px; gap:14px; padding:0 24px 24px; }
+  .card { background:#14191f; border:1px solid var(--line); border-radius:16px; padding:16px; }
+  .swatch { height:120px; border-radius:12px; border:1px solid var(--line); display:flex; align-items:end; padding:10px; font:16px ui-monospace,monospace; }
+  table { width:100%; border-collapse:collapse; font:15px ui-monospace,monospace; }
+  th, td { text-align:left; padding:6px 0; border-bottom:1px solid #232a33; }
+  .moved { color:#ffd089; }
+  .ok { color:var(--pass); }
+  .bad { color:var(--fail); }
+  pre { margin:0; white-space:pre-wrap; font:13px/1.4 ui-monospace,monospace; color:#c8d0d8; }
+  .pill { display:inline-block; border-radius:999px; padding:2px 8px; border:1px solid var(--line); font-size:13px; }
+  @media (max-width:1100px){ main { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Proof of work — live HAL driver</h1>
+  <p class="sub">Not the official CAD iframe. Numbers are <code>GET /led/color</code> and <code>GET /servo/position</code> after the mapper posts a named verb. HTTP 200 alone is not a pass.</p>
+  <p>Last: <span id="name" class="pill">idle</span> · Grade: <span id="grade" class="pill">—</span></p>
+</header>
+<div class="row">
+  <button data-name="look" class="primary">Look</button>
+  <button data-name="dance" class="primary">Dance</button>
+  <button data-name="tests_passed" class="primary">tests_passed</button>
+  <button data-name="follow">Follow (expect 500)</button>
+  <button data-name="stop">Stop</button>
+</div>
+<main>
+  <section class="card">
+    <h2>LED from HAL</h2>
+    <p class="sub" id="led-label">before → after</p>
+    <div class="swatch" id="swatch">#000000</div>
+  </section>
+  <section class="card">
+    <h2>Joints from HAL</h2>
+    <table>
+      <thead><tr><th>joint</th><th>before</th><th>after</th><th>Δ°</th></tr></thead>
+      <tbody id="joints"></tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>What we sent</h2>
+    <pre id="receipt">idle — press a verb</pre>
+  </section>
+</main>
+<script>
+const JOINTS = ["base_yaw.pos","base_pitch.pos","elbow_pitch.pos","wrist_pitch.pos","wrist_roll.pos"];
+function deg(v){ return v==null ? "—" : Number(v).toFixed(1); }
+function paint(row){
+  const g = row.grade || {};
+  document.getElementById("name").textContent = row.name || "idle";
+  const grade = document.getElementById("grade");
+  grade.textContent = g.ok ? "PASS — " + g.reason : "FAIL — " + (g.reason || "no delta");
+  grade.className = "pill " + (g.ok ? "ok" : "bad");
+  const hex = row.led_after || "#000000";
+  document.getElementById("swatch").style.background = hex;
+  document.getElementById("swatch").textContent = (row.led_before || "—") + " → " + (row.led_after || "—");
+  document.getElementById("led-label").textContent = "GET /led/color  on=" + (((row.after||{}).led||{}).on);
+  const body = document.getElementById("joints");
+  body.innerHTML = "";
+  const b = (row.before||{}).positions || {};
+  const a = (row.after||{}).positions || {};
+  const d = row.deltas || {};
+  JOINTS.forEach((name) => {
+    const tr = document.createElement("tr");
+    const moved = (d[name]||0) >= 5;
+    tr.className = moved ? "moved" : "";
+    tr.innerHTML = `<td>${name.replace(".pos","")}</td><td>${deg(b[name])}</td><td>${deg(a[name])}</td><td>${(d[name]||0).toFixed(1)}</td>`;
+    body.appendChild(tr);
+  });
+  const lines = [
+    (row.markers||[]).join("\\n"),
+    "",
+    "HAL " + (row.dispatched||[]).map(x => x.path + " " + x.status).join("  "),
+    "source " + (row.source||""),
+    row.after && row.after.ok === false ? "HAL read failed: " + row.after.error : "",
+  ];
+  document.getElementById("receipt").textContent = lines.filter(Boolean).join("\\n");
+}
+async function run(name){
+  const r = await fetch("/api/proof", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({name})});
+  paint(await r.json());
+}
+document.querySelectorAll("[data-name]").forEach((b) => b.onclick = () => run(b.dataset.name));
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+Software agents already have a life cycle. They start. They think. They wait. They ask permission. They get stuck. Tests pass or fail. They finish. Today that life lives in a terminal. A desk lamp has no word for it.
+
+Agent Body Protocol is a small contract. Nine named events. Four named verbs. A coding agent speaks them. The lamp already knows how to move.
+
+The language is light and pose. Started is dim white. Thinking is slow blue. Waiting and permission are amber, looking at you. Blocked is red, and it asks once. Tests passed is green. Tests failed is a red flash. Completed is a short wiggle. Quiet restores the room.
+
+Scenario one. Tests are running. The lamp thinks in blue. Tests pass. Green. You never opened a dashboard.
+
+Scenario two. The agent wants to push your code. Amber. It turns toward you. One question. Not a speech.
+
+Scenario three. You are stuck. Red breath. Want help? Yes means it points at reset. It never types a password.
+
+The joints are how we prove it. Look tips the head toward you. Dance moves four joints. Follow needs a person in view. Without one, it says it cannot. That is honest.
+
+Any coding agent can plug in. Tomorrow the same commands run on a real lamp. People add skills the body already has. They do not teach a second model how to move each joint.

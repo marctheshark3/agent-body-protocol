@@ -1,0 +1,107 @@
+{
+  "kind": "stop",
+  "name": "stop",
+  "markers": [
+    "[HW:/servo/track/stop:{}]",
+    "[HW:/servo/aim:{\"direction\":\"center\"}]"
+  ],
+  "dispatched": [
+    {
+      "path": "/servo/track/stop",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "tracking": false,
+        "target": null,
+        "bbox": null,
+        "confidence": null
+      }
+    },
+    {
+      "path": "/servo/aim",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "direction": "center",
+        "positions": {
+          "base_pitch.pos": -20.0,
+          "wrist_roll.pos": 0.0,
+          "elbow_pitch.pos": 32.0,
+          "base_yaw.pos": -27.581062,
+          "wrist_pitch.pos": 0.0
+        }
+      }
+    }
+  ],
+  "before": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": -27.581062,
+      "base_pitch.pos": 11.6961,
+      "elbow_pitch.pos": 28.937708,
+      "wrist_pitch.pos": -17.680372,
+      "wrist_roll.pos": -1e-05
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "after": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 23.975315,
+      "base_pitch.pos": 7.722894,
+      "elbow_pitch.pos": 15.128963,
+      "wrist_pitch.pos": -7.318608,
+      "wrist_roll.pos": -1e-05
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "led_before": "#007830",
+  "led_after": "#007830",
+  "deltas": {
+    "base_yaw.pos": 51.556377,
+    "base_pitch.pos": 3.9732059999999993,
+    "elbow_pitch.pos": 13.808745,
+    "wrist_pitch.pos": 10.361763999999997,
+    "wrist_roll.pos": 0.0
+  },
+  "source": "hal_live",
+  "grade": {
+    "ok": true,
+    "http_ok": true,
+    "moved_joints": [
+      "base_yaw.pos",
+      "elbow_pitch.pos",
+      "wrist_pitch.pos"
+    ],
+    "led_changed": false,
+    "statuses": [
+      200,
+      200
+    ],
+    "reason": "named verb moved a scored joint"
+  }
+}

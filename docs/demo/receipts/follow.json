@@ -1,0 +1,97 @@
+{
+  "kind": "follow",
+  "name": "follow",
+  "markers": [
+    "[HW:/servo/aim:{\"direction\":\"user\"}]",
+    "[HW:/servo/track:{\"target\":[\"person\"]}]"
+  ],
+  "dispatched": [
+    {
+      "path": "/servo/aim",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "direction": "user",
+        "positions": {
+          "base_pitch.pos": 0.0,
+          "wrist_roll.pos": 0.0,
+          "elbow_pitch.pos": 0.0,
+          "base_yaw.pos": 0.0,
+          "wrist_pitch.pos": -85.0
+        }
+      }
+    },
+    {
+      "path": "/servo/track",
+      "status": 500,
+      "error": "Internal Server Error"
+    }
+  ],
+  "before": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": 0.0,
+      "elbow_pitch.pos": 0.0,
+      "wrist_pitch.pos": -85.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "after": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": 0.0,
+      "elbow_pitch.pos": 0.0,
+      "wrist_pitch.pos": -85.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "led_before": "#007830",
+  "led_after": "#007830",
+  "deltas": {
+    "base_yaw.pos": 0.0,
+    "base_pitch.pos": 0.0,
+    "elbow_pitch.pos": 0.0,
+    "wrist_pitch.pos": 0.0,
+    "wrist_roll.pos": 0.0
+  },
+  "source": "hal_live",
+  "grade": {
+    "ok": true,
+    "http_ok": false,
+    "moved_joints": [],
+    "led_changed": false,
+    "statuses": [
+      200,
+      500
+    ],
+    "reason": "follow 500 without a person is the honest HAL sim"
+  }
+}

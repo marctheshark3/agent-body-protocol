@@ -103,7 +103,7 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 - **In-call talk:** sanitized transcript on the other screen. Audio stays in the browser.
 - **Look / Dance / Stop:** stock HAL verbs on Pat. **Follow** is official `/servo/track` (sim often 500s — no person).
 
-See `docs/ARCHITECTURE.md` for mermaid + noun table.
+See `docs/DEMO.md` for the 90-second script. Architecture: `docs/ARCHITECTURE.md`. Idea file: `docs/GIST.md`.
 
 ```bash
 PYTHONPATH=. python3 demos/call-sam/serve.py

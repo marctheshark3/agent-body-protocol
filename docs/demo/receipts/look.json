@@ -1,0 +1,94 @@
+{
+  "kind": "look",
+  "name": "look",
+  "markers": [
+    "[HW:/servo/aim:{\"direction\":\"user\"}]"
+  ],
+  "dispatched": [
+    {
+      "path": "/servo/aim",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "direction": "user",
+        "positions": {
+          "base_pitch.pos": 0.0,
+          "wrist_roll.pos": 0.0,
+          "elbow_pitch.pos": 0.0,
+          "base_yaw.pos": 0.0,
+          "wrist_pitch.pos": -85.0
+        }
+      }
+    }
+  ],
+  "before": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": -20.0,
+      "elbow_pitch.pos": 32.0,
+      "wrist_pitch.pos": 0.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "after": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": 0.0,
+      "elbow_pitch.pos": 0.0,
+      "wrist_pitch.pos": -85.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "led_before": "#007830",
+  "led_after": "#007830",
+  "deltas": {
+    "base_yaw.pos": 0.0,
+    "base_pitch.pos": 20.0,
+    "elbow_pitch.pos": 32.0,
+    "wrist_pitch.pos": 85.0,
+    "wrist_roll.pos": 0.0
+  },
+  "source": "hal_live",
+  "grade": {
+    "ok": true,
+    "http_ok": true,
+    "moved_joints": [
+      "base_pitch.pos",
+      "elbow_pitch.pos",
+      "wrist_pitch.pos"
+    ],
+    "led_changed": false,
+    "statuses": [
+      200
+    ],
+    "reason": "named verb moved a scored joint"
+  }
+}

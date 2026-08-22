@@ -74,11 +74,10 @@ class VirtualBody:
     pose: dict[str, float] = field(default_factory=lambda: dict(REST))
     speech: str | None = None
 
-    def apply(self, event_name: str) -> dict:
-        output = map_event(_event(event_name))
-        self.event = event_name
-        self.speech = output.speech
-        for marker in output.markers:
+    def apply_markers(self, markers: list[str], label: str | None = None) -> dict:
+        if label:
+            self.event = label
+        for marker in markers:
             path, payload = parse_marker(marker)
             if path == "/led/solid":
                 self.color = list(payload.get("color") or [0, 0, 0])
@@ -94,7 +93,14 @@ class VirtualBody:
                 self.pose = dict(AIM.get(str(payload.get("direction") or "center"), AIM["center"]))
             elif path == "/servo/play":
                 self.pose = dict(WIGGLE)
+            elif path == "/servo/track":
+                self.pose = dict(AIM["user"])
         return self.snapshot()
+
+    def apply(self, event_name: str) -> dict:
+        output = map_event(_event(event_name))
+        self.speech = output.speech
+        return self.apply_markers(list(output.markers), event_name)
 
     def reset(self) -> None:
         self.event = None
