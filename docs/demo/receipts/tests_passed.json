@@ -1,0 +1,91 @@
+{
+  "kind": "event",
+  "name": "tests_passed",
+  "markers": [
+    "[HW:/led/effect/stop:{\"transient\":true}]",
+    "[HW:/led/solid:{\"color\":[0,200,80],\"transient\":true}]"
+  ],
+  "dispatched": [
+    {
+      "path": "/led/effect/stop",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "path": "/led/solid",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      }
+    }
+  ],
+  "before": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "hex": "#000000",
+      "effect": null,
+      "on": false
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": -20.0,
+      "elbow_pitch.pos": 32.0,
+      "wrist_pitch.pos": 0.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "after": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": -20.0,
+      "elbow_pitch.pos": 32.0,
+      "wrist_pitch.pos": 0.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "led_before": "#000000",
+  "led_after": "#007830",
+  "deltas": {
+    "base_yaw.pos": 0.0,
+    "base_pitch.pos": 0.0,
+    "elbow_pitch.pos": 0.0,
+    "wrist_pitch.pos": 0.0,
+    "wrist_roll.pos": 0.0
+  },
+  "source": "hal_live",
+  "grade": {
+    "ok": true,
+    "http_ok": true,
+    "moved_joints": [],
+    "led_changed": true,
+    "statuses": [
+      200,
+      200
+    ],
+    "reason": "LED or pose changed on the live driver"
+  }
+}

@@ -1,0 +1,19 @@
+WEBVTT
+
+00:00.000 --> 00:03.200
+Proof, not a mood board.
+
+00:03.200 --> 00:09.200
+tests_passed: LED off to safety-clamped green #007830. Joints did not move.
+
+00:09.200 --> 00:15.000
+Look: wrist pitch 0 to -85. HAL /servo/aim 200.
+
+00:15.000 --> 00:20.000
+Follow: /servo/track 500. No person in the sim. That is a pass.
+
+00:20.000 --> 00:25.500
+Dance: four joints move on happy_wiggle.
+
+00:25.500 --> 00:29.800
+HTTP 200 is not enough. Deltas are.

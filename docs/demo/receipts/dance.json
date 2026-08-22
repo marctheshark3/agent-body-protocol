@@ -1,0 +1,87 @@
+{
+  "kind": "dance",
+  "name": "dance",
+  "markers": [
+    "[HW:/servo/play:{\"recording\":\"happy_wiggle\"}]"
+  ],
+  "dispatched": [
+    {
+      "path": "/servo/play",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      }
+    }
+  ],
+  "before": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": 0.0,
+      "base_pitch.pos": 0.0,
+      "elbow_pitch.pos": 0.0,
+      "wrist_pitch.pos": -85.0,
+      "wrist_roll.pos": 0.0
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "after": {
+    "ok": true,
+    "led": {
+      "color": [
+        0,
+        120,
+        48
+      ],
+      "hex": "#007830",
+      "effect": null,
+      "on": true
+    },
+    "positions": {
+      "base_yaw.pos": -25.862243,
+      "base_pitch.pos": 12.041915,
+      "elbow_pitch.pos": 29.931818,
+      "wrist_pitch.pos": -18.303135,
+      "wrist_roll.pos": -1e-05
+    },
+    "simulator": {
+      "media": "virtual"
+    }
+  },
+  "led_before": "#007830",
+  "led_after": "#007830",
+  "deltas": {
+    "base_yaw.pos": 25.862243,
+    "base_pitch.pos": 12.041915,
+    "elbow_pitch.pos": 29.931818,
+    "wrist_pitch.pos": 66.696865,
+    "wrist_roll.pos": 1e-05
+  },
+  "source": "hal_live",
+  "grade": {
+    "ok": true,
+    "http_ok": true,
+    "moved_joints": [
+      "base_yaw.pos",
+      "base_pitch.pos",
+      "elbow_pitch.pos",
+      "wrist_pitch.pos"
+    ],
+    "led_changed": false,
+    "statuses": [
+      200
+    ],
+    "reason": "named verb moved a scored joint"
+  }
+}

@@ -1,8 +1,13 @@
 clip*.mp4
+pclip*.mp4
 video-silent.mp4
 video-pad.mp4
+proof-silent.mp4
+proof-pad.mp4
 clips.txt
+pclips.txt
 vo.mp3
+vo-proof.mp3
 frames/06-pat-sim.png
 frames/07-look-sim.png
 __pycache__/

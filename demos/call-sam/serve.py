@@ -19,11 +19,13 @@ from mapper.call_session import CallSession
 from mapper.hal_client import dispatch
 from mapper.help_mode import HelpMode
 from mapper.map import map_event
+from mapper.proof import run_proof
 from mapper.skills import dispatch_soft, markers_for
 from mapper.virtual_body import VirtualBody
 
 ROOT = Path(__file__).resolve().parent
 INDEX = ROOT / "index.html"
+PROOF = ROOT / "proof.html"
 HAL_GETS = {"/health", "/led/color", "/servo/position"}
 SCENARIOS = {
     "ci_pass": [("near", "started"), ("near", "thinking"), ("near", "tests_passed"), ("near", "completed")],
@@ -94,6 +96,17 @@ class DemoState:
         }
         self.log.append(record)
         return record
+
+    def proof(self, name: str, house: str = "near") -> dict:
+        target = self.far_hal if house == "far" else self.hal
+        row = run_proof(name, target)
+        if name in {"look", "follow", "dance", "stop"}:
+            body = self.far_body if house == "far" else self.near_body
+            body.apply_markers(row.get("markers") or [], name)
+        row["near_body"] = self.near_body.snapshot()
+        row["far_body"] = self.far_body.snapshot()
+        self.log.append(row)
+        return row
 
     def act(self, name: str) -> dict:
         method = {
@@ -209,6 +222,9 @@ def make_handler(state: DemoState):
             if path in {"/", "/index.html"}:
                 self._send(200, INDEX.read_text(), "text/html; charset=utf-8")
                 return
+            if path == "/proof":
+                self._send(200, PROOF.read_text(), "text/html; charset=utf-8")
+                return
             if path == "/api/state":
                 self._send(200, state.snapshot())
                 return
@@ -262,6 +278,10 @@ def make_handler(state: DemoState):
                 if path == "/api/talk":
                     body = self._read_json()
                     self._send(200, state.talk(str(body.get("text") or ""), str(body.get("speaker") or "near")))
+                    return
+                if path == "/api/proof":
+                    body = self._read_json()
+                    self._send(200, state.proof(str(body.get("name") or ""), str(body.get("house") or "near")))
                     return
                 if path == "/api/skill":
                     body = self._read_json()

@@ -9,10 +9,10 @@ Agent Body Protocol is a small, runtime-neutral contract: nine named events and 
 Repo: https://github.com/marctheshark3/agent-body-protocol
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
-**Lab demo (25s, live HAL, loopback stills):**
-https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-lab-demo.mp4
+**Proof video (30s, live HAL receipts):**
+https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-proof.mp4
 
-Recorded 2026-08-22 against official `HAL_SIMULATE` on Pat. Dance `/servo/play` 200. Look `/servo/aim user` 200. Headless Firefox cannot render the 54 MB CAD WebGL view, so this cut is the two-lamp lab canvas — the same mapper the 3D preview would show. Not Isaac. Not FaceTime.
+Recorded 2026-08-22 against official `HAL_SIMULATE`. `tests_passed` LED `#000000 → #007830`. Look wrist `0 → -85`. Follow `/servo/track` **500** (no person). Dance four joints. HTTP 200 is not a pass — the receipt is the delta.
 
 ## The nouns (read these first)
 
