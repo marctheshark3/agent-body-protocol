@@ -33,6 +33,8 @@ After the loop, a hop and a look. Same five joints.
 <a href="docs/demo/abp-hatch.mp4"><img src="docs/demo/posters/hatch.jpg" alt="It hops. Then it looks at you." width="640"></a>
 It hops. Then it looks at you.
 
+Stitch tape [`docs/demo/abp-stitch.mp4`](docs/demo/abp-stitch.mp4) after the lede. Packet clips stay one-by-one.
+
 USB-C — Unplug it and take it with you. No clip until a real unplug exists.
 
 ## How to run demos
