@@ -4,13 +4,34 @@ Software talks to a body. This lamp thinks, looks at you, and will not dance on 
 
 Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
-## Hackathon
+Packet. Lamp only. Silent. Click a still to watch.
 
-Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomous OS Week 5). Not Autonomous OS itself, and it does not ship a lamp.
+**Coding loop**
+You should not have to watch a log.
+<a href="docs/demo/abp-loop.mp4"><img src="docs/demo/posters/loop.jpg" alt="It thinks. It looks at you. It failed. It passed." width="640"></a>
+It thinks. / It looks at you. / It failed. / It passed.
 
-**Started.** Nine agent events → lamp body language so you can see think / stuck / fail / pass / done from across the desk. Power as a parallel contract so a wall-plugged lamp can someday leave the brick (voltage track, pack in the base, Qi pad). For this stretch: production-ready docs, lamp-only packet clips, Hatch as a skill (hop then look), not a 10th event.
+**Help**
+It asks once. It does not type your password.
+<a href="docs/demo/abp-help.mp4"><img src="docs/demo/posters/help.jpg" alt="It asks for help. Once." width="640"></a>
+It asks for help. Once.
 
-**Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
+**Low power**
+Tired looks like tired, not like an error.
+<a href="docs/demo/abp-low.mp4"><img src="docs/demo/posters/low.jpg" alt="Low power. Dim." width="640"></a>
+Low power. Dim.
+
+**Look**
+A charging pad is not a dance floor.
+<a href="docs/demo/abp-look.mp4"><img src="docs/demo/posters/look.jpg" alt="It looks at you. On a charger. It will not dance." width="640"></a>
+It looks at you. / On a charger. It will not dance.
+
+**Hatch**
+After the loop, a hop and a look. Same five joints.
+<a href="docs/demo/abp-hatch.mp4"><img src="docs/demo/posters/hatch.jpg" alt="It hops. Then it looks at you." width="640"></a>
+It hops. Then it looks at you.
+
+USB-C — Unplug it and take it with you. No clip until a real unplug exists.
 
 ## How to run demos
 
@@ -40,19 +61,7 @@ Menu: [`docs/DEMO.md`](docs/DEMO.md)
 
 Hatch CLI: `python3 -m mapper.agent_body skill --name hatch --hal http://127.0.0.1:5001`
 
-After the loop, a hop and a look. Same five joints. Character, not a status light.
-
-It hops. Then it looks at you.
-
-Packet, lamp-only, silent, click each clip. Order: loop, help, low, look, hatch.
-
-1. [`docs/demo/abp-loop.mp4`](docs/demo/abp-loop.mp4) — It thinks. / It looks at you. / It failed. / It passed.
-2. [`docs/demo/abp-help.mp4`](docs/demo/abp-help.mp4) — It asks for help. Once.
-3. [`docs/demo/abp-low.mp4`](docs/demo/abp-low.mp4) — Low power. Dim.
-4. [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4) — It looks at you. / On a charger. It will not dance. Named `/servo/aim` `user`. Camera orbited onto the user axis so the look is at the viewer.
-5. [`docs/demo/abp-hatch.mp4`](docs/demo/abp-hatch.mp4) — It hops. Then it looks at you. `skill --name hatch` plays `wake_up`, waits, then named `/servo/aim` `user`. Camera orbited onto the user axis so the look is at the viewer.
-
-USB-C stays a line until a real unplug exists. Appendix takes (`docs/demo/old/`: story, lab-demo, proof, room) stay in the tree. Do not play them as the packet.
+Appendix takes (`docs/demo/old/`: story, lab-demo, proof, room) stay in the tree. Do not play them as the packet.
 
 Combined 90s room take (coding loop + help): `scripts/demo_room.sh`. Table proof (no hardware): `scripts/demo_power.sh`. USB-C is spoken/pantomime: unplug and walk; a `/tmp --record` is not unplug-and-go.
 
@@ -67,11 +76,17 @@ Captions (lamp-only recapture, when reshot):
 - On a charger. It will not dance.
 - It hops. Then it looks at you.
 
-Look + Qi hero: [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Camera orbited onto the user axis so the look is at the viewer (into the shade opening), not the default 3/4 studio. Not the full 90s room (no fail/pass/help). Not hatch.
-
 [`docs/demo/old/abp-room.mp4`](docs/demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Not the packet.
 
 Do not run `scripts/demo.sh` on stage (nine-color parade). Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
+
+## Hackathon
+
+Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomous OS Week 5). Not Autonomous OS itself, and it does not ship a lamp.
+
+**Started.** Nine agent events → lamp body language so you can see think / stuck / fail / pass / done from across the desk. Power as a parallel contract so a wall-plugged lamp can someday leave the brick (voltage track, pack in the base, Qi pad). For this stretch: production-ready docs, lamp-only packet clips, Hatch as a skill (hop then look), not a 10th event.
+
+**Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
 
 ## The contract
 
