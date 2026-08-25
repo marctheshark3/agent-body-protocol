@@ -115,7 +115,9 @@ def validate_power(sample: Any) -> dict[str, Any]:
         soc = sample["soc_pct"]
         if not isinstance(soc, (int, float)) or isinstance(soc, bool) or not 0 <= soc <= 100:
             raise ValueError("soc_pct must be 0-100 or null")
-    if "power_w" in sample and sample["power_w"] is not None:
+    if "power_w" not in sample:
+        raise ValueError("power_w is required (number or null)")
+    if sample["power_w"] is not None:
         power_w = sample["power_w"]
         if not isinstance(power_w, (int, float)) or isinstance(power_w, bool) or power_w < 0:
             raise ValueError("power_w must be >= 0 or null")
@@ -160,7 +162,7 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "power_w": None,
         }
         sample["low"] = effective_low(sample)
-    elif name == "low":
+    elif name in ("low", "battery-low"):
         # Golden fixtures/golden/power-battery-low.json. Healthy 11.1 V is --sim battery.
         sample = {
             "v": 1,
@@ -189,20 +191,6 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "low": False,
             "power_w": 5.0,
         }
-    elif name == "coil-miss":
-        sample = {
-            "v": 1,
-            "kind": "power",
-            "ts": stamp,
-            "voltage_v": 5.0,
-            "source": "qi",
-            "origin": "sim",
-            "soc_pct": None,
-            "charging": False,
-            "docked": True,
-            "low": False,
-            "power_w": 0,
-        }
     else:
         raise ValueError(f"unsupported sim source: {source}")
     return validate_power(sample)
@@ -212,7 +200,8 @@ def stamp_hal_origin(sample: Mapping[str, Any]) -> dict[str, Any]:
     """Keep live voltages. Label origin=hal. Do not substitute canned 12.0/11.1/5.0."""
     labeled = dict(sample)
     labeled["origin"] = "hal"
-    labeled.setdefault("power_w", None)
+    if "power_w" not in labeled:
+        labeled["power_w"] = None
     return validate_power(labeled)
 
 

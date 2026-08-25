@@ -116,11 +116,11 @@ def build_parser() -> argparse.ArgumentParser:
     skill.add_argument("--name", required=True, choices=sorted(SKILLS))
     skill.add_argument("--hal")
     skill.add_argument("--house", default="pat")
-    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "coil-miss"), help="Consult simulated power; dance refuses wiggle on qi")
+    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Consult simulated power; dance/happy_wiggle refuse on qi")
     power = sub.add_parser("power", help="Read power telemetry (parallel contract, not a 10th event)")
     power.add_argument("--record", type=Path, help="Write sample + mapped markers")
     power.add_argument("--hal", help="HAL base URL; GET /power, 404 falls back to sim")
-    power.add_argument("--sim", choices=("mains", "battery", "qi", "low", "coil-miss"), help="Golden demo source (default mains). low reaches power-battery-low.json. coil-miss is docked Qi at 0 W")
+    power.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Golden demo source (default mains). low or battery-low reaches power-battery-low.json")
     return parser
 
 
