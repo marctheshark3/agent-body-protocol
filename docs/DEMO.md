@@ -25,12 +25,25 @@ Open:
 
 1. **CI pass** — Pat goes green.
 2. **Call Sam** → **Accept** — paired screens open (not the shade).
-3. Type a note → **Send to Sam’s screen**.
+3. Type a note → **Send to Sam's screen**.
 4. **Dance** — Pat plays `happy_wiggle` (watch the official sim).
 5. **Look** — named `/servo/aim user`.
 6. **Follow** — official `/servo/track`. Sim often **500** (no person). That is the honest demo.
 7. **Stop**.
 8. Optional: **Help Mode stuck** → Yes → Point at reset. Never types a password.
+
+## Power body (no hardware, ~90s)
+
+Unplug / walk / pad / thinking stays blue. **Not** a 10th agent event. `HAL_SIMULATE` has no `/power`.
+
+```bash
+agent-body power --sim mains --record /tmp/power-mains.json
+agent-body power --sim battery --record /tmp/power-battery.json
+agent-body power --sim qi --record /tmp/power-qi.json
+agent-body post --event thinking --record /tmp/thinking.json
+```
+
+1. Unplug — mains quiet. 2. Walk — pack later, in the base. 3. Pad — Qi white breathing. 4. Thinking stays blue. Low overlay is a slow dim solid, not amber, no look-at-user. **Stock Qi is ~5-15 W** and cannot dance (`completed` refuses `happy_wiggle` on Qi). Full path: `docs/POWER.md`.
 
 ## CLI proof
 
@@ -38,11 +51,12 @@ Open:
 python3 -m unittest discover -s tests -q
 PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
 # follow exits 1 on the official sim — camera missing
+PYTHONPATH=. python3 -m mapper.agent_body power --sim qi --record /tmp/power-qi.json
 ```
 
 ## What to say in the thread
 
-Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym.
+Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym. Power is a parallel contract so he can move the lamp bench to bench later — protocol now, pack in the base later.
 
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
