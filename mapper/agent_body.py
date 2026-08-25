@@ -116,10 +116,11 @@ def build_parser() -> argparse.ArgumentParser:
     skill.add_argument("--name", required=True, choices=sorted(SKILLS))
     skill.add_argument("--hal")
     skill.add_argument("--house", default="pat")
+    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low"), help="Consult simulated power; dance refuses wiggle on qi")
     power = sub.add_parser("power", help="Read power telemetry (parallel contract, not a 10th event)")
     power.add_argument("--record", type=Path, help="Write sample + mapped markers")
     power.add_argument("--hal", help="HAL base URL; GET /power, 404 falls back to sim")
-    power.add_argument("--sim", choices=("mains", "battery", "qi"), help="Golden demo source (default mains)")
+    power.add_argument("--sim", choices=("mains", "battery", "qi", "low"), help="Golden demo source (default mains). low reaches power-battery-low.json")
     return parser
 
 
@@ -155,7 +156,19 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(payload, separators=(",", ":")))
         return 0
     if args.command == "skill":
-        payload = {"skill": args.name, "markers": markers_for(args.name)}
+        power_sample = None
+        if getattr(args, "hal", None):
+            live = get_power(args.hal)
+            if live is not None:
+                try:
+                    power_sample = stamp_hal_origin(live)
+                except ValueError:
+                    power_sample = None
+        if power_sample is None and getattr(args, "sim", None):
+            power_sample = simulate_power(args.sim)
+        payload = {"skill": args.name, "markers": markers_for(args.name, power=power_sample)}
+        if args.name == "dance" and power_sample and str(power_sample.get("source")) == "qi":
+            payload["reason"] = "qi-cannot-dance"
         if args.hal:
             payload["dispatched"] = dispatch_soft(payload["markers"], args.hal)
         print(json.dumps(payload, separators=(",", ":")))
