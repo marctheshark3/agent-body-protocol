@@ -1,3 +1,7 @@
+NOT THE ROOM SCRIPT.
+Live room: docs/DEMO.md and scripts/demo_room.sh.
+This VO is the old nine-color + Follow cut (docs/demo/abp-story.mp4). Do not play it on stage.
+
 Software agents already have a life cycle. They start. They think. They wait. They ask permission. They get stuck. Tests pass or fail. They finish. Today that life lives in a terminal. A desk lamp has no word for it.
 
 Agent Body Protocol is a small contract. Nine named events. Four named verbs. A coding agent speaks them. The lamp already knows how to move.

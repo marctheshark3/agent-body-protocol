@@ -2,17 +2,20 @@
 
 **Coding-agent events in. Lamp body language out.**
 
-A coding agent already has a life cycle. It starts. It thinks. It waits. It asks permission. It gets stuck. Tests pass or fail. It finishes. Today that life lives in a terminal. A lamp has no word for it.
+This is the idea file. It is **not** the room script.
 
-Agent Body Protocol is a small contract: nine named events and four named verbs. A coding agent speaks them. The lamp already knows how to move.
+Live 90s (Pat, fake hook, Help Mode, same-lamp power, USB-C): [`docs/DEMO.md`](DEMO.md) and `scripts/demo_room.sh`.
 
 Repo: https://github.com/marctheshark3/agent-body-protocol
-Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
+Gist (same idea file): https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
-**Story (about 90s):** why this exists, the nine colors, three everyday asks, then how we prove the joints moved.
+## Old VO (not the room script)
+
+The ~90s story cut is nine colors + Follow + “completed is a wiggle.” Do not play it on stage.
 https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-story.mp4
 
-Measured joint and light receipts: https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-proof.mp4
+Measured joint and light receipts (table appendix, not the lead):
+https://github.com/marctheshark3/agent-body-protocol/releases/download/lab-demo/abp-proof.mp4
 
 ## Nine events
 
@@ -39,7 +42,7 @@ Quiet by default. At night, light only. If it is stuck, it asks once and **never
 | follow | tracks a person, if one is in view |
 | stop | stops tracking and centers |
 
-Follow needs a camera and a person. In the simulator there is no person, so follow correctly fails. That is honest, not a bug.
+Follow needs a camera and a person. In the simulator there is no person, so follow correctly fails. That is honest, not a bug. Follow is not in the live 90s room script.
 
 ## Layers
 
