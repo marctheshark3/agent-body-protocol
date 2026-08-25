@@ -189,6 +189,20 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "low": False,
             "power_w": 5.0,
         }
+    elif name == "coil-miss":
+        sample = {
+            "v": 1,
+            "kind": "power",
+            "ts": stamp,
+            "voltage_v": 5.0,
+            "source": "qi",
+            "origin": "sim",
+            "soc_pct": None,
+            "charging": False,
+            "docked": True,
+            "low": False,
+            "power_w": 0,
+        }
     else:
         raise ValueError(f"unsupported sim source: {source}")
     return validate_power(sample)
@@ -198,6 +212,7 @@ def stamp_hal_origin(sample: Mapping[str, Any]) -> dict[str, Any]:
     """Keep live voltages. Label origin=hal. Do not substitute canned 12.0/11.1/5.0."""
     labeled = dict(sample)
     labeled["origin"] = "hal"
+    labeled.setdefault("power_w", None)
     return validate_power(labeled)
 
 

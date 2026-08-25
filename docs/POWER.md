@@ -22,6 +22,7 @@ agent-body power --sim battery --record /tmp/power-battery.json
 
 # 3. Pad — drop on Qi. Healthy Qi is quiet (not started-white). origin=sim.
 agent-body power --sim qi --record /tmp/power-qi.json
+agent-body power --sim coil-miss --record /tmp/power-coil-miss.json
 
 # 4. Thinking stays blue. Power does not steal the agent LED.
 agent-body post --event thinking --record /tmp/thinking.json

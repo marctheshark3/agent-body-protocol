@@ -4,7 +4,7 @@
   "title": "Agent Body Protocol Power Telemetry",
   "type": "object",
   "additionalProperties": false,
-  "required": ["v", "kind", "ts", "voltage_v", "source", "origin"],
+  "required": ["v", "kind", "ts", "voltage_v", "source", "origin", "power_w"],
   "properties": {
     "v": {"const": 1},
     "kind": {"const": "power"},

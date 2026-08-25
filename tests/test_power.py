@@ -57,6 +57,12 @@ class PowerSchemaTests(unittest.TestCase):
         with self.assertRaises(Exception):
             POWER_VALIDATOR.validate(sample)
 
+    def test_schema_requires_power_w(self):
+        sample = json.loads(GOLDEN["mains"].read_text())["sample"]
+        del sample["power_w"]
+        with self.assertRaises(Exception):
+            POWER_VALIDATOR.validate(sample)
+
     def test_agent_event_enum_stays_nine(self):
         events = EVENT_SCHEMA["properties"]["event"]["enum"]
         self.assertEqual(9, len(events))
@@ -221,6 +227,16 @@ class PowerSimTests(unittest.TestCase):
         self.assertEqual(golden["sample"], sample)
         self.assertEqual(golden["markers"], list(map_power(sample).markers))
 
+    def test_sim_coil_miss_is_docked_zero_watts_no_led(self):
+        sample = simulate_power("coil-miss", ts="2026-08-25T15:00:00Z")
+        self.assertEqual("sim", sample["origin"])
+        self.assertEqual("qi", sample["source"])
+        self.assertEqual(5.0, sample["voltage_v"])
+        self.assertTrue(sample["docked"])
+        self.assertFalse(sample["charging"])
+        self.assertEqual(0, sample["power_w"])
+        self.assertEqual((), map_power(sample).markers)
+
     def test_stamp_hal_keeps_live_voltage(self):
         live = {
             "v": 1, "kind": "power", "ts": "2026-08-25T15:00:00Z",
@@ -229,6 +245,7 @@ class PowerSimTests(unittest.TestCase):
         labeled = stamp_hal_origin(live)
         self.assertEqual("hal", labeled["origin"])
         self.assertEqual(13.8, labeled["voltage_v"])
+        self.assertIsNone(labeled["power_w"])
 
     def test_qi_five_volts_is_not_low(self):
         self.assertFalse(effective_low(json.loads(GOLDEN["qi"].read_text())["sample"]))
@@ -275,6 +292,19 @@ class PowerCliTests(unittest.TestCase):
             self.assertEqual(10.2, payload["sample"]["voltage_v"])
             self.assertTrue(payload["sample"]["low"])
             self.assertIn("[48,16,0]", "".join(payload["markers"]))
+
+    def test_sim_coil_miss_record_emits_no_led(self):
+        with tempfile.TemporaryDirectory() as directory:
+            record = Path(directory) / "coil-miss.json"
+            self.assertEqual(0, main(["power", "--sim", "coil-miss", "--record", str(record)]))
+            payload = json.loads(record.read_text())
+            self.assertEqual("sim", payload["sample"]["origin"])
+            self.assertEqual("qi", payload["sample"]["source"])
+            self.assertTrue(payload["sample"]["docked"])
+            self.assertFalse(payload["sample"]["charging"])
+            self.assertEqual(0, payload["sample"]["power_w"])
+            self.assertEqual(5.0, payload["sample"]["voltage_v"])
+            self.assertEqual([], payload["markers"])
 
     def test_skill_dance_on_qi_refuses_wiggle(self):
         buf = io.StringIO()
