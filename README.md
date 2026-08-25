@@ -88,6 +88,14 @@ Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomou
 
 **Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
 
+## Marks
+
+Red, black, gray, white. Fun marks, not the packet. Not official Teenage Engineering.
+
+<img src="docs/brand/hanko.png" alt="It looks at you." width="400">
+
+<img src="docs/brand/ofuda.png" alt="It hops. Then it looks at you." width="400">
+
 ## The contract
 
 - `started` — dim white, silent
@@ -199,5 +207,6 @@ Old VO `docs/demo/old/abp-story.mp4` and `docs/demo/old/story-vo.txt` stay in th
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
 - `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
 - `docs/GIST.md` — idea file; public gist is the same, not the room script
+- `docs/brand/` — hanko seal and ofuda hop. Fun marks, not the lamp packet.
 
 MIT licensed.
