@@ -40,10 +40,11 @@ Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th ag
 agent-body power --sim mains --record /tmp/power-mains.json
 agent-body power --sim battery --record /tmp/power-battery.json
 agent-body power --sim qi --record /tmp/power-qi.json
+agent-body power --sim low --record /tmp/power-battery-low.json
 agent-body power --hal http://127.0.0.1:5001
 ```
 
-90-second no-hardware script (unplug / walk / pad / thinking stays blue), Qi wattage honesty (~5–15 W idle/trickle, not a servo dance), and the ADC → pack-in-base → bench pad path: `docs/POWER.md`.
+30-second no-hardware script (unplug / walk / pad / thinking stays blue / low dims the head): `scripts/demo_power.sh`. Healthy Qi/USB emit no LED. `--sim low` reaches `power-battery-low.json`. Qi wattage honesty (~5–15 W idle/trickle, not a servo dance) and the ADC → pack-in-base → bench pad path: `docs/POWER.md`.
 
 ## Live HAL validation
 
@@ -141,6 +142,6 @@ PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --h
 - `docs/ARCHITECTURE.md` — mermaid, nouns, layers
 - `docs/architecture.html` — dark architecture diagram
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
-- `docs/POWER.md` — voltage telemetry, battery/Qi path, 90-second `--sim` proof
+- `docs/POWER.md` — voltage telemetry, battery/Qi path, 30-second `--sim` proof
 
 MIT licensed. Built as a companion extension for Autonomous OS Week 5.
