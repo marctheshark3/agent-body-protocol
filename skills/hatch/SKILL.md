@@ -7,7 +7,7 @@ description: Luxo hop then look. When the work is done, it hops and looks at you
 
 It hops. Then it looks at you.
 
-Named skill. Same five HAL joints. Character, not a status light. Not a 10th agent event — `completed` still plays `happy_wiggle`.
+Named skill. After the loop, a hop and a look. Same five joints. Character, not a status light. Not a 10th agent event — `completed` still plays `happy_wiggle`.
 
 ```bash
 PYTHONPATH=. python3 -m mapper.agent_body skill --name hatch

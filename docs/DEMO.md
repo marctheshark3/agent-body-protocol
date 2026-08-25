@@ -1,6 +1,6 @@
 # Demo menu
 
-Software talks to a body. This lamp thinks, looks at you, and hops when the work is done.
+Software talks to a body. This lamp thinks, looks at you, and will not dance on a charger.
 
 Loopback only. Fake hook is enough; do not wait on live Claude.
 
@@ -30,7 +30,9 @@ Captions (lamp-only recapture, when reshot):
 - On a charger. It will not dance.
 - It hops. Then it looks at you.
 
-Slot: [`docs/demo/abp-room.mp4`](demo/abp-room.mp4). Current file is a dashboard take / frozen-pose LED slideshow, **not** a locked lamp recapture. Named aim on HAL_SIMULATE snaps; that is not tracking and not Luxo hatch. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
+Look + Qi hero: [`docs/demo/abp-look.mp4`](demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
+
+[`docs/demo/abp-room.mp4`](demo/abp-room.mp4) on main is still the dashboard take / frozen-pose LED slideshow. Do not claim it is this lock. Hatch joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
 
 ## 1. Coding loop
 
@@ -70,15 +72,17 @@ On a charger. It will not dance.
 
 ## 5. Hatch
 
-When the work is done, it hops and looks at you. Same five joints. Character, not a status light.
+After the loop, a hop and a look. Same five joints. Character, not a status light.
 
 ```bash
 bash scripts/demo_hatch.sh
 ```
 
+When the work is done, it hops and looks at you.
+
 It hops. Then it looks at you.
 
-Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. On Qi: no hop, `reason=qi-cannot-hatch`.
+Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. Hatch is script #5, not the done beat. On Qi: no hop, `markers=[]`, `reason=qi-cannot-hatch`. Joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch.
 
 ## 6. USB-C
 
@@ -88,7 +92,7 @@ Unplug it and take it with you.
 bash scripts/demo_usbc.sh
 ```
 
-No Call Sam. No Follow.
+Spoken/pantomime: unplug the cable and walk. This script does not unplug. A `/tmp --record` is not unplug-and-go. No Call Sam. No Follow.
 
 ## Combined 90s room take
 

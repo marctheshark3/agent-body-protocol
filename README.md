@@ -1,6 +1,6 @@
 # Agent Body Protocol
 
-Software talks to a body. This lamp thinks, looks at you, and hops when the work is done.
+Software talks to a body. This lamp thinks, looks at you, and will not dance on a charger.
 
 Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
@@ -27,14 +27,18 @@ Menu: [`docs/DEMO.md`](docs/DEMO.md)
 2. **Help Mode** — It asks once. It does not type your password. `scripts/demo_help.sh`
 3. **Low power** — Tired looks like tired, not like an error. `scripts/demo_low.sh`
 4. **Qi** — A charging pad is not a dance floor. Unplug it if you want it to move. `scripts/demo_qi.sh`
-5. **Hatch** — When the work is done, it hops and looks at you. Same five joints. Character, not a status light. `scripts/demo_hatch.sh`
+5. **Hatch** — After the loop, a hop and a look. Same five joints. Character, not a status light. `scripts/demo_hatch.sh`
 6. **USB-C** — Unplug it and take it with you. `scripts/demo_usbc.sh`
 
 Hatch CLI: `python3 -m mapper.agent_body skill --name hatch`
 
+When the work is done, it hops and looks at you.
+
 It hops. Then it looks at you.
 
-Combined 90s room take (coding loop + help): `scripts/demo_room.sh`. Table proof (no hardware): `scripts/demo_power.sh`.
+Hatch joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch.
+
+Combined 90s room take (coding loop + help): `scripts/demo_room.sh`. Table proof (no hardware): `scripts/demo_power.sh`. USB-C is spoken/pantomime: unplug and walk; a `/tmp --record` is not unplug-and-go.
 
 Captions (lamp-only recapture, when reshot):
 
@@ -47,7 +51,9 @@ Captions (lamp-only recapture, when reshot):
 - On a charger. It will not dance.
 - It hops. Then it looks at you.
 
-Slot: [`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4). Current file is a dashboard take / frozen-pose LED slideshow, **not** a locked lamp recapture. Do not present it as tracking, Luxo hatch, or a joints-locked hero. A named-aim recapture (HAL_SIMULATE snaps; not tracking) is not this branch's hero. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
+Look + Qi hero: [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
+
+[`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4) on main is still the dashboard take / frozen-pose LED slideshow. Do not claim it is this lock. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
 
 Do not run `scripts/demo.sh` on stage (nine-color parade). Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
 
@@ -70,7 +76,7 @@ Every LED write is transient. Focus/night modes are silent. No mapping drives ra
 ```bash
 python3 -m pip install -e '.[test]'
 python3 -m mapper.agent_body post --event thinking --record /tmp/thinking.json
-python3 -m pytest tests -q
+python3 -m unittest discover -s tests -q
 ```
 
 The record contains the exact markers that would be dispatched. Golden files for all nine events live in `fixtures/golden/`.
