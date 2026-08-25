@@ -9,7 +9,8 @@
     "soc_pct": 8,
     "charging": false,
     "docked": false,
-    "low": true
+    "low": true,
+    "power_w": null
   },
   "markers": [
     "[HW:/led/effect/stop:{\"transient\":true}]",

@@ -9,7 +9,8 @@
     "soc_pct": null,
     "charging": false,
     "docked": true,
-    "low": false
+    "low": false,
+    "power_w": null
   },
   "markers": []
 }

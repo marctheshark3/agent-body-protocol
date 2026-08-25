@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Mapping
 
 from .hal_client import parse_marker
 from .motion import FORBIDDEN
@@ -25,10 +25,13 @@ class SkillError(ValueError):
     pass
 
 
-def markers_for(name: str) -> list[str]:
+def markers_for(name: str, power: Mapping[str, Any] | None = None) -> list[str]:
     key = str(name or "").strip().lower()
     if key not in SKILLS:
         raise SkillError(f"unknown skill: {name!r}")
+    # Stock Qi is ~5-15 W and cannot dance. Same overlay as completed.
+    if key == "dance" and power and str(power.get("source")) == "qi":
+        return []
     markers = list(SKILLS[key])
     blob = "".join(markers).lower()
     for token in FORBIDDEN:

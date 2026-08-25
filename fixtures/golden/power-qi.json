@@ -9,9 +9,8 @@
     "soc_pct": null,
     "charging": true,
     "docked": true,
-    "low": false
+    "low": false,
+    "power_w": 5.0
   },
-  "markers": [
-    "[HW:/led/effect:{\"color\":[200,200,200],\"effect\":\"breathing\",\"speed\":0.25,\"transient\":true}]"
-  ]
+  "markers": []
 }

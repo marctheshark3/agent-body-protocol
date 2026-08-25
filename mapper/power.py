@@ -5,17 +5,17 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from .map import BodyOutput, _effect, _marker
+from .map import BodyOutput, _marker
 
 LOW_VOLTAGE_V = 10.5
 LOW_SOC_PCT = 15.0
 SOURCES = {"mains", "battery", "qi", "unknown"}
 ORIGINS = {"sim", "hal"}
-ALLOWED = {"v", "kind", "ts", "voltage_v", "source", "origin", "soc_pct", "charging", "docked", "low"}
+ALLOWED = {"v", "kind", "ts", "voltage_v", "source", "origin", "soc_pct", "charging", "docked", "low", "power_w"}
 SECRET_FIELDS = {"password", "passwd", "token", "secret", "credential", "api_key", "authorization"}
 
 # Per-source expected buses. 5 V on Qi is normal; 5 V on a 3S pack is not.
-# These are LED-policy ranges, not BMS cutoffs.
+# These are LED-policy ranges, not BMS cutoffs. validate_power consults this table.
 VOLTAGE_RANGE = {
     "mains": (11.0, 14.0),    # 12 V wall rail
     "battery": (9.0, 12.6),   # 3S pack
@@ -40,9 +40,7 @@ _SOC_TABLE = (
     (9.00, 0.0),
 )
 
-DIM_GREEN = [0, 80, 32]
 DIM_LOW = [48, 16, 0]  # slow dim solid; not waiting_for_user amber
-WHITE = [200, 200, 200]
 
 
 def utc_now() -> str:
@@ -67,14 +65,19 @@ def soc_from_voltage(voltage_v: float) -> float:
 
 
 def effective_low(sample: Mapping[str, Any]) -> bool:
-    """LED-policy low overlay. Not a pack cutoff. BMS (later) owns cutoff."""
+    """LED-policy low overlay. Not a pack cutoff. BMS (later) owns cutoff.
+
+    Inferred voltage/soc low is battery-only. An explicit low=true still wins.
+    """
     if sample.get("low") is True:
         return True
+    if sample.get("source") != "battery":
+        return False
     voltage = sample.get("voltage_v")
     soc = sample.get("soc_pct")
-    if sample.get("source") == "battery" and isinstance(voltage, (int, float)) and voltage < LOW_VOLTAGE_V:
+    if isinstance(voltage, (int, float)) and not isinstance(voltage, bool) and voltage < LOW_VOLTAGE_V:
         return True
-    if isinstance(soc, (int, float)) and soc < LOW_SOC_PCT:
+    if isinstance(soc, (int, float)) and not isinstance(soc, bool) and soc < LOW_SOC_PCT:
         return True
     return False
 
@@ -96,16 +99,26 @@ def validate_power(sample: Any) -> dict[str, Any]:
     ts = sample.get("ts")
     if not isinstance(ts, str) or "T" not in ts:
         raise ValueError("power requires an ISO timestamp")
-    if not isinstance(sample.get("voltage_v"), (int, float)) or isinstance(sample.get("voltage_v"), bool):
+    voltage = sample.get("voltage_v")
+    if not isinstance(voltage, (int, float)) or isinstance(voltage, bool):
         raise ValueError("voltage_v must be a number")
     if sample.get("source") not in SOURCES:
         raise ValueError("unknown power source")
     if sample.get("origin") not in ORIGINS:
         raise ValueError("power requires origin=sim|hal")
+    source = sample.get("source")
+    if source in VOLTAGE_RANGE:
+        lo, hi = VOLTAGE_RANGE[source]
+        if not lo <= float(voltage) <= hi:
+            raise ValueError(f"voltage_v {voltage} out of range for {source} ({lo}-{hi} V)")
     if "soc_pct" in sample and sample["soc_pct"] is not None:
         soc = sample["soc_pct"]
         if not isinstance(soc, (int, float)) or isinstance(soc, bool) or not 0 <= soc <= 100:
             raise ValueError("soc_pct must be 0-100 or null")
+    if "power_w" in sample and sample["power_w"] is not None:
+        power_w = sample["power_w"]
+        if not isinstance(power_w, (int, float)) or isinstance(power_w, bool) or power_w < 0:
+            raise ValueError("power_w must be >= 0 or null")
     for flag in ("charging", "docked", "low"):
         if flag in sample and not isinstance(sample[flag], bool):
             raise ValueError(f"{flag} must be a boolean")
@@ -128,6 +141,7 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "charging": False,
             "docked": True,
             "low": False,
+            "power_w": None,
         }
     elif name == "battery":
         voltage = 11.1
@@ -143,8 +157,24 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "charging": False,
             "docked": False,
             "low": False,
+            "power_w": None,
         }
         sample["low"] = effective_low(sample)
+    elif name == "low":
+        # Golden fixtures/golden/power-battery-low.json. Healthy 11.1 V is --sim battery.
+        sample = {
+            "v": 1,
+            "kind": "power",
+            "ts": stamp,
+            "voltage_v": 10.2,
+            "source": "battery",
+            "origin": "sim",
+            "soc_pct": 8,
+            "charging": False,
+            "docked": False,
+            "low": True,
+            "power_w": None,
+        }
     elif name == "qi":
         sample = {
             "v": 1,
@@ -157,6 +187,7 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "charging": True,
             "docked": True,
             "low": False,
+            "power_w": 5.0,
         }
     else:
         raise ValueError(f"unsupported sim source: {source}")
@@ -174,25 +205,14 @@ def map_power(sample: Mapping[str, Any]) -> BodyOutput:
     """Map validated power telemetry to existing HAL LED markers only.
 
     Power is read telemetry. Never emit a /power HAL write.
-    Low: slow dim solid. No /servo/aim. Not waiting_for_user amber.
-    Qi charging: slow white breathing.
-    Charging and docked (USB-C / dock, not the qi-breathing case): dim green solid.
-    Mains: stay quiet; wall power is background.
+    Low: slow dim solid [48,16,0]. No /servo/aim. Not waiting_for_user amber.
+    Healthy power (mains, Qi charging, USB-C docked, coil-miss 0 W): no LED.
+    Agent events still win: thinking stays blue.
     """
     validated = validate_power(dict(sample))
     if effective_low(validated):
         return BodyOutput((
             _marker("/led/effect/stop", {"transient": True}),
             _marker("/led/solid", {"color": DIM_LOW, "transient": True}),
-        ))
-    source = str(validated["source"])
-    charging = bool(validated.get("charging", False))
-    docked = bool(validated.get("docked", False))
-    if source == "qi" and charging:
-        return BodyOutput((_effect("breathing", WHITE, speed=0.25),))
-    if charging and docked:
-        return BodyOutput((
-            _marker("/led/effect/stop", {"transient": True}),
-            _marker("/led/solid", {"color": DIM_GREEN, "transient": True}),
         ))
     return BodyOutput(())
