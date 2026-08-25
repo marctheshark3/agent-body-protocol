@@ -30,8 +30,13 @@ def _effect(effect: str, color: list[int], *, speed: float = 1.0, duration_ms: i
     return _marker("/led/effect", payload)
 
 
-def map_event(event: Mapping[str, Any]) -> BodyOutput:
-    """Map one validated protocol event to an exact ordered body sequence."""
+def map_event(event: Mapping[str, Any], *, power: Mapping[str, Any] | None = None) -> BodyOutput:
+    """Map one validated protocol event to an exact ordered body sequence.
+
+    `power` is optional parallel telemetry. Default (power=None) keeps the
+    nine-event goldens unchanged. When source=qi, completed refuses
+    happy_wiggle: stock Qi is ~5-15 W and cannot dance.
+    """
     name = str(event["event"])
     mode = str(event.get("mode", "normal"))
     consent = str(event.get("consent", "ask"))
@@ -72,9 +77,13 @@ def map_event(event: Mapping[str, Any]) -> BodyOutput:
             _effect("notification_flash", [255, 0, 0], speed=1.0, duration_ms=3000),
         ), None if quiet else "Tests failed.")
     if name == "completed":
+        flourish = _effect("pulse", [0, 200, 80], speed=1.2, duration_ms=2000)
+        if power and str(power.get("source")) == "qi":
+            # Qi ~5-15 W cannot dance. LED flourish only.
+            return BodyOutput((flourish,))
         return BodyOutput((
             _marker("/servo/play", {"recording": "happy_wiggle"}),
-            _effect("pulse", [0, 200, 80], speed=1.2, duration_ms=2000),
+            flourish,
         ))
     if name == "quiet":
         return BodyOutput((
