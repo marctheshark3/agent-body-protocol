@@ -14,7 +14,7 @@ from .motion import ALLOWED_DIRECTIONS, aim
 from .policy import BodyPolicy
 from .power import map_power, simulate_power, stamp_hal_origin
 from .serve import serve
-from .skills import SKILLS, dispatch_soft, markers_for
+from .skills import SKILLS, dispatch_soft, markers_for, qi_refuse_reason
 from .trajectory import read_body, record
 from .transfer import SETTLE_S, replay
 
@@ -116,7 +116,7 @@ def build_parser() -> argparse.ArgumentParser:
     skill.add_argument("--name", required=True, choices=sorted(SKILLS))
     skill.add_argument("--hal")
     skill.add_argument("--house", default="pat")
-    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Consult simulated power; dance/happy_wiggle refuse on qi")
+    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Consult simulated power; dance and hatch refuse on qi")
     power = sub.add_parser("power", help="Read power telemetry (parallel contract, not a 10th event)")
     power.add_argument("--record", type=Path, help="Write sample + mapped markers")
     power.add_argument("--hal", help="HAL base URL; GET /power, 404 falls back to sim")
@@ -167,8 +167,9 @@ def main(argv: list[str] | None = None) -> int:
         if power_sample is None and getattr(args, "sim", None):
             power_sample = simulate_power(args.sim)
         payload = {"skill": args.name, "markers": markers_for(args.name, power=power_sample)}
-        if args.name == "dance" and power_sample and str(power_sample.get("source")) == "qi":
-            payload["reason"] = "qi-cannot-dance"
+        reason = qi_refuse_reason(args.name, power_sample)
+        if reason:
+            payload["reason"] = reason
         if args.hal:
             payload["dispatched"] = dispatch_soft(payload["markers"], args.hal)
         print(json.dumps(payload, separators=(",", ":")))

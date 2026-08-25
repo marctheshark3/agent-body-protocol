@@ -39,13 +39,14 @@ Say this out loud:
 4. **Thinking stays blue** — `[0,80,255]` breathing. Agent events still win.
 5. **Low** — slow dim `[48,16,0]`, **not** `waiting_for_user` amber, **no look-at-user**.
 
-Then the honest line: **stock Qi is ~5–15 W.** Idle/trickle, not a continuous servo dance. `completed` and `skill --name dance` on Qi **refuse `happy_wiggle`**. Work sessions still want the pad or USB-C. `HAL_SIMULATE` has no `/power`; `--hal` 404s and the CLI falls back to **labeled** sim.
+Then the honest line: **stock Qi is ~5–15 W.** Idle/trickle, not a continuous servo dance. `completed` and `skill --name dance` on Qi **refuse `happy_wiggle`**. `skill --name hatch` on Qi **refuses the hop** (`qi-cannot-hatch`). Work sessions still want the pad or USB-C. `HAL_SIMULATE` has no `/power`; `--hal` 404s and the CLI falls back to **labeled** sim.
 
 Optional live fetch (today 404; origin stays `sim` with `fallback=hal_unavailable`):
 
 ```bash
 agent-body power --hal http://127.0.0.1:5001 --sim mains
 agent-body skill --name dance --sim qi
+agent-body skill --name hatch --sim qi
 ```
 
 ## What shipped (Phase 0)
@@ -80,7 +81,7 @@ agent-body skill --name dance --sim qi
 
 ### Qi wattage (do not oversell)
 
-Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Mains `power_w` is required and may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). A work session still wants the pad underneath or USB-C.
+Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Mains `power_w` is required and may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). Hatch also refuses (`qi-cannot-hatch`). A work session still wants the pad underneath or USB-C.
 
 ### Safety (do not ship fiction)
 
@@ -97,5 +98,6 @@ Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Mains `power_w` is requi
 | `thinking` + any power | Stays blue. Power does not steal the agent LED. |
 | `completed` + `source=qi` | LED flourish only. No `happy_wiggle`. |
 | `skill --name dance` + `source=qi` | No `happy_wiggle`. |
+| `skill --name hatch` + `source=qi` | No hop. `markers=[]`. `qi-cannot-hatch`. |
 
 Power is **read** telemetry. `get_power` GETs `{hal}/power` then `/sensing/power`. 404 → sim, labeled `origin=sim`. `dispatch()` never POSTs `/power`.

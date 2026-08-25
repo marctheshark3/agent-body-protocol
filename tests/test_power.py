@@ -325,6 +325,16 @@ class PowerCliTests(unittest.TestCase):
         self.assertEqual("qi-cannot-dance", payload["reason"])
         self.assertNotIn("happy_wiggle", json.dumps(payload))
 
+    def test_skill_hatch_on_qi_refuses_hop(self):
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            self.assertEqual(0, main(["skill", "--name", "hatch", "--sim", "qi"]))
+        payload = json.loads(buf.getvalue())
+        self.assertEqual([], payload["markers"])
+        self.assertEqual("qi-cannot-hatch", payload["reason"])
+        self.assertNotIn("wake_up", json.dumps(payload))
+        self.assertNotIn("/servo", json.dumps(payload.get("markers")))
+
 
 class PowerClientTests(unittest.TestCase):
     def test_dispatch_refuses_power_writes(self):

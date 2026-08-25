@@ -75,6 +75,23 @@ class CliTests(unittest.TestCase):
             # stdout only; no HAL
             self.assertEqual(0, main(["skill", "--name", "dance"]))
 
+    def test_skill_hatch_is_hop_then_look(self):
+        import io
+        from contextlib import redirect_stdout
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            self.assertEqual(0, main(["skill", "--name", "hatch"]))
+        payload = json.loads(buf.getvalue())
+        self.assertEqual("hatch", payload["skill"])
+        self.assertEqual(
+            [
+                '[HW:/servo/play:{"recording":"wake_up"}]',
+                '[HW:/servo/aim:{"direction":"user"}]',
+            ],
+            payload["markers"],
+        )
+        self.assertNotIn("reason", payload)
+
     def test_aim_record_is_named_only(self):
         with tempfile.TemporaryDirectory() as directory:
             record = Path(directory) / "aim.json"

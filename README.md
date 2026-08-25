@@ -1,30 +1,55 @@
 # Agent Body Protocol
 
-**Coding-agent events in. Autonomous Lamp body language out.**
+Software talks to a body. This lamp thinks, looks at you, and hops when the work is done.
 
-Coding agents already have a life cycle. The lamp had no word for it. Nine events in. Body language out.
+Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
-## Room demo (90s)
+## How to run demos
 
-Pat simulator only. Adapter-fired. One lamp. Script: [`docs/DEMO.md`](docs/DEMO.md). Runner: `scripts/demo_room.sh`.
-
-Hero recording: [`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4) (Pat `HAL_SIMULATE`, 95s). Not `abp-story.mp4`.
+Loopback only. In Autonomous OS (do **not** run `make sim` or `make hal-dev` from this repo — those binds are not loopback):
 
 ```bash
-# Autonomous OS — Pat
-make sim
-
-# this repo
-export PYTHONPATH=.
-python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
-bash scripts/demo_room.sh
+HAL_SIMULATE=1 uvicorn hal.server:app --host 127.0.0.1 --port 5001
 ```
 
-Open Pat `http://127.0.0.1:5001/simulator`. No architecture slide. Fake hook is enough; do not wait on live Claude.
+In this repo:
 
-Thinking stays blue. Help Mode asks once and never types a password. Same lamp: `--sim low --hal` dims the head, `skill --name dance --sim qi` refuses. USB-C close. Optional look-replay onto Sam is transfer proof only — no ring.
+```bash
+export PYTHONPATH=.
+python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
+```
 
-Do not run `scripts/demo.sh` on stage (nine-color parade). Do not play `docs/demo/abp-story.mp4` as the live take (old nine-color + Follow VO). Table proof (no hardware): `scripts/demo_power.sh`. Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
+Open `http://127.0.0.1:5001/simulator`. Fake hook is enough; do not wait on live Claude.
+
+Menu: [`docs/DEMO.md`](docs/DEMO.md)
+
+1. **Coding loop** — You should not have to watch a log. Think, stuck, fail, pass, done — you can see it from across the desk. `scripts/demo_coding_loop.sh`
+2. **Help Mode** — It asks once. It does not type your password. `scripts/demo_help.sh`
+3. **Low power** — Tired looks like tired, not like an error. `scripts/demo_low.sh`
+4. **Qi** — A charging pad is not a dance floor. Unplug it if you want it to move. `scripts/demo_qi.sh`
+5. **Hatch** — When the work is done, it hops and looks at you. Same five joints. Character, not a status light. `scripts/demo_hatch.sh`
+6. **USB-C** — Unplug it and take it with you. `scripts/demo_usbc.sh`
+
+Hatch CLI: `python3 -m mapper.agent_body skill --name hatch`
+
+It hops. Then it looks at you.
+
+Combined 90s room take (coding loop + help): `scripts/demo_room.sh`. Table proof (no hardware): `scripts/demo_power.sh`.
+
+Captions (lamp-only recapture, when reshot):
+
+- It thinks.
+- It looks at you.
+- It failed.
+- It passed.
+- It asks for help. Once.
+- Low power. Dim.
+- On a charger. It will not dance.
+- It hops. Then it looks at you.
+
+Slot: [`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4). Current file is a dashboard take / frozen-pose LED slideshow, **not** a locked lamp recapture. Do not present it as tracking, Luxo hatch, or a joints-locked hero. A named-aim recapture (HAL_SIMULATE snaps; not tracking) is not this branch's hero. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
+
+Do not run `scripts/demo.sh` on stage (nine-color parade). Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
 
 ## The contract
 
@@ -44,8 +69,8 @@ Every LED write is transient. Focus/night modes are silent. No mapping drives ra
 
 ```bash
 python3 -m pip install -e '.[test]'
-agent-body post --event thinking --record /tmp/thinking.json
-python3 -m unittest discover -s tests -v
+python3 -m mapper.agent_body post --event thinking --record /tmp/thinking.json
+python3 -m pytest tests -q
 ```
 
 The record contains the exact markers that would be dispatched. Golden files for all nine events live in `fixtures/golden/`.
@@ -54,7 +79,7 @@ The record contains the exact markers that would be dispatched. Golden files for
 
 Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th agent event. HAL is a robot driver and does not currently expose a battery. Today's Lamp is wall-plugged. This repo ships protocol + simulation; it does not claim HAL already has a pack.
 
-No-hardware table proof: `scripts/demo_power.sh`. Room lead is the 90s on the same lamp (`docs/DEMO.md`): thinking stays blue, `--sim low --hal` dims the head, `skill --name dance --sim qi` refuses the wiggle. Healthy Qi/USB emit no LED. Path and wattage (~5–15 W idle/trickle): `docs/POWER.md`.
+No-hardware table proof: `scripts/demo_power.sh`. Same lamp: `--sim low --hal` dims the head, `skill --name dance --sim qi` and `skill --name hatch --sim qi` refuse. Healthy Qi/USB emit no LED. Path and wattage (~5–15 W idle/trickle): `docs/POWER.md`.
 
 ## Live HAL validation
 
@@ -73,24 +98,25 @@ python3 scripts/validate_hal.py http://127.0.0.1:5001
 
 ## Run against Autonomous OS
 
-In Autonomous OS:
+Start HAL on loopback (not `make sim`):
 
 ```bash
-make sim
+HAL_SIMULATE=1 uvicorn hal.server:app --host 127.0.0.1 --port 5001
 ```
 
 Then in this repo:
 
 ```bash
-agent-body post --event started --hal http://127.0.0.1:5001
-agent-body post --event thinking --hal http://127.0.0.1:5001
-agent-body post --event tests_passed --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body post --event started --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body post --event thinking --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body post --event tests_passed --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body skill --name hatch --hal http://127.0.0.1:5001
 ```
 
 Or start the coalescing loopback mapper:
 
 ```bash
-agent-body serve --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
 curl -s http://127.0.0.1:5051/event \
   -H 'Content-Type: application/json' \
   -d '{"v":1,"event":"blocked","ts":"2026-08-21T18:00:00Z","source":"manual","consent":"ask"}'
@@ -119,16 +145,16 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 ## Demos (appendix)
 
-Room lead is at the top of this README. Table proof: `scripts/demo_power.sh`. Architecture: `docs/ARCHITECTURE.md`. Idea file (not the room script): `docs/GIST.md`. Honesty: `docs/HONESTY.md`.
+Room menu is at the top of this README. Table proof: `scripts/demo_power.sh`. Architecture: `docs/ARCHITECTURE.md`. Idea file (not the room script): `docs/GIST.md`. Honesty: `docs/HONESTY.md`.
 
-Old VO `docs/demo/abp-story.mp4` and `docs/demo/story-vo.txt` stay in the tree. They are not the live 90s.
+Old VO `docs/demo/abp-story.mp4` and `docs/demo/story-vo.txt` stay in the tree. They are not the live take.
 
 ## Repository map
 
 - `protocol/` — JSON Schema and examples
 - `mapper/` — deterministic mapper, state policy, loopback server, HAL client, CLI
 - `fixtures/golden/` — exact expected marker sequences
-- `skills/` — drop-in Agent Body, work-light, build-scribe, motion-aim, look/follow/dance/stop
+- `skills/` — drop-in Agent Body, work-light, build-scribe, motion-aim, look/follow/dance/hatch/stop
 - `adapters/` — Claude Code and Hermes adapters
 - `docs/HONESTY.md` — what the demo does and does not prove
 - `docs/ARCHITECTURE.md` — mermaid, nouns, layers

@@ -22,3 +22,4 @@ python3 -m mapper.agent_body power --sim low --record /tmp/power-battery-low.jso
 
 echo "==> dance on Qi refuses happy_wiggle"
 python3 -m mapper.agent_body skill --name dance --sim qi
+python3 -m mapper.agent_body skill --name hatch --sim qi

@@ -7,6 +7,8 @@ from typing import Any, Mapping
 from .hal_client import assert_hal_url, parse_marker, refuse_power_write
 from .motion import FORBIDDEN
 
+# Dance is the completed-event choreography (happy_wiggle). Hatch is a second
+# named skill — hop then look — not a 10th agent event. completed stays wiggle.
 SKILLS = {
     "look": ('[HW:/servo/aim:{"direction":"user"}]',),
     "follow": (
@@ -14,10 +16,21 @@ SKILLS = {
         '[HW:/servo/track:{"target":["person"]}]',
     ),
     "dance": ('[HW:/servo/play:{"recording":"happy_wiggle"}]',),
+    "hatch": (
+        # Stock HAL recording: crouch-to-rise on the five joints, interpolated
+        # (not an aim teleport). Then a named look. It hops. Then it looks at you.
+        '[HW:/servo/play:{"recording":"wake_up"}]',
+        '[HW:/servo/aim:{"direction":"user"}]',
+    ),
     "stop": (
         '[HW:/servo/track/stop:{}]',
         '[HW:/servo/aim:{"direction":"center"}]',
     ),
+}
+
+QI_REFUSE = {
+    "dance": "qi-cannot-dance",
+    "hatch": "qi-cannot-hatch",
 }
 
 
@@ -25,13 +38,21 @@ class SkillError(ValueError):
     pass
 
 
+def qi_refuse_reason(name: str, power: Mapping[str, Any] | None) -> str | None:
+    """Pad cannot throw a party. dance and hatch refuse on source=qi."""
+    key = str(name or "").strip().lower()
+    if power and str(power.get("source")) == "qi":
+        return QI_REFUSE.get(key)
+    return None
+
+
 def markers_for(name: str, power: Mapping[str, Any] | None = None) -> list[str]:
     key = str(name or "").strip().lower()
     if key not in SKILLS:
         raise SkillError(f"unknown skill: {name!r}")
     markers = list(SKILLS[key])
-    # Stock Qi is ~5-15 W and cannot dance. dance / happy_wiggle consult current power.
-    if power and str(power.get("source")) == "qi" and "happy_wiggle" in "".join(markers):
+    # Stock Qi is ~5-15 W and cannot dance or hatch.
+    if qi_refuse_reason(key, power):
         return []
     blob = "".join(markers).lower()
     for token in FORBIDDEN:

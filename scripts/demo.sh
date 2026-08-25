@@ -6,7 +6,7 @@ set -euo pipefail
 HAL_URL="${HAL_URL:-http://127.0.0.1:5001}"
 
 if ! curl -fsS "$HAL_URL/health" >/dev/null 2>&1 && ! curl -fsS "$HAL_URL/docs" >/dev/null 2>&1; then
-  echo "HAL is not reachable at $HAL_URL; start Autonomous OS with: make sim" >&2
+  echo "HAL is not reachable at $HAL_URL; start HAL with: HAL_SIMULATE=1 uvicorn hal.server:app --host 127.0.0.1 --port 5001" >&2
   exit 1
 fi
 

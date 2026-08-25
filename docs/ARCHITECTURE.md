@@ -9,7 +9,7 @@ flowchart LR
   end
   subgraph usb [USB-C]
     ABP["9 events"]
-    SK["look / follow / dance / stop"]
+    SK["look / follow / dance / hatch / stop"]
   end
   subgraph body [Body]
     HAL["HAL HTTP"]
@@ -47,6 +47,7 @@ RL only belongs *inside* a named skill later (how `user` is reached), never as a
 ## What already exists in Autonomous OS
 
 - Dance → `POST /servo/play` `{recording: happy_wiggle}` (20 stock clips)
+- Hatch → `POST /servo/play` `{recording: wake_up}` then `POST /servo/aim {direction:user}` (hop then look; not a 10th event)
 - Follow → `POST /servo/aim {direction:user}` then `POST /servo/track {target:["person"]}`
 - Look → `POST /servo/aim {direction:user}`
 - Stop → `POST /servo/track/stop` then aim `center`

@@ -27,6 +27,8 @@ class MotionSkillTests(unittest.TestCase):
         self.assertEqual(9, len(EVENTS))
         self.assertNotIn("look", EVENTS)
         self.assertNotIn("aim", EVENTS)
+        self.assertNotIn("hatch", EVENTS)
+        self.assertNotIn("dance", EVENTS)
 
     def test_learned_slot_falls_back_to_named(self):
         os.environ["ABP_AIM_POLICY"] = "learned"

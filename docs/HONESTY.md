@@ -14,6 +14,7 @@
 - `dispatch()` is POST-only and refuses `POST /power`. `get_power()` is GET.
 - `completed` on `source=qi` refuses `happy_wiggle`.
 - `skill --name dance` consults power and also refuses `happy_wiggle` on Qi.
+- `skill --name hatch` is hop (`wake_up` recording) then look. Not a 10th event. On Qi: `markers=[]`, `reason=qi-cannot-hatch`.
 - Healthy power (mains, Qi, USB-C docked) emits no LED. Low is dim `[48,16,0]` only.
 
 ## Proven by a live Autonomous OS simulator run
@@ -34,6 +35,7 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - Real-time A/V belongs on a phone/tablet companion (or FaceTime). Do not put faces on the Lamp shade (`display: false`).
 - Motion-aim is a named `/servo/aim` slot. `ABP_AIM_POLICY=learned` falls back to named presets until a module exists. No `set_joint` MCP. No training in this repo.
 - The trajectory logger (`agent-body aim|post --log`) records command + `/led/color` + `/servo/position` JSONL. `agent-body transfer` replays those markers onto another HAL and reports joint/LED gap. That is **API sim-to-real** (same `[HW:]`, different body). Not Isaac. Not a trained policy. A real Lamp is the same `--hal` later.
-- Named skills (`look` / `follow` / `dance` / `stop`) are USB-C onto **stock HAL routes**. Dance is `happy_wiggle`. Follow is official `/servo/track`. HAL_SIMULATE has no person — track often 500s. No RL in this repo.
+- Named skills (`look` / `follow` / `dance` / `hatch` / `stop`) are USB-C onto **stock HAL routes**. Dance is `happy_wiggle`. Hatch is stock `wake_up` (interpolated crouch-to-rise) then named `/servo/aim` `user`. Follow is official `/servo/track`. HAL_SIMULATE has no person — track often 500s. No RL in this repo.
+- `docs/demo/abp-room.mp4` in this slot is a dashboard take / frozen-pose LED slideshow, not a locked lamp recapture. Named aim on HAL_SIMULATE snaps; that is not tracking and not Luxo hatch.
 - **HAL_SIMULATE has no `/power`.** A GET 404s; the CLI falls back to labeled `origin=sim`. Do not claim HAL already has a battery.
-- **Stock Qi is ~5–15 W** and cannot dance. Idle/trickle only. Work sessions still want the pad or USB-C. `soc_from_voltage` is a 3S OCV table, not a BMS. `low` is an LED overlay, not a pack cutoff.
+- **Stock Qi is ~5–15 W** and cannot dance or hatch. Idle/trickle only. Work sessions still want the pad or USB-C. `soc_from_voltage` is a 3S OCV table, not a BMS. `low` is an LED overlay, not a pack cutoff.

@@ -33,12 +33,13 @@ quiet
 
 Quiet by default. At night, light only. If it is stuck, it asks once and **never types a password**.
 
-## Four verbs
+## Named verbs
 
 | You say | The lamp does |
 |---|---|
 | look | turns toward you |
 | dance | a short celebration |
+| hatch | it hops. Then it looks at you. |
 | follow | tracks a person, if one is in view |
 | stop | stops tracking and centers |
 
@@ -73,4 +74,4 @@ A real lamp later is the same commands. No new stack.
 
 Do not teach a second model how to move each joint.
 
-Nine events. Four verbs. The lamp already knows the rest.
+Nine events. Named verbs. The lamp already knows the rest.
