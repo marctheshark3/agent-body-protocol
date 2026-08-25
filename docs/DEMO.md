@@ -4,6 +4,8 @@ Pat simulator only. Adapter-fired. One lamp. `scripts/demo_power.sh` is the no-h
 
 Needs Pat `HAL_SIMULATE` on `http://127.0.0.1:5001`. Mapper on loopback. Optional Sam `:5002` only for the last 15s transfer. Fake hook is enough; do not wait on live Claude.
 
+Recording of this script: [`docs/demo/abp-room.mp4`](demo/abp-room.mp4). Receipts: [`docs/demo/abp-room-receipts.json`](demo/abp-room-receipts.json).
+
 ```bash
 # Autonomous OS — Pat
 make sim

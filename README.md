@@ -8,6 +8,8 @@ Coding agents already have a life cycle. The lamp had no word for it. Nine event
 
 Pat simulator only. Adapter-fired. One lamp. Script: [`docs/DEMO.md`](docs/DEMO.md). Runner: `scripts/demo_room.sh`.
 
+Hero recording: [`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4) (Pat `HAL_SIMULATE`, 95s). Not `abp-story.mp4`.
+
 ```bash
 # Autonomous OS — Pat
 make sim
