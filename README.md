@@ -101,7 +101,7 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 ## Demos
 
-Room script: `docs/DEMO.md` (90s, Pat on `:5001`). Adapter-fired coding loop, Help Mode once, then power on the same lamp. USB-C close. Optional look-replay onto Sam is transfer proof only.
+Room script: `docs/DEMO.md` (90s, Pat on `:5001`). Runner: `scripts/demo_room.sh` (adapter-fired loop plus a real `consent=yes` POST). Help Mode once, then power on the same lamp. USB-C close. Optional look-replay onto Sam is transfer proof only.
 
 No-hardware table proof: `scripts/demo_power.sh`. `scripts/demo.sh` is a nine-color parade; do not run it on stage.
 

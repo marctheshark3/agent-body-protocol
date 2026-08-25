@@ -58,8 +58,9 @@ def dispatch(markers: Iterable[str], hal_url: str, timeout: float = 3.0) -> list
 def get_power(hal_url: str, timeout: float = 3.0) -> dict | None:
     """GET power telemetry. Separate from dispatch(); never POST /power.
 
-    Tries `{hal}/power` then `{hal}/sensing/power`. 404 or any error → None
-    so the caller can simulate and must label origin=sim. HAL is a robot
+    Tries `{hal}/power` then `{hal}/sensing/power`. 404, empty body,
+    non-object JSON, or JSONDecodeError continue to the next path.
+    Both miss → None so the caller labels origin=sim. HAL is a robot
     driver, not currently a sensor. HAL_SIMULATE has no /power.
     """
     base = assert_hal_url(hal_url)
@@ -68,8 +69,15 @@ def get_power(hal_url: str, timeout: float = 3.0) -> dict | None:
         try:
             with urlopen(request, timeout=timeout) as response:
                 raw = response.read()
-                data = json.loads(raw) if raw else None
-                return data if isinstance(data, dict) else None
+                if not raw:
+                    continue
+                try:
+                    data = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(data, dict) and data:
+                    return data
+                continue
         except HTTPError as exc:
             try:
                 exc.read()
@@ -78,6 +86,6 @@ def get_power(hal_url: str, timeout: float = 3.0) -> dict | None:
             if exc.code == 404:
                 continue
             return None
-        except (URLError, TimeoutError, json.JSONDecodeError, ValueError):
+        except (URLError, TimeoutError, ValueError):
             return None
     return None
