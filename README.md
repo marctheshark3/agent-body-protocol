@@ -4,6 +4,14 @@ Software talks to a body. This lamp thinks, looks at you, and will not dance on 
 
 Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
+## Hackathon
+
+Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomous OS Week 5). Not Autonomous OS itself, and it does not ship a lamp.
+
+**Started.** Nine agent events → lamp body language so you can see think / stuck / fail / pass / done from across the desk. Power as a parallel contract so a wall-plugged lamp can someday leave the brick (voltage track, pack in the base, Qi pad). For this stretch: production-ready docs, lamp-only packet clips, Hatch as a skill (hop then look), not a 10th event.
+
+**Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
+
 ## How to run demos
 
 Loopback only. In Autonomous OS (do **not** run `make sim` or `make hal-dev` from this repo — those binds are not loopback):
@@ -177,4 +185,4 @@ Old VO `docs/demo/old/abp-story.mp4` and `docs/demo/old/story-vo.txt` stay in th
 - `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
 - `docs/GIST.md` — idea file; public gist is the same, not the room script
 
-MIT licensed. Built as a companion extension for Autonomous OS Week 5.
+MIT licensed.
