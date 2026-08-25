@@ -45,6 +45,14 @@ WIGGLE = {
     "wrist_roll.pos": 20.0,
     "wrist_pitch.pos": 12.0,
 }
+# End of stock wake_up recording: crouch-to-rise hop on the five joints.
+HOP = {
+    "base_yaw.pos": -2.4,
+    "base_pitch.pos": 41.9,
+    "elbow_pitch.pos": 30.0,
+    "wrist_roll.pos": 8.2,
+    "wrist_pitch.pos": -31.7,
+}
 REST = {
     "base_yaw.pos": 0.0,
     "base_pitch.pos": -12.0,
@@ -92,7 +100,8 @@ class VirtualBody:
             elif path == "/servo/aim":
                 self.pose = dict(AIM.get(str(payload.get("direction") or "center"), AIM["center"]))
             elif path == "/servo/play":
-                self.pose = dict(WIGGLE)
+                recording = str(payload.get("recording") or "")
+                self.pose = dict(HOP if recording == "wake_up" else WIGGLE)
             elif path == "/servo/track":
                 self.pose = dict(AIM["user"])
         return self.snapshot()

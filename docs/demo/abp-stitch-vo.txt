@@ -1,0 +1,41 @@
+ABP STITCHED DEMO  (extra tape after the lede. Packet clips stay one-by-one.)
+Sparse VO. No charger gag. No USB-C. No hop-on-done. No X.
+
+LEDE (on the open card, not spoken)
+Software talks to a body. This lamp thinks. It looks at you.
+Byline (on the open card, not VO): Agent Body Protocol, built by Rage Industries, for the Autonomous Labs lamp.
+
+TAPE  (115s). Packet clips stay the source, real durations, not looped. Lamp facing the lens. 864x540 30fps.
+
+00:00–00:08  OPEN  hero-hinomaru.png
+Silent. Cleaned hero (no overlapping AGENT BODY PROTOCOL label). Card already has lede + byline. Do not read them.
+
+00:08–00:10  BUMP  strip-nine.png
+Silent. Nine events in. Body language out.
+
+00:10–00:44  LOOP  abp-loop.mp4  (33.6s real)
+VO, once at the head: You should not have to watch a log.
+Captions already on the clip. No more VO.
+
+00:44–00:58  HELP  abp-help.mp4  (14.6s real)
+VO: It does not type your password.
+(Asks once is already the caption.)
+
+00:58–01:10  LOW  abp-low.mp4  (11.6s real)
+VO: Tired looks like tired.
+(Low power. Dim. is already the caption.)
+
+01:10–01:31  LOOK  abp-look.mp4  (21.1s real)
+Silent. Do not punch will not dance on a charger. Qi freeze is the picture.
+
+01:31–01:47  HATCH  abp-hatch.mp4  (16.1s real)
+Silent. Caption already: It hops. Then it looks at you.
+
+01:47–01:55  CLOSE  poster-ofuda.png
+VO: When the work is done, it hops and looks at you.
+On-screen stays: It hops. Then it looks at you.
+
+USB-C stays off this tape. Not spoken. No fake unplug. No black card. No seal-hanko beat.
+
+SILENT ON PURPOSE
+Open lede, byline, strip-nine, look, hatch, charger rule, USB-C.

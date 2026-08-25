@@ -4,7 +4,7 @@
 
 This is the idea file. It is **not** the room script.
 
-Live 90s (Pat, fake hook, Help Mode, same-lamp power, USB-C): [`docs/DEMO.md`](DEMO.md) and `scripts/demo_room.sh`.
+Live 90s (Pat, fake hook, Help Mode, same-lamp power, USB-C): [`docs/DEMO.md`](DEMO.md) and `scripts/demo_room.sh`. No Call Sam. No Follow. Follow is a named verb, not the room script.
 
 Repo: https://github.com/marctheshark3/agent-body-protocol
 Gist (same idea file): https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
@@ -33,12 +33,13 @@ quiet
 
 Quiet by default. At night, light only. If it is stuck, it asks once and **never types a password**.
 
-## Four verbs
+## Named verbs
 
 | You say | The lamp does |
 |---|---|
 | look | turns toward you |
 | dance | a short celebration |
+| hatch | It hops. Then it looks at you. |
 | follow | tracks a person, if one is in view |
 | stop | stops tracking and centers |
 
@@ -73,4 +74,4 @@ A real lamp later is the same commands. No new stack.
 
 Do not teach a second model how to move each joint.
 
-Nine events. Four verbs. The lamp already knows the rest.
+Nine events. Named verbs. The lamp already knows the rest.

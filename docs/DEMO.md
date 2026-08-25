@@ -1,57 +1,106 @@
-# Room demo (90s)
+# Demo menu
 
-Pat simulator only. Adapter-fired. One lamp. `scripts/demo_power.sh` is the no-hardware table proof, not this script.
+Software talks to a body. This lamp thinks, looks at you, and will not dance on a charger.
 
-Needs Pat `HAL_SIMULATE` on `http://127.0.0.1:5001`. Mapper on loopback. Optional Sam `:5002` only for the last 15s transfer. Fake hook is enough; do not wait on live Claude.
-
-Recording of this script: [`docs/demo/abp-room.mp4`](demo/abp-room.mp4). Receipts: [`docs/demo/abp-room-receipts.json`](demo/abp-room-receipts.json).
+Loopback only. Fake hook is enough; do not wait on live Claude.
 
 ```bash
-# Autonomous OS — Pat
-make sim
+# Autonomous OS — Pat (loopback; do not use make sim / make hal-dev)
+HAL_SIMULATE=1 uvicorn hal.server:app --host 127.0.0.1 --port 5001
 
 # this repo
 export PYTHONPATH=.
 python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
 ```
 
-Open Pat `http://127.0.0.1:5001/simulator`. No architecture slide.
+Open `http://127.0.0.1:5001/simulator`.
 
-## 0–8s
+Hatch CLI: `python3 -m mapper.agent_body skill --name hatch --hal http://127.0.0.1:5001`
 
-Say: “Coding agents already have a life cycle. The lamp had no word for it. Nine events in. Body language out.”
+After the loop, a hop and a look. Same five joints. Character, not a status light.
 
-## 8–55s — stay quiet
+It hops. Then it looks at you.
 
-```bash
-bash scripts/demo_room.sh
-```
+Captions (lamp-only recapture, when reshot):
 
-The script fires the coding loop (thinking / wait / fail / pass / completed), then Help Mode: blocked ask, a real `consent=yes` POST, then point-at-reset. Do not name the events. Do not cycle started or quiet.
+- It thinks.
+- It looks at you.
+- It failed.
+- It passed.
+- It asks for help. Once.
+- Low power. Dim.
+- On a charger. It will not dance.
+- It hops. Then it looks at you.
 
-After blocked, say: “It asks once. It never types a password.”
+Packet (lamp-only, silent): [`abp-loop.mp4`](demo/abp-loop.mp4), [`abp-help.mp4`](demo/abp-help.mp4), [`abp-low.mp4`](demo/abp-low.mp4), [`abp-look.mp4`](demo/abp-look.mp4), [`abp-hatch.mp4`](demo/abp-hatch.mp4).
 
-## 55–75s — same lamp, power
+Look + Qi hero: [`docs/demo/abp-look.mp4`](demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Camera orbited onto the user axis so the look is at the viewer (into the shade opening), not the default 3/4 studio. Not the full 90s room (no fail/pass/help). Not hatch.
 
-Thinking stays blue. Dim the head on HAL, not in `/tmp`.
+[`docs/demo/old/abp-room.mp4`](demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Hatch is [`abp-hatch.mp4`](demo/abp-hatch.mp4): stock `wake_up` then named `/servo/aim` `user` on HAL_SIMULATE. Not `abp-story.mp4`.
 
-```bash
-python3 -m mapper.agent_body power --sim low --hal http://127.0.0.1:5001
-python3 -m mapper.agent_body skill --name dance --sim qi --hal http://127.0.0.1:5001
-```
+## 1. Coding loop
 
-One sentence: pack in the base later, pad is 5–15 W, not a dance floor. Docked at 0 W is a miss, one clause.
-
-## 75–90s — USB-C
-
-Say: “Same [HW:] they already shipped.”
-
-Optional, Sam on `:5002` only: replay the look as transfer proof. No ring.
+You should not have to watch a log. Think, stuck, fail, pass, done — you can see it from across the desk.
 
 ```bash
-python3 -m mapper.agent_body aim --direction user --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5001
-python3 -m mapper.agent_body transfer --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5002
+bash scripts/demo_coding_loop.sh
 ```
+
+## 2. Help Mode
+
+It asks once. It does not type your password.
+
+```bash
+bash scripts/demo_help.sh
+```
+
+## 3. Low power
+
+Tired looks like tired, not like an error.
+
+```bash
+bash scripts/demo_low.sh
+```
+
+Low power. Dim.
+
+## 4. Qi
+
+A charging pad is not a dance floor. Unplug it if you want it to move.
+
+```bash
+bash scripts/demo_qi.sh
+```
+
+On a charger. It will not dance.
+
+## 5. Hatch
+
+After the loop, a hop and a look. Same five joints. Character, not a status light.
+
+```bash
+bash scripts/demo_hatch.sh
+```
+
+It hops. Then it looks at you.
+
+Script #5 closer (not `completed`, not the CLI one-liner): When the work is done, it hops and looks at you.
+
+Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. Hatch is script #5, not the done beat. On Qi: no hop, `markers=[]`, `reason=qi-cannot-hatch`. Camera recapture: [`abp-hatch.mp4`](demo/abp-hatch.mp4). Joints-moved also in VirtualBody/`tests/test_skills.py`.
+
+## 6. USB-C
+
+Unplug it and take it with you.
+
+```bash
+bash scripts/demo_usbc.sh
+```
+
+Spoken/pantomime: unplug the cable and walk. This script does not unplug. A `/tmp --record` is not unplug-and-go. No Call Sam. No Follow.
+
+## Combined 90s room take
+
+Coding loop + help, adapter-fired: `scripts/demo_room.sh`. Presenter stays quiet during the script. After blocked, say: “It asks once. It never types a password.” Then run the focused power / Qi / hatch scripts rather than one parade.
 
 ## Table proof (no hardware)
 
@@ -59,4 +108,4 @@ Keep `scripts/demo_power.sh`. Unittest suite plus receipts. Not the room lead.
 
 `scripts/demo.sh` parades nine colors and skips blocked. Do not run it on stage.
 
-Honesty: `docs/HONESTY.md`.
+Honesty: `docs/HONESTY.md`. Idea file (not this menu): `docs/GIST.md`.

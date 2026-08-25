@@ -71,6 +71,20 @@ class ScenarioBodies(unittest.TestCase):
         self.assertEqual("dance", body.event)
         self.assertNotEqual(rest, body.pose)
 
+    def test_hatch_skill_hops_then_looks(self):
+        from mapper.skills import markers_for
+        from mapper.virtual_body import AIM
+        body = VirtualBody("near")
+        rest = dict(body.pose)
+        hop, look = markers_for("hatch")
+        body.apply_markers([hop], "hatch")
+        self.assertEqual("hatch", body.event)
+        self.assertNotEqual(rest, body.pose)
+        hopped = dict(body.pose)
+        body.apply_markers([look], "hatch")
+        self.assertNotEqual(hopped, body.pose)
+        self.assertEqual(AIM["user"]["wrist_pitch.pos"], body.pose["wrist_pitch.pos"])
+
 
 if __name__ == "__main__":
     unittest.main()
