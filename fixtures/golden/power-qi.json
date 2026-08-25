@@ -1,0 +1,17 @@
+{
+  "sample": {
+    "v": 1,
+    "kind": "power",
+    "ts": "2026-08-25T15:00:00Z",
+    "voltage_v": 5.0,
+    "source": "qi",
+    "origin": "sim",
+    "soc_pct": null,
+    "charging": true,
+    "docked": true,
+    "low": false
+  },
+  "markers": [
+    "[HW:/led/effect:{\"color\":[200,200,200],\"effect\":\"breathing\",\"speed\":0.25,\"transient\":true}]"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "sample": {
+    "v": 1,
+    "kind": "power",
+    "ts": "2026-08-25T15:00:00Z",
+    "voltage_v": 10.2,
+    "source": "battery",
+    "origin": "sim",
+    "soc_pct": 8,
+    "charging": false,
+    "docked": false,
+    "low": true
+  },
+  "markers": [
+    "[HW:/led/effect/stop:{\"transient\":true}]",
+    "[HW:/led/solid:{\"color\":[48,16,0],\"transient\":true}]"
+  ]
+}
