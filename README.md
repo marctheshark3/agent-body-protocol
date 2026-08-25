@@ -1,6 +1,8 @@
 # Agent Body Protocol
 
-Software talks to a body. This lamp thinks, looks at you, and will not dance on a charger.
+Software talks to a body. This lamp thinks. It looks at you, then it hops.
+
+Agent Body Protocol, built by Rage Industries, for the Autonomous Labs lamp.
 
 Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
@@ -22,9 +24,9 @@ Tired looks like tired, not like an error.
 Low power. Dim.
 
 **Look**
-A charging pad is not a dance floor.
-<a href="docs/demo/abp-look.mp4"><img src="docs/demo/posters/look.jpg" alt="It looks at you. On a charger. It will not dance." width="640"></a>
-It looks at you. / On a charger. It will not dance.
+It looks at you.
+<a href="docs/demo/abp-look.mp4"><img src="docs/demo/posters/look.jpg" alt="It looks at you." width="640"></a>
+It looks at you.
 
 **Hatch**
 After the loop, a hop and a look. Same five joints.
@@ -82,11 +84,13 @@ Do not run `scripts/demo.sh` on stage (nine-color parade). Honesty: [`docs/HONES
 
 ## Hackathon
 
-Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomous OS Week 5). Not Autonomous OS itself, and it does not ship a lamp.
+Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomous OS Week 5). Rage Industries built the protocol, not the lamp.
 
 **Started.** Nine agent events → lamp body language so you can see think / stuck / fail / pass / done from across the desk. Power as a parallel contract so a wall-plugged lamp can someday leave the brick (voltage track, pack in the base, Qi pad). For this stretch: production-ready docs, lamp-only packet clips, Hatch as a skill (hop then look), not a 10th event.
 
 **Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
+
+It is meant to go with you, offline: a battery in the base so it can leave the wall, then a pad it sits down on to charge. That path is still a simulation. On a charger, it will not dance (`docs/POWER.md`).
 
 ## Marks
 
