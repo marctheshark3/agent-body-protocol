@@ -1,6 +1,6 @@
 ---
 name: hatch
-description: Luxo hop then look. When the work is done, it hops and looks at you. Not a tenth event. Never set_joint.
+description: Luxo hop then look. After the loop, a hop and a look. Same five joints. Character, not a status light. Not a tenth event. Never set_joint.
 ---
 
 # Hatch

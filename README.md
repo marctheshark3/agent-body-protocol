@@ -36,7 +36,15 @@ After the loop, a hop and a look. Same five joints. Character, not a status ligh
 
 It hops. Then it looks at you.
 
-Hatch joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch.
+Packet, lamp-only, silent, click each clip. Order: loop, help, low, look, hatch.
+
+1. [`docs/demo/abp-loop.mp4`](docs/demo/abp-loop.mp4) — It thinks. / It looks at you. / It failed. / It passed.
+2. [`docs/demo/abp-help.mp4`](docs/demo/abp-help.mp4) — It asks for help. Once.
+3. [`docs/demo/abp-low.mp4`](docs/demo/abp-low.mp4) — Low power. Dim.
+4. [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4) — It looks at you. / On a charger. It will not dance. Locked.
+5. [`docs/demo/abp-hatch.mp4`](docs/demo/abp-hatch.mp4) — It hops. Then it looks at you. Pat `wake_up` then named `/servo/aim` `user`.
+
+USB-C stays a line until a real unplug exists. Appendix takes (`docs/demo/old/`: story, lab-demo, proof, room) stay in the tree. Do not play them as the packet.
 
 Combined 90s room take (coding loop + help): `scripts/demo_room.sh`. Table proof (no hardware): `scripts/demo_power.sh`. USB-C is spoken/pantomime: unplug and walk; a `/tmp --record` is not unplug-and-go.
 
@@ -53,7 +61,7 @@ Captions (lamp-only recapture, when reshot):
 
 Look + Qi hero: [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
 
-[`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4) on main is still the dashboard take / frozen-pose LED slideshow. Do not claim it is this lock. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
+[`docs/demo/old/abp-room.mp4`](docs/demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Not the packet.
 
 Do not run `scripts/demo.sh` on stage (nine-color parade). Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
 
@@ -153,7 +161,7 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 Room menu is at the top of this README. Table proof: `scripts/demo_power.sh`. Architecture: `docs/ARCHITECTURE.md`. Idea file (not the room script): `docs/GIST.md`. Honesty: `docs/HONESTY.md`.
 
-Old VO `docs/demo/abp-story.mp4` and `docs/demo/story-vo.txt` stay in the tree. They are not the live take.
+Old VO `docs/demo/old/abp-story.mp4` and `docs/demo/old/story-vo.txt` stay in the tree. They are not the packet.
 
 ## Repository map
 

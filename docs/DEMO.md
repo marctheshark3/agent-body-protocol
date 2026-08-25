@@ -32,9 +32,11 @@ Captions (lamp-only recapture, when reshot):
 - On a charger. It will not dance.
 - It hops. Then it looks at you.
 
+Packet (lamp-only, silent): [`abp-loop.mp4`](demo/abp-loop.mp4), [`abp-help.mp4`](demo/abp-help.mp4), [`abp-low.mp4`](demo/abp-low.mp4), [`abp-look.mp4`](demo/abp-look.mp4), [`abp-hatch.mp4`](demo/abp-hatch.mp4).
+
 Look + Qi hero: [`docs/demo/abp-look.mp4`](demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
 
-[`docs/demo/abp-room.mp4`](demo/abp-room.mp4) on main is still the dashboard take / frozen-pose LED slideshow. Do not claim it is this lock. Hatch joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch. Hatch is a live skill, not in that file. Not `abp-story.mp4`.
+[`docs/demo/old/abp-room.mp4`](demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Hatch is [`abp-hatch.mp4`](demo/abp-hatch.mp4): stock `wake_up` then named `/servo/aim` `user` on HAL_SIMULATE. Not `abp-story.mp4`.
 
 ## 1. Coding loop
 
@@ -84,7 +86,7 @@ It hops. Then it looks at you.
 
 Script #5 closer (not `completed`, not the CLI one-liner): When the work is done, it hops and looks at you.
 
-Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. Hatch is script #5, not the done beat. On Qi: no hop, `markers=[]`, `reason=qi-cannot-hatch`. Joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch.
+Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. Hatch is script #5, not the done beat. On Qi: no hop, `markers=[]`, `reason=qi-cannot-hatch`. Camera recapture: [`abp-hatch.mp4`](demo/abp-hatch.mp4). Joints-moved also in VirtualBody/`tests/test_skills.py`.
 
 ## 6. USB-C
 
