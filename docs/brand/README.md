@@ -1,10 +1,14 @@
 # Marks
 
-Red / black / gray / white. Autonomous Labs lamp.
+Red / black / gray / white. Autonomous Labs.
 
-- `sequencer.png` — catalog sheet. Software talks to a body.
+- `hero-hinomaru.png` — Software talks to a body. This lamp thinks, looks at you, and will not dance on a charger.
+- `seal-hanko.png` — Nine events in. Body language out.
+- `strip-nine.png` — Nine events in. Body language out.
+- `poster-ofuda.png` — It hops. Then it looks at you.
+- `sequencer.png` — catalog sheet
 - `hanko.png` — seal. It looks at you.
-- `ofuda.png` — hop card. It hops. Then it looks at you.
-- `hinomaru.png` — poster. Nine events in. Body language out.
+- `ofuda.png` — hop card
+- `hinomaru.png` — poster
 
-Not the demo packet. The packet stills live in `docs/demo/posters/`.
+Not the demo packet. Packet stills live in `docs/demo/posters/`.

@@ -90,7 +90,15 @@ Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomou
 
 ## Marks
 
-Red, black, gray, white. Autonomous Labs lamp. Fun marks, not the packet.
+Red, black, gray, white. Autonomous Labs. Fun marks, not the packet.
+
+<img src="docs/brand/hero-hinomaru.png" alt="Software talks to a body." width="640">
+
+<img src="docs/brand/seal-hanko.png" alt="Nine events in. Body language out." width="400">
+
+<img src="docs/brand/strip-nine.png" alt="Nine events in. Body language out." width="640">
+
+<img src="docs/brand/poster-ofuda.png" alt="It hops. Then it looks at you." width="400">
 
 <img src="docs/brand/sequencer.png" alt="Agent Body Protocol sequencer sheet" width="640">
 
