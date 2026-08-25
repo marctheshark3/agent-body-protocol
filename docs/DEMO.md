@@ -34,7 +34,7 @@ Captions (lamp-only recapture, when reshot):
 
 Packet (lamp-only, silent): [`abp-loop.mp4`](demo/abp-loop.mp4), [`abp-help.mp4`](demo/abp-help.mp4), [`abp-low.mp4`](demo/abp-low.mp4), [`abp-look.mp4`](demo/abp-look.mp4), [`abp-hatch.mp4`](demo/abp-hatch.mp4).
 
-Look + Qi hero: [`docs/demo/abp-look.mp4`](demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
+Look + Qi hero: [`docs/demo/abp-look.mp4`](demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Camera orbited onto the user axis so the look is at the viewer (into the shade opening), not the default 3/4 studio. Not the full 90s room (no fail/pass/help). Not hatch.
 
 [`docs/demo/old/abp-room.mp4`](demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Hatch is [`abp-hatch.mp4`](demo/abp-hatch.mp4): stock `wake_up` then named `/servo/aim` `user` on HAL_SIMULATE. Not `abp-story.mp4`.
 

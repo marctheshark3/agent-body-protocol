@@ -41,8 +41,8 @@ Packet, lamp-only, silent, click each clip. Order: loop, help, low, look, hatch.
 1. [`docs/demo/abp-loop.mp4`](docs/demo/abp-loop.mp4) — It thinks. / It looks at you. / It failed. / It passed.
 2. [`docs/demo/abp-help.mp4`](docs/demo/abp-help.mp4) — It asks for help. Once.
 3. [`docs/demo/abp-low.mp4`](docs/demo/abp-low.mp4) — Low power. Dim.
-4. [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4) — It looks at you. / On a charger. It will not dance. Locked.
-5. [`docs/demo/abp-hatch.mp4`](docs/demo/abp-hatch.mp4) — It hops. Then it looks at you. Pat `wake_up` then named `/servo/aim` `user`.
+4. [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4) — It looks at you. / On a charger. It will not dance. Named `/servo/aim` `user`. Camera orbited onto the user axis so the look is at the viewer.
+5. [`docs/demo/abp-hatch.mp4`](docs/demo/abp-hatch.mp4) — It hops. Then it looks at you. `skill --name hatch` plays `wake_up`, waits, then named `/servo/aim` `user`. Camera orbited onto the user axis so the look is at the viewer.
 
 USB-C stays a line until a real unplug exists. Appendix takes (`docs/demo/old/`: story, lab-demo, proof, room) stay in the tree. Do not play them as the packet.
 
@@ -59,7 +59,7 @@ Captions (lamp-only recapture, when reshot):
 - On a charger. It will not dance.
 - It hops. Then it looks at you.
 
-Look + Qi hero: [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Not the full 90s room (no fail/pass/help). Not hatch.
+Look + Qi hero: [`docs/demo/abp-look.mp4`](docs/demo/abp-look.mp4). Named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Camera orbited onto the user axis so the look is at the viewer (into the shade opening), not the default 3/4 studio. Not the full 90s room (no fail/pass/help). Not hatch.
 
 [`docs/demo/old/abp-room.mp4`](docs/demo/old/abp-room.mp4) is the dashboard take / frozen-pose LED slideshow. Appendix only. Not the packet.
 
