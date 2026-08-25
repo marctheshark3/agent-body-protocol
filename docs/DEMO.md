@@ -1,46 +1,85 @@
-# Stage demo (30s, no hardware)
+# Room demo (90s)
 
-This is the win script. Do not start with Call Sam. Do not dance on mains and call it Qi.
+Pat simulator only. Adapter-fired. One lamp. `scripts/demo_power.sh` is the no-hardware table proof, not this script.
 
-Lamp leaves the wall later. Today: protocol + sim, labeled `origin=sim`. Not a 10th agent event. HAL has no `/power`.
+Needs Pat `HAL_SIMULATE` on `http://127.0.0.1:5001`. Mapper on loopback. Optional Sam `:5002` only for the last 15s transfer.
 
 ```bash
-python3 -m pip install -e '.[test]'
-python3 -m unittest tests.test_power tests.test_help_rails tests.test_schema tests.test_map -q
-bash scripts/demo_power.sh
+# Autonomous OS — Pat
+make sim
+
+# this repo
+export PYTHONPATH=.
+python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
 ```
 
-Or by hand:
+Open Pat `http://127.0.0.1:5001/simulator`. No architecture slide.
+
+## 0–8s
+
+Say: “Coding agents already have a life cycle. The lamp had no word for it. Nine events in. Body language out.”
+
+## 8–40s — the loop
+
+Fire from the Claude/CI adapter (or this fake hook). Do not type `agent-body post --record /tmp` as the lead. Stay quiet while it thinks. Do not name the events. Do not cycle started or quiet.
 
 ```bash
 export PYTHONPATH=.
-python3 -m mapper.agent_body power --sim mains --record /tmp/power-mains.json
-python3 -m mapper.agent_body power --sim battery --record /tmp/power-battery.json
-python3 -m mapper.agent_body power --sim qi --record /tmp/power-qi.json
-python3 -m mapper.agent_body post --event thinking --record /tmp/thinking.json
-python3 -m mapper.agent_body power --sim low --record /tmp/power-battery-low.json
-python3 -m mapper.agent_body skill --name dance --sim qi
+MAPPER=http://127.0.0.1:5051/event
+HOOK="python3 adapters/claude-code/hook.py --mapper $MAPPER"
+
+echo '{}' | $HOOK --hook PostToolUse
+# quiet blue
+
+echo '{}' | $HOOK --hook Notification
+# amber, looks at you
+
+echo '{"result":"3 failed"}' | $HOOK --hook Stop
+# three red
+
+echo '{"result":"tests passed, 0 failed"}' | $HOOK --hook Stop
+# green
+
+echo '{"result":"done"}' | $HOOK --hook Stop
+# flourish; dance only off Qi
 ```
 
-Say this out loud while it runs:
+## 40–55s — Help Mode once
 
-1. **Unplug** — mains. `markers: []`. Wall power does not nag.
-2. **Walk** — `--sim battery` is healthy 11.1 V, **not** low. Pack lives in the base later.
-3. **Pad** — `--sim qi`. Healthy Qi emits no LED (not white, not dim green). `origin=sim`. Stock Qi is ~5–15 W.
-4. **Thinking stays blue** — `[0,80,255]` breathing. Power does not steal the agent LED.
-5. **Low dims the head** — `--sim low` is `/led/solid [48,16,0]`. Not waiting amber. No look-at-user.
-6. **Qi cannot dance** — `skill --name dance --sim qi` returns `markers: []` and `qi-cannot-dance`. Do not run `skill --name dance` without `--sim qi` on stage.
-
-Every `--sim` record is `origin=sim`. `dispatch()` never POSTs `/power`.
-
-## Optional: Call Sam (not first, needs HAL)
-
-Only after the 30s. Needs `HAL_SIMULATE` on `:5001` and `:5002`, which this box often does not have. Follow 500s without a person is the honest sim.
+blocked → consent → point at reset. Then stop.
 
 ```bash
-PYTHONPATH=. python3 demos/call-sam/serve.py --hal http://127.0.0.1:5001 --far-hal http://127.0.0.1:5002
+echo '{"error":"tool failed"}' | $HOOK --hook PostToolUseFailure
 ```
 
-Lab `http://127.0.0.1:5055/` · Pat `:5001/simulator` · Sam `:5002/simulator`.
+Operator nods. Lamp asks once. Point at Send reset link. Say: “It asks once. It never types a password.”
 
-If you dance here, you are on mains. On Qi it refuses.
+## 55–75s — same lamp, power
+
+Thinking stays blue. Dim the head on HAL, not in `/tmp`.
+
+```bash
+python3 -m mapper.agent_body power --sim low --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body skill --name dance --sim qi --hal http://127.0.0.1:5001
+```
+
+One sentence: pack in the base later, pad is 5–15 W, not a dance floor. Docked at 0 W is a miss, one clause.
+
+## 75–90s — USB-C
+
+Say: “Same [HW:] they already shipped.”
+
+Optional, Sam on `:5002` only: replay the look as transfer proof. No ring.
+
+```bash
+python3 -m mapper.agent_body aim --direction user --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body transfer --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5002
+```
+
+## Table proof (no hardware)
+
+Keep `scripts/demo_power.sh`. Unittest suite plus receipts. Not the room lead.
+
+`scripts/demo.sh` parades nine colors and skips blocked. Do not run it on stage.
+
+Honesty: `docs/HONESTY.md`.

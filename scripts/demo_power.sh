@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 30-second no-hardware power demo. This is the stage script.
+# No-hardware table proof. NOT the room lead (that is docs/DEMO.md, 90s on HAL).
 # Unplug / walk / pad / thinking stays blue / low dims the head / Qi cannot dance.
 set -euo pipefail
 cd "$(dirname "$0")/.."

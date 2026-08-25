@@ -6,7 +6,7 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from .hal_client import dispatch
+from .hal_client import assert_hal_url, dispatch
 from .policy import BodyPolicy
 from .power import map_power, validate_power
 
@@ -118,7 +118,7 @@ class EventHandler(BaseHTTPRequestHandler):
 def serve(host: str = "127.0.0.1", port: int = 5051, hal_url: str | None = None) -> None:
     if host not in {"127.0.0.1", "localhost", "::1"}:
         raise ValueError("v0 server is loopback-only")
-    EventHandler.hal_url = hal_url
+    EventHandler.hal_url = assert_hal_url(hal_url) if hal_url else None
     server = ThreadingHTTPServer((host, port), EventHandler)
     print(f"agent-body listening on http://{host}:{port}/event")
     server.serve_forever()

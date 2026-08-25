@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from .hal_client import parse_marker
+from .hal_client import assert_hal_url, parse_marker, refuse_power_write
 from .motion import FORBIDDEN
 
 SKILLS = {
@@ -46,9 +46,10 @@ def dispatch_soft(markers: list[str], hal_url: str, timeout: float = 5.0) -> lis
     import json
 
     results = []
-    base = hal_url.rstrip("/")
+    base = assert_hal_url(hal_url)
     for marker in markers:
         path, payload = parse_marker(marker)
+        refuse_power_write(path)
         body = json.dumps(payload, separators=(",", ":")).encode()
         request = Request(base + path, data=body, headers={"Content-Type": "application/json"}, method="POST")
         try:

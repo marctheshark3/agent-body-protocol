@@ -6,9 +6,9 @@ Phase 0 (this PR) is protocol + simulation + LED mapping onto stock HAL routes. 
 
 Every sample is labeled `origin=sim` or `origin=hal`. Canned 12.0 / 11.1 / 5.0 V voltages are **sim only**. Live GET keeps the HAL numbers.
 
-## 30-second script (no hardware)
+## Table proof (no hardware)
 
-Lead demo: unplug / walk / pad / thinking stays blue / low dims the head. Call Sam is not first. No Lamp, no pad, no network. Runnable copy: `scripts/demo_power.sh`.
+Room lead is `docs/DEMO.md` (90s, same lamp, `--sim low --hal`). This section is receipts only. No Lamp, no pad, no network. Runnable copy: `scripts/demo_power.sh`.
 
 ```bash
 python3 -m pip install -e '.[test]'
@@ -35,7 +35,7 @@ Say this out loud:
 
 1. **Unplug** — markers empty on mains. The body does not nag about wall power.
 2. **Walk** — pack lives in the **base**, later. Healthy 11.1 V is not low. `--sim low` is the overlay.
-3. **Pad** — healthy Qi/USB emit no LED. Coil-miss is docked + `power_w: 0`.
+3. **Pad** — healthy Qi/USB emit no LED.
 4. **Thinking stays blue** — `[0,80,255]` breathing. Agent events still win.
 5. **Low** — slow dim `[48,16,0]`, **not** `waiting_for_user` amber, **no look-at-user**.
 
@@ -80,7 +80,7 @@ agent-body skill --name dance --sim qi
 
 ### Qi wattage (do not oversell)
 
-Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Coil-miss: `docked: true`, `charging: false`, `power_w: 0`. Mains `power_w` is required and may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). A work session still wants the pad underneath or USB-C.
+Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Mains `power_w` is required and may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). A work session still wants the pad underneath or USB-C.
 
 ### Safety (do not ship fiction)
 
@@ -93,7 +93,7 @@ Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Coil-miss: `docked: true
 | State | Body |
 |---|---|
 | `low` | Slow dim solid `[48,16,0]`. No `/servo/aim`. Not `waiting_for_user` amber. |
-| Healthy Qi / USB-C docked / mains / coil-miss | No extra LED |
+| Healthy Qi / USB-C docked / mains | No extra LED |
 | `thinking` + any power | Stays blue. Power does not steal the agent LED. |
 | `completed` + `source=qi` | LED flourish only. No `happy_wiggle`. |
 | `skill --name dance` + `source=qi` | No `happy_wiggle`. |

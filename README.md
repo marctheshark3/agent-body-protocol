@@ -36,15 +36,7 @@ The record contains the exact markers that would be dispatched. Golden files for
 
 Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th agent event. HAL is a robot driver and does not currently expose a battery. Today's Lamp is wall-plugged. This repo ships protocol + simulation; it does not claim HAL already has a pack.
 
-```bash
-agent-body power --sim mains --record /tmp/power-mains.json
-agent-body power --sim battery --record /tmp/power-battery.json
-agent-body power --sim qi --record /tmp/power-qi.json
-agent-body power --sim low --record /tmp/power-battery-low.json
-agent-body power --hal http://127.0.0.1:5001
-```
-
-30-second no-hardware script (unplug / walk / pad / thinking stays blue / low dims the head): `scripts/demo_power.sh`. Healthy Qi/USB emit no LED. `--sim low` reaches `power-battery-low.json`. Qi wattage honesty (~5–15 W idle/trickle, not a servo dance) and the ADC → pack-in-base → bench pad path: `docs/POWER.md`.
+No-hardware table proof: `scripts/demo_power.sh`. Room lead is the 90s on the same lamp (`docs/DEMO.md`): thinking stays blue, `--sim low --hal` dims the head, `skill --name dance --sim qi` refuses the wiggle. Healthy Qi/USB emit no LED. Path and wattage (~5–15 W idle/trickle): `docs/POWER.md`.
 
 ## Live HAL validation
 
@@ -109,27 +101,11 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 ## Demos
 
-- **CI sentinel:** `CI pass` / `CI fail` on the lab page.
-- **Pair-programming rubber duck:** thinking stays quiet; permissions turn the body.
-- **Help Mode:** `blocked` → consent → point at Send reset link. Never types the secret.
-- **Two lamps:** Call Sam. Pat waits, Sam rings.
-- **No answer:** leave a 140-char note on Sam’s paired screen.
-- **In-call talk:** sanitized transcript on the other screen. Audio stays in the browser.
-- **Look / Dance / Stop:** stock HAL verbs on Pat. **Follow** is official `/servo/track` (sim often 500s — no person).
+Room script: `docs/DEMO.md` (90s, Pat on `:5001`). Adapter-fired coding loop, Help Mode once, then power on the same lamp. USB-C close. Optional look-replay onto Sam is transfer proof only.
 
-See `docs/DEMO.md` for the 90-second script. Architecture: `docs/ARCHITECTURE.md`. Idea file: `docs/GIST.md`.
+No-hardware table proof: `scripts/demo_power.sh`. `scripts/demo.sh` is a nine-color parade; do not run it on stage.
 
-```bash
-PYTHONPATH=. python3 demos/call-sam/serve.py
-# http://127.0.0.1:5055/
-PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
-PYTHONPATH=. python3 scripts/validate_e2e.py
-```
-
-```bash
-PYTHONPATH=. python3 -m mapper.agent_body aim --direction user --log /tmp/abp-traj.jsonl
-PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --hal http://127.0.0.1:5002
-```
+Architecture: `docs/ARCHITECTURE.md`. Idea file: `docs/GIST.md`. Honesty: `docs/HONESTY.md`.
 
 ## Repository map
 
@@ -142,6 +118,6 @@ PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --h
 - `docs/ARCHITECTURE.md` — mermaid, nouns, layers
 - `docs/architecture.html` — dark architecture diagram
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
-- `docs/POWER.md` — voltage telemetry, battery/Qi path, 30-second `--sim` proof
+- `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
 
 MIT licensed. Built as a companion extension for Autonomous OS Week 5.
