@@ -1,7 +1,7 @@
 import unittest
 
 from mapper.serve import EVENTS
-from mapper.skills import QI_REFUSE, SKILLS, SkillError, markers_for, qi_refuse_reason
+from mapper.skills import QI_REFUSE, SKILLS, SkillError, WAKE_UP_S, dispatch_soft, markers_for, qi_refuse_reason
 from mapper.virtual_body import AIM, HOP, VirtualBody
 
 
@@ -88,6 +88,97 @@ class SkillVerbTests(unittest.TestCase):
             "charging": False, "docked": False, "low": False, "power_w": None,
         }
         self.assertEqual(2, len(markers_for("hatch", power=battery)))
+
+    def test_hatch_dispatch_waits_out_wake_up_before_aim(self):
+        import threading
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+
+        clock = [0.0]
+        events = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                length = int(self.headers.get("Content-Length", "0") or 0)
+                raw = self.rfile.read(length) if length else b"{}"
+                events.append((clock[0], self.path, raw.decode()))
+                body = b'{"status":"ok"}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, format, *args):
+                return
+
+        def sleeper(seconds):
+            events.append((clock[0], "wait", seconds))
+            clock[0] += float(seconds)
+
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            results = dispatch_soft(markers_for("hatch"), url, sleeper=sleeper)
+        finally:
+            server.shutdown()
+            server.server_close()
+
+        self.assertEqual(3.0, WAKE_UP_S)
+        paths = [item["path"] for item in results]
+        self.assertEqual(["/servo/resume", "/servo/play", "/servo/aim"], paths)
+        posts = [(t, p, body) for t, p, body in events if str(p).startswith("/")]
+        self.assertEqual("/servo/resume", posts[0][1])
+        self.assertEqual("/servo/play", posts[1][1])
+        self.assertEqual("/servo/aim", posts[2][1])
+        self.assertEqual(0.0, posts[0][0])
+        self.assertEqual(0.0, posts[1][0])
+        self.assertEqual(WAKE_UP_S, posts[2][0])
+        self.assertGreater(posts[2][0], posts[1][0])
+        self.assertIn("wake_up", posts[1][2])
+        self.assertIn("user", posts[2][2])
+        waits = [e for e in events if e[1] == "wait"]
+        self.assertEqual([(0.0, "wait", WAKE_UP_S)], waits)
+        # play and aim are not two POSTs in one tick
+        play_tick = posts[1][0]
+        aim_tick = posts[2][0]
+        self.assertNotEqual(play_tick, aim_tick)
+
+    def test_hatch_qi_dispatch_posts_nothing(self):
+        import threading
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+
+        hits = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                hits.append(self.path)
+                self.send_error(500)
+
+            def log_message(self, format, *args):
+                return
+
+        qi = {
+            "v": 1, "kind": "power", "ts": "2026-08-25T15:00:00Z",
+            "voltage_v": 5.0, "source": "qi", "origin": "sim",
+            "charging": True, "docked": True, "low": False, "power_w": 5.0,
+        }
+        markers = markers_for("hatch", power=qi)
+        self.assertEqual([], markers)
+        self.assertEqual("qi-cannot-hatch", qi_refuse_reason("hatch", qi))
+
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            results = dispatch_soft(markers, url, sleeper=lambda s: self.fail("qi hatch must not wait/play"))
+        finally:
+            server.shutdown()
+            server.server_close()
+        self.assertEqual([], results)
+        self.assertEqual([], hits)
 
     def test_unknown_and_raw_joints_fail(self):
         with self.assertRaises(SkillError):

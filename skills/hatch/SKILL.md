@@ -17,9 +17,11 @@ PYTHONPATH=. python3 -m mapper.agent_body skill --name hatch --sim qi
 
 | Power | Body |
 |---|---|
-| mains / battery | `/servo/play` `wake_up` (crouch-to-rise, interpolated) then `/servo/aim` `user` |
+| mains / battery | hold off; `/servo/play` `wake_up` (crouch-to-rise, interpolated); wait ~3s; then `/servo/aim` `user` |
 | qi | refuse. `markers=[]`. `reason=qi-cannot-hatch`. No hop. |
 
 A charging pad is not a dance floor. Unplug it if you want it to move.
+
+The skill waits out wake_up before aim so HAL does not cancel play.
 
 Do not expose joint MCP. Do not emit `set_joint`. Hatch is not LED-only.
