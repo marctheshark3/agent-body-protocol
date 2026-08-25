@@ -32,18 +32,19 @@ Open:
 7. **Stop**.
 8. Optional: **Help Mode stuck** → Yes → Point at reset. Never types a password.
 
-## Power body (no hardware, ~90s)
+## Power body (no hardware, ~30s)
 
-Unplug / walk / pad / thinking stays blue. **Not** a 10th agent event. `HAL_SIMULATE` has no `/power`.
+Unplug / walk / pad / thinking stays blue / low dims the head. **Not** a 10th agent event. `HAL_SIMULATE` has no `/power`. Lead script: `scripts/demo_power.sh`.
 
 ```bash
 agent-body power --sim mains --record /tmp/power-mains.json
 agent-body power --sim battery --record /tmp/power-battery.json
 agent-body power --sim qi --record /tmp/power-qi.json
 agent-body post --event thinking --record /tmp/thinking.json
+agent-body power --sim low --record /tmp/power-battery-low.json
 ```
 
-1. Unplug — mains quiet. 2. Walk — pack later, in the base. 3. Pad — Qi white breathing. 4. Thinking stays blue. Low overlay is a slow dim solid, not amber, no look-at-user. **Stock Qi is ~5-15 W** and cannot dance (`completed` refuses `happy_wiggle` on Qi). Full path: `docs/POWER.md`.
+1. Unplug — mains quiet. 2. Walk — healthy 11.1 V is **not** low. 3. Pad — healthy Qi/USB emit no LED. 4. Thinking stays blue. 5. `--sim low` dims the head `[48,16,0]`, not amber, no look-at-user. **Stock Qi is ~5-15 W** and cannot dance (`completed` and `skill --name dance` refuse `happy_wiggle` on Qi). Full path: `docs/POWER.md`.
 
 ## CLI proof
 
@@ -52,6 +53,8 @@ python3 -m unittest discover -s tests -q
 PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
 # follow exits 1 on the official sim — camera missing
 PYTHONPATH=. python3 -m mapper.agent_body power --sim qi --record /tmp/power-qi.json
+PYTHONPATH=. python3 -m mapper.agent_body power --sim low --record /tmp/power-battery-low.json
+PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --sim qi
 ```
 
 ## What to say in the thread

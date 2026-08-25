@@ -13,6 +13,8 @@
 - Power is a parallel `kind=power` contract, not a 10th agent event. `--sim` proof needs no hardware.
 - `dispatch()` is POST-only and refuses `POST /power`. `get_power()` is GET.
 - `completed` on `source=qi` refuses `happy_wiggle`.
+- `skill --name dance` consults power and also refuses `happy_wiggle` on Qi.
+- Healthy power (mains, Qi, USB-C docked) emits no LED. Low is dim `[48,16,0]` only.
 
 ## Proven by a live Autonomous OS simulator run
 
