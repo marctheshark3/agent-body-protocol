@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Mapping
 
-from .hal_client import parse_marker
+from .hal_client import assert_hal_url, parse_marker, refuse_power_write
 from .motion import FORBIDDEN
 
 SKILLS = {
@@ -25,11 +25,14 @@ class SkillError(ValueError):
     pass
 
 
-def markers_for(name: str) -> list[str]:
+def markers_for(name: str, power: Mapping[str, Any] | None = None) -> list[str]:
     key = str(name or "").strip().lower()
     if key not in SKILLS:
         raise SkillError(f"unknown skill: {name!r}")
     markers = list(SKILLS[key])
+    # Stock Qi is ~5-15 W and cannot dance. dance / happy_wiggle consult current power.
+    if power and str(power.get("source")) == "qi" and "happy_wiggle" in "".join(markers):
+        return []
     blob = "".join(markers).lower()
     for token in FORBIDDEN:
         if token.lower() in blob:
@@ -43,9 +46,10 @@ def dispatch_soft(markers: list[str], hal_url: str, timeout: float = 5.0) -> lis
     import json
 
     results = []
-    base = hal_url.rstrip("/")
+    base = assert_hal_url(hal_url)
     for marker in markers:
         path, payload = parse_marker(marker)
+        refuse_power_write(path)
         body = json.dumps(payload, separators=(",", ":")).encode()
         request = Request(base + path, data=body, headers={"Content-Type": "application/json"}, method="POST")
         try:

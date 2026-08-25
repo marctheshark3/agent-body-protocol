@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Nine-event parade. Skips blocked. NOT the room script.
+# Room lead: docs/DEMO.md (90s). Table proof: scripts/demo_power.sh.
 set -euo pipefail
 
 HAL_URL="${HAL_URL:-http://127.0.0.1:5001}"

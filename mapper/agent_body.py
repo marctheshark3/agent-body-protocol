@@ -8,10 +8,11 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .hal_client import dispatch
+from .hal_client import dispatch, get_power
 from .map import map_event
 from .motion import ALLOWED_DIRECTIONS, aim
 from .policy import BodyPolicy
+from .power import map_power, simulate_power, stamp_hal_origin
 from .serve import serve
 from .skills import SKILLS, dispatch_soft, markers_for
 from .trajectory import read_body, record
@@ -32,13 +33,13 @@ def _event(args: argparse.Namespace) -> dict:
     return event
 
 
-def _result_payload(event: dict, policy: BodyPolicy | None = None) -> dict:
+def _result_payload(event: dict, policy: BodyPolicy | None = None, power: dict | None = None) -> dict:
     if policy:
-        result = policy.apply(event)
+        result = policy.apply(event, power=power)
         output = result.output
         suppressed, reason = result.suppressed, result.reason
     else:
-        output = map_event(event)
+        output = map_event(event, power=power)
         suppressed, reason = False, None
     return {
         "event": event,
@@ -47,6 +48,39 @@ def _result_payload(event: dict, policy: BodyPolicy | None = None) -> dict:
         "suppressed": suppressed,
         "reason": reason,
     }
+
+
+def _run_power(args: argparse.Namespace) -> int:
+    sample = None
+    fallback = None
+    if args.hal:
+        live = get_power(args.hal)
+        if live is not None:
+            try:
+                sample = stamp_hal_origin(live)
+            except ValueError:
+                sample = None
+                fallback = "hal_invalid"
+        else:
+            fallback = "hal_unavailable"
+    if sample is None:
+        sample = simulate_power(args.sim or "mains")
+    output = map_power(sample)
+    payload = {
+        "sample": sample,
+        "markers": list(output.markers),
+        "speech": output.speech,
+        "origin": sample["origin"],
+    }
+    if fallback:
+        payload["fallback"] = fallback
+    if args.hal and output.markers:
+        payload["dispatched"] = dispatch(output.markers, args.hal)
+    if args.record:
+        args.record.parent.mkdir(parents=True, exist_ok=True)
+        args.record.write_text(json.dumps(payload, indent=2) + "\n")
+    print(json.dumps(payload, separators=(",", ":")))
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -82,6 +116,11 @@ def build_parser() -> argparse.ArgumentParser:
     skill.add_argument("--name", required=True, choices=sorted(SKILLS))
     skill.add_argument("--hal")
     skill.add_argument("--house", default="pat")
+    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Consult simulated power; dance/happy_wiggle refuse on qi")
+    power = sub.add_parser("power", help="Read power telemetry (parallel contract, not a 10th event)")
+    power.add_argument("--record", type=Path, help="Write sample + mapped markers")
+    power.add_argument("--hal", help="HAL base URL; GET /power, 404 falls back to sim")
+    power.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Golden demo source (default mains). low or battery-low reaches power-battery-low.json")
     return parser
 
 
@@ -117,7 +156,19 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(payload, separators=(",", ":")))
         return 0
     if args.command == "skill":
-        payload = {"skill": args.name, "markers": markers_for(args.name)}
+        power_sample = None
+        if getattr(args, "hal", None):
+            live = get_power(args.hal)
+            if live is not None:
+                try:
+                    power_sample = stamp_hal_origin(live)
+                except ValueError:
+                    power_sample = None
+        if power_sample is None and getattr(args, "sim", None):
+            power_sample = simulate_power(args.sim)
+        payload = {"skill": args.name, "markers": markers_for(args.name, power=power_sample)}
+        if args.name == "dance" and power_sample and str(power_sample.get("source")) == "qi":
+            payload["reason"] = "qi-cannot-dance"
         if args.hal:
             payload["dispatched"] = dispatch_soft(payload["markers"], args.hal)
         print(json.dumps(payload, separators=(",", ":")))
@@ -129,7 +180,17 @@ def main(argv: list[str] | None = None) -> int:
             ]
             return 1 if failed else 0
         return 0
-    payload = _result_payload(_event(args))
+    if args.command == "power":
+        return _run_power(args)
+    power_sample = None
+    if args.command == "post" and args.hal:
+        live = get_power(args.hal)
+        if live is not None:
+            try:
+                power_sample = stamp_hal_origin(live)
+            except ValueError:
+                power_sample = None
+    payload = _result_payload(_event(args), power=power_sample)
     before = read_body(args.hal) if args.command == "post" and args.hal else {"ok": False, "error": "no_hal"}
     if args.command == "post" and args.hal:
         payload["dispatched"] = dispatch(payload["markers"], args.hal)

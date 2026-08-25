@@ -8,6 +8,7 @@ import json
 import re
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 from urllib.request import Request, urlopen
 
 _FAILED = re.compile(r"\b(?:tests? failed|failed tests|\d+\s+failed)\b")
@@ -36,6 +37,13 @@ def classify(hook: str, payload: dict) -> str:
     return "thinking"
 
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from mapper.hal_client import assert_hal_url
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--hook", required=True)
@@ -55,6 +63,7 @@ def main() -> int:
     if args.print_only:
         print(encoded.decode())
         return 0
+    assert_hal_url(args.mapper)
     request = Request(args.mapper, data=encoded, headers={"Content-Type": "application/json"}, method="POST")
     with urlopen(request, timeout=2) as response:
         print(response.read().decode())

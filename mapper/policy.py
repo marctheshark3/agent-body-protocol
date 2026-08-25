@@ -24,10 +24,10 @@ class BodyPolicy:
         self._tests_passed_at = float("-inf")
         self._last_help_offer_at = float("-inf")
 
-    def apply(self, event: Mapping[str, Any]) -> PolicyResult:
+    def apply(self, event: Mapping[str, Any], *, power: Mapping[str, Any] | None = None) -> PolicyResult:
         now = self._clock()
         name = str(event["event"])
-        output = map_event(event)
+        output = map_event(event, power=power)
 
         if name == self._last_event and now - self._last_event_at < 2.0:
             return PolicyResult(BodyOutput(()), True, "duplicate-within-2s")

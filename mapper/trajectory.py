@@ -9,6 +9,8 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from .hal_client import assert_hal_url
+
 SCHEMA = "abp.trajectory/v1"
 JOINTS = (
     "base_yaw.pos",
@@ -24,7 +26,8 @@ def utc_now() -> str:
 
 
 def get_json(hal_url: str, path: str, timeout: float = 3.0) -> dict[str, Any]:
-    request = Request(hal_url.rstrip("/") + path, method="GET")
+    base = assert_hal_url(hal_url)
+    request = Request(base + path, method="GET")
     with urlopen(request, timeout=timeout) as response:
         raw = response.read()
         return json.loads(raw) if raw else {}
@@ -33,6 +36,7 @@ def get_json(hal_url: str, path: str, timeout: float = 3.0) -> dict[str, Any]:
 def read_body(hal_url: str | None) -> dict[str, Any]:
     if not hal_url:
         return {"ok": False, "error": "no_hal"}
+    assert_hal_url(hal_url)
     try:
         led = get_json(hal_url, "/led/color")
         servo = get_json(hal_url, "/servo/position")

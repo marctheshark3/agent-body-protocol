@@ -6,8 +6,9 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from .hal_client import dispatch
+from .hal_client import assert_hal_url, dispatch
 from .policy import BodyPolicy
+from .power import map_power, validate_power
 
 ALLOWED = {"v", "event", "ts", "source", "agent", "summary", "detail", "consent", "mode"}
 EVENTS = {
@@ -52,15 +53,43 @@ def validate_event(event: Any) -> dict[str, Any]:
 class EventHandler(BaseHTTPRequestHandler):
     policy = BodyPolicy()
     hal_url: str | None = None
+    latest_power: dict[str, Any] | None = None
+
+    def do_GET(self) -> None:
+        if self.path != "/power":
+            self.send_error(404)
+            return
+        if self.latest_power is None:
+            self.send_error(404)
+            return
+        self._json(200, self.latest_power)
 
     def do_POST(self) -> None:
+        if self.path == "/power":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                sample = validate_power(json.loads(self.rfile.read(length)))
+                EventHandler.latest_power = sample
+                output = map_power(sample)
+                dispatched = dispatch(output.markers, self.hal_url) if self.hal_url and output.markers else []
+                self._json(200, {
+                    "sample": sample,
+                    "markers": list(output.markers),
+                    "speech": output.speech,
+                    "dispatched": dispatched,
+                })
+            except (ValueError, json.JSONDecodeError) as exc:
+                self._json(400, {"error": str(exc)})
+            except RuntimeError as exc:
+                self._json(502, {"error": str(exc)})
+            return
         if self.path != "/event":
             self.send_error(404)
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             event = validate_event(json.loads(self.rfile.read(length)))
-            result = self.policy.apply(event)
+            result = self.policy.apply(event, power=self.latest_power)
             dispatched = dispatch(result.output.markers, self.hal_url) if self.hal_url and result.output.markers else []
             self._json(200, {
                 "markers": list(result.output.markers),
@@ -89,7 +118,7 @@ class EventHandler(BaseHTTPRequestHandler):
 def serve(host: str = "127.0.0.1", port: int = 5051, hal_url: str | None = None) -> None:
     if host not in {"127.0.0.1", "localhost", "::1"}:
         raise ValueError("v0 server is loopback-only")
-    EventHandler.hal_url = hal_url
+    EventHandler.hal_url = assert_hal_url(hal_url) if hal_url else None
     server = ThreadingHTTPServer((host, port), EventHandler)
     print(f"agent-body listening on http://{host}:{port}/event")
     server.serve_forever()

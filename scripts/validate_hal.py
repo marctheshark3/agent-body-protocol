@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from mapper.map import map_event
-from mapper.hal_client import parse_marker
+from mapper.hal_client import assert_hal_url, parse_marker, refuse_power_write
 
 EVENTS = (
     "started",
@@ -30,6 +30,7 @@ EVENTS = (
 
 
 def post(base: str, path: str, payload: dict) -> dict:
+    refuse_power_write(path)
     body = json.dumps(payload).encode()
     request = Request(base + path, data=body, headers={"Content-Type": "application/json"}, method="POST")
     try:
@@ -44,7 +45,7 @@ def post(base: str, path: str, payload: dict) -> dict:
 
 
 def main() -> int:
-    base = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5001").rstrip("/")
+    base = assert_hal_url(sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5001")
     with urlopen(base + "/health", timeout=5) as response:
         health = json.loads(response.read())
     if health.get("status") != "ok":

@@ -22,6 +22,16 @@ class SkillVerbTests(unittest.TestCase):
     def test_dance_is_stock_recording(self):
         self.assertEqual(['[HW:/servo/play:{"recording":"happy_wiggle"}]'], markers_for("dance"))
 
+    def test_dance_on_qi_refuses_wiggle(self):
+        qi = {
+            "v": 1, "kind": "power", "ts": "2026-08-25T15:00:00Z",
+            "voltage_v": 5.0, "source": "qi", "origin": "sim",
+            "charging": True, "docked": True, "low": False, "power_w": 5.0,
+        }
+        blob = "".join(markers_for("dance", power=qi))
+        self.assertEqual([], markers_for("dance", power=qi))
+        self.assertNotIn("happy_wiggle", blob)
+
     def test_unknown_and_raw_joints_fail(self):
         with self.assertRaises(SkillError):
             markers_for("moonwalk")

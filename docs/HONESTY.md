@@ -10,6 +10,11 @@
 - Completion within five seconds of test success skips the second flourish.
 - Blocked help offers have a 15-minute cooldown and never emit typing or credential actions.
 - The CLI can record all output without a device or network.
+- Power is a parallel `kind=power` contract, not a 10th agent event. `--sim` proof needs no hardware.
+- `dispatch()` is POST-only and refuses `POST /power`. `get_power()` is GET.
+- `completed` on `source=qi` refuses `happy_wiggle`.
+- `skill --name dance` consults power and also refuses `happy_wiggle` on Qi.
+- Healthy power (mains, Qi, USB-C docked) emits no LED. Low is dim `[48,16,0]` only.
 
 ## Proven by a live Autonomous OS simulator run
 
@@ -30,3 +35,5 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - Motion-aim is a named `/servo/aim` slot. `ABP_AIM_POLICY=learned` falls back to named presets until a module exists. No `set_joint` MCP. No training in this repo.
 - The trajectory logger (`agent-body aim|post --log`) records command + `/led/color` + `/servo/position` JSONL. `agent-body transfer` replays those markers onto another HAL and reports joint/LED gap. That is **API sim-to-real** (same `[HW:]`, different body). Not Isaac. Not a trained policy. A real Lamp is the same `--hal` later.
 - Named skills (`look` / `follow` / `dance` / `stop`) are USB-C onto **stock HAL routes**. Dance is `happy_wiggle`. Follow is official `/servo/track`. HAL_SIMULATE has no person — track often 500s. No RL in this repo.
+- **HAL_SIMULATE has no `/power`.** A GET 404s; the CLI falls back to labeled `origin=sim`. Do not claim HAL already has a battery.
+- **Stock Qi is ~5–15 W** and cannot dance. Idle/trickle only. Work sessions still want the pad or USB-C. `soc_from_voltage` is a 3S OCV table, not a BMS. `low` is an LED overlay, not a pack cutoff.

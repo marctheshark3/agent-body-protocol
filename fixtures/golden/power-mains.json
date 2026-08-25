@@ -1,0 +1,16 @@
+{
+  "sample": {
+    "v": 1,
+    "kind": "power",
+    "ts": "2026-08-25T15:00:00Z",
+    "voltage_v": 12.0,
+    "source": "mains",
+    "origin": "sim",
+    "soc_pct": null,
+    "charging": false,
+    "docked": true,
+    "low": false,
+    "power_w": null
+  },
+  "markers": []
+}

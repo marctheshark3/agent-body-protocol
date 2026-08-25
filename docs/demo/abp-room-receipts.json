@@ -1,0 +1,247 @@
+{
+  "power_low": {
+    "sample": {
+      "v": 1,
+      "kind": "power",
+      "ts": "2026-08-25T17:13:18.444628Z",
+      "voltage_v": 10.2,
+      "source": "battery",
+      "origin": "sim",
+      "soc_pct": 8,
+      "charging": false,
+      "docked": false,
+      "low": true,
+      "power_w": null
+    },
+    "markers": [
+      "[HW:/led/effect/stop:{\"transient\":true}]",
+      "[HW:/led/solid:{\"color\":[48,16,0],\"transient\":true}]"
+    ],
+    "speech": null,
+    "origin": "sim",
+    "fallback": "hal_unavailable",
+    "dispatched": [
+      {
+        "path": "/led/effect/stop",
+        "status": 200
+      },
+      {
+        "path": "/led/solid",
+        "status": 200
+      }
+    ]
+  },
+  "dance_qi": {
+    "skill": "dance",
+    "markers": [],
+    "reason": "qi-cannot-dance",
+    "dispatched": []
+  },
+  "snapshots": [
+    {
+      "t": "2026-08-25T17:12:37.446608+00:00",
+      "label": "before_demo_room",
+      "led": {
+        "led_count": 32,
+        "on": false,
+        "color": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000",
+        "brightness": 0.0,
+        "effect": null,
+        "scene": null
+      },
+      "pixels_head": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "pixels_n": 32,
+      "servo": {
+        "positions": {
+          "base_pitch.pos": 25.0,
+          "wrist_pitch.pos": 30.0,
+          "wrist_roll.pos": 10.0,
+          "base_yaw.pos": 0.0,
+          "elbow_pitch.pos": 43.0
+        }
+      },
+      "servo_current": null
+    },
+    {
+      "t": "2026-08-25T17:13:18.358020+00:00",
+      "label": "after_demo_room",
+      "led": {
+        "led_count": 32,
+        "on": true,
+        "color": [
+          255,
+          150,
+          0
+        ],
+        "hex": "#ff9600",
+        "brightness": 1.0,
+        "effect": "pulse",
+        "scene": null
+      },
+      "pixels_head": [
+        [
+          120,
+          71,
+          0
+        ],
+        [
+          120,
+          70,
+          0
+        ],
+        [
+          120,
+          70,
+          0
+        ],
+        [
+          111,
+          65,
+          0
+        ]
+      ],
+      "pixels_n": 32,
+      "servo": {
+        "positions": {
+          "base_pitch.pos": 26.0,
+          "wrist_pitch.pos": -38.0,
+          "wrist_roll.pos": 10.0,
+          "base_yaw.pos": -2.269658333333333,
+          "elbow_pitch.pos": 33.0
+        }
+      },
+      "servo_current": "__aim_hold__"
+    },
+    {
+      "t": "2026-08-25T17:13:19.969305+00:00",
+      "label": "after_power_low",
+      "led": {
+        "led_count": 32,
+        "on": true,
+        "color": [
+          48,
+          16,
+          0
+        ],
+        "hex": "#301000",
+        "brightness": 0.188,
+        "effect": null,
+        "scene": null
+      },
+      "pixels_head": [
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ]
+      ],
+      "pixels_n": 32,
+      "servo": {
+        "positions": {
+          "base_pitch.pos": 26.0,
+          "wrist_pitch.pos": -38.0,
+          "wrist_roll.pos": 10.0,
+          "base_yaw.pos": -2.269658333333333,
+          "elbow_pitch.pos": 33.0
+        }
+      },
+      "servo_current": "__aim_hold__"
+    },
+    {
+      "t": "2026-08-25T17:13:21.591616+00:00",
+      "label": "after_dance_qi",
+      "led": {
+        "led_count": 32,
+        "on": true,
+        "color": [
+          48,
+          16,
+          0
+        ],
+        "hex": "#301000",
+        "brightness": 0.188,
+        "effect": null,
+        "scene": null
+      },
+      "pixels_head": [
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ],
+        [
+          48,
+          16,
+          0
+        ]
+      ],
+      "pixels_n": 32,
+      "servo": {
+        "positions": {
+          "base_pitch.pos": 26.0,
+          "wrist_pitch.pos": -38.0,
+          "wrist_roll.pos": 10.0,
+          "base_yaw.pos": -2.269658333333333,
+          "elbow_pitch.pos": 33.0
+        }
+      },
+      "servo_current": "__aim_hold__"
+    }
+  ],
+  "demo_room": {
+    "returncode": 0,
+    "elapsed_s": 44.1,
+    "stdout": "== 8-40s adapter loop\n==> PostToolUse\n{\"markers\":[\"[HW:/led/effect:{\\\"color\\\":[0,80,255],\\\"effect\\\":\\\"breathing\\\",\\\"speed\\\":0.3,\\\"transient\\\":true}]\"],\"speech\":null,\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/led/effect\",\"status\":200}]}\n==> Notification\n{\"markers\":[\"[HW:/servo/aim:{\\\"direction\\\":\\\"user\\\"}]\",\"[HW:/led/effect:{\\\"color\\\":[255,150,0],\\\"effect\\\":\\\"pulse\\\",\\\"speed\\\":0.5,\\\"transient\\\":true}]\"],\"speech\":null,\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/servo/aim\",\"status\":200},{\"path\":\"/led/effect\",\"status\":200}]}\n==> Stop\n{\"markers\":[\"[HW:/servo/aim:{\\\"direction\\\":\\\"user\\\"}]\",\"[HW:/led/effect:{\\\"color\\\":[255,0,0],\\\"duration_ms\\\":3000,\\\"effect\\\":\\\"notification_flash\\\",\\\"speed\\\":1.0,\\\"transient\\\":true}]\"],\"speech\":\"Tests failed.\",\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/servo/aim\",\"status\":200},{\"path\":\"/led/effect\",\"status\":200}]}\n==> Stop\n{\"markers\":[\"[HW:/led/effect/stop:{\\\"transient\\\":true}]\",\"[HW:/led/solid:{\\\"color\\\":[0,200,80],\\\"transient\\\":true}]\"],\"speech\":\"Tests passed.\",\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/led/effect/stop\",\"status\":200},{\"path\":\"/led/solid\",\"status\":200}]}\n==> Stop\n{\"markers\":[\"[HW:/servo/play:{\\\"recording\\\":\\\"happy_wiggle\\\"}]\",\"[HW:/led/effect:{\\\"color\\\":[0,200,80],\\\"duration_ms\\\":2000,\\\"effect\\\":\\\"pulse\\\",\\\"speed\\\":1.2,\\\"transient\\\":true}]\"],\"speech\":null,\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/servo/play\",\"status\":200},{\"path\":\"/led/effect\",\"status\":200}]}\n== 40-55s Help Mode (real consent POST, not a fake nod)\n==> PostToolUseFailure\n{\"markers\":[\"[HW:/servo/aim:{\\\"direction\\\":\\\"user\\\"}]\",\"[HW:/led/effect:{\\\"color\\\":[255,0,0],\\\"effect\\\":\\\"breathing\\\",\\\"speed\\\":0.45,\\\"transient\\\":true}]\"],\"speech\":\"Want help with that?\",\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/servo/aim\",\"status\":200},{\"path\":\"/led/effect\",\"status\":200}]}\n==> consent yes\n{\"markers\":[\"[HW:/led/effect:{\\\"color\\\":[0,80,255],\\\"effect\\\":\\\"breathing\\\",\\\"speed\\\":0.3,\\\"transient\\\":true}]\"],\"speech\":null,\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/led/effect\",\"status\":200}]}\n==> point reset\n{\"markers\":[\"[HW:/servo/aim:{\\\"direction\\\":\\\"user\\\"}]\",\"[HW:/led/effect:{\\\"color\\\":[255,150,0],\\\"effect\\\":\\\"pulse\\\",\\\"speed\\\":0.5,\\\"transient\\\":true}]\"],\"speech\":null,\"suppressed\":false,\"reason\":null,\"dispatched\":[{\"path\":\"/servo/aim\",\"status\":200},{\"path\":\"/led/effect\",\"status\":200}]}\n"
+  }
+}

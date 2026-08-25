@@ -1,50 +1,62 @@
-# 90-second demo
+# Room demo (90s)
 
-No FaceTime. No Isaac. Two HAL copies + this mapper.
+Pat simulator only. Adapter-fired. One lamp. `scripts/demo_power.sh` is the no-hardware table proof, not this script.
 
-## Nouns
+Needs Pat `HAL_SIMULATE` on `http://127.0.0.1:5001`. Mapper on loopback. Optional Sam `:5002` only for the last 15s transfer. Fake hook is enough; do not wait on live Claude.
 
-- HAL = robot driver (HTTP), not a sensor
-- Pat = `:5001` · Sam = `:5002`
-- `/simulator` = 3D preview of that driver
-
-## Start (already running on Spark)
+Recording of this script: [`docs/demo/abp-room.mp4`](demo/abp-room.mp4). Receipts: [`docs/demo/abp-room-receipts.json`](demo/abp-room-receipts.json).
 
 ```bash
-# Autonomous OS HAL_SIMULATE on :5001 and :5002
-PYTHONPATH=. python3 demos/call-sam/serve.py --hal http://127.0.0.1:5001 --far-hal http://127.0.0.1:5002
+# Autonomous OS — Pat
+make sim
+
+# this repo
+export PYTHONPATH=.
+python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
 ```
 
-Open:
+Open Pat `http://127.0.0.1:5001/simulator`. No architecture slide.
 
-1. Lab `http://127.0.0.1:5055/`
-2. Pat `http://127.0.0.1:5001/simulator`
-3. Sam `http://127.0.0.1:5002/simulator`
+## 0–8s
 
-## Script
+Say: “Coding agents already have a life cycle. The lamp had no word for it. Nine events in. Body language out.”
 
-1. **CI pass** — Pat goes green.
-2. **Call Sam** → **Accept** — paired screens open (not the shade).
-3. Type a note → **Send to Sam’s screen**.
-4. **Dance** — Pat plays `happy_wiggle` (watch the official sim).
-5. **Look** — named `/servo/aim user`.
-6. **Follow** — official `/servo/track`. Sim often **500** (no person). That is the honest demo.
-7. **Stop**.
-8. Optional: **Help Mode stuck** → Yes → Point at reset. Never types a password.
-
-## CLI proof
+## 8–55s — stay quiet
 
 ```bash
-python3 -m unittest discover -s tests -q
-PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
-# follow exits 1 on the official sim — camera missing
+bash scripts/demo_room.sh
 ```
 
-## What to say in the thread
+The script fires the coding loop (thinking / wait / fail / pass / completed), then Help Mode: blocked ask, a real `consent=yes` POST, then point-at-reset. Do not name the events. Do not cycle started or quiet.
 
-Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym.
+After blocked, say: “It asks once. It never types a password.”
 
-Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
+## 55–75s — same lamp, power
 
-**Story (~94s):** `docs/demo/abp-story.mp4` — concept, nine colors, three scenarios, joints, add-ons.
-**Exam (30s):** `docs/demo/abp-proof.mp4` — live HAL receipts.
+Thinking stays blue. Dim the head on HAL, not in `/tmp`.
+
+```bash
+python3 -m mapper.agent_body power --sim low --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body skill --name dance --sim qi --hal http://127.0.0.1:5001
+```
+
+One sentence: pack in the base later, pad is 5–15 W, not a dance floor. Docked at 0 W is a miss, one clause.
+
+## 75–90s — USB-C
+
+Say: “Same [HW:] they already shipped.”
+
+Optional, Sam on `:5002` only: replay the look as transfer proof. No ring.
+
+```bash
+python3 -m mapper.agent_body aim --direction user --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5001
+python3 -m mapper.agent_body transfer --log /tmp/abp-look.jsonl --hal http://127.0.0.1:5002
+```
+
+## Table proof (no hardware)
+
+Keep `scripts/demo_power.sh`. Unittest suite plus receipts. Not the room lead.
+
+`scripts/demo.sh` parades nine colors and skips blocked. Do not run it on stage.
+
+Honesty: `docs/HONESTY.md`.

@@ -2,11 +2,29 @@
 
 **Coding-agent events in. Autonomous Lamp body language out.**
 
-Agent Body Protocol is a small runtime-neutral contract that makes a physical agent communicate state without becoming another chatty narrator. Claude Code, Hermes, Codex, OpenCode, or CI emit one of nine events. A deterministic mapper returns exact Autonomous OS `[HW:]` sequences and optional short speech.
+Coding agents already have a life cycle. The lamp had no word for it. Nine events in. Body language out.
 
-It consumes Autonomous OS's existing `make sim`. It does not rebuild HAL, fork Buddy, or implement a Grok runtime.
+## Room demo (90s)
 
-Public gist (idea file): https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
+Pat simulator only. Adapter-fired. One lamp. Script: [`docs/DEMO.md`](docs/DEMO.md). Runner: `scripts/demo_room.sh`.
+
+Hero recording: [`docs/demo/abp-room.mp4`](docs/demo/abp-room.mp4) (Pat `HAL_SIMULATE`, 95s). Not `abp-story.mp4`.
+
+```bash
+# Autonomous OS — Pat
+make sim
+
+# this repo
+export PYTHONPATH=.
+python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127.0.0.1:5001
+bash scripts/demo_room.sh
+```
+
+Open Pat `http://127.0.0.1:5001/simulator`. No architecture slide. Fake hook is enough; do not wait on live Claude.
+
+Thinking stays blue. Help Mode asks once and never types a password. Same lamp: `--sim low --hal` dims the head, `skill --name dance --sim qi` refuses. USB-C close. Optional look-replay onto Sam is transfer proof only — no ring.
+
+Do not run `scripts/demo.sh` on stage (nine-color parade). Do not play `docs/demo/abp-story.mp4` as the live take (old nine-color + Follow VO). Table proof (no hardware): `scripts/demo_power.sh`. Honesty: [`docs/HONESTY.md`](docs/HONESTY.md).
 
 ## The contract
 
@@ -31,6 +49,12 @@ python3 -m unittest discover -s tests -v
 ```
 
 The record contains the exact markers that would be dispatched. Golden files for all nine events live in `fixtures/golden/`.
+
+## Power body
+
+Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th agent event. HAL is a robot driver and does not currently expose a battery. Today's Lamp is wall-plugged. This repo ships protocol + simulation; it does not claim HAL already has a pack.
+
+No-hardware table proof: `scripts/demo_power.sh`. Room lead is the 90s on the same lamp (`docs/DEMO.md`): thinking stays blue, `--sim low --hal` dims the head, `skill --name dance --sim qi` refuses the wiggle. Healthy Qi/USB emit no LED. Path and wattage (~5–15 W idle/trickle): `docs/POWER.md`.
 
 ## Live HAL validation
 
@@ -93,29 +117,11 @@ The v0 server binds to loopback only. Speech is returned to the caller as one op
 
 `tests/test_help_rails.py` fails if any blocked mapping emits credential or typing actions.
 
-## Demos
+## Demos (appendix)
 
-- **CI sentinel:** `CI pass` / `CI fail` on the lab page.
-- **Pair-programming rubber duck:** thinking stays quiet; permissions turn the body.
-- **Help Mode:** `blocked` → consent → point at Send reset link. Never types the secret.
-- **Two lamps:** Call Sam. Pat waits, Sam rings.
-- **No answer:** leave a 140-char note on Sam’s paired screen.
-- **In-call talk:** sanitized transcript on the other screen. Audio stays in the browser.
-- **Look / Dance / Stop:** stock HAL verbs on Pat. **Follow** is official `/servo/track` (sim often 500s — no person).
+Room lead is at the top of this README. Table proof: `scripts/demo_power.sh`. Architecture: `docs/ARCHITECTURE.md`. Idea file (not the room script): `docs/GIST.md`. Honesty: `docs/HONESTY.md`.
 
-See `docs/DEMO.md` for the 90-second script. Architecture: `docs/ARCHITECTURE.md`. Idea file: `docs/GIST.md`.
-
-```bash
-PYTHONPATH=. python3 demos/call-sam/serve.py
-# http://127.0.0.1:5055/
-PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
-PYTHONPATH=. python3 scripts/validate_e2e.py
-```
-
-```bash
-PYTHONPATH=. python3 -m mapper.agent_body aim --direction user --log /tmp/abp-traj.jsonl
-PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --hal http://127.0.0.1:5002
-```
+Old VO `docs/demo/abp-story.mp4` and `docs/demo/story-vo.txt` stay in the tree. They are not the live 90s.
 
 ## Repository map
 
@@ -128,5 +134,7 @@ PYTHONPATH=. python3 -m mapper.agent_body transfer --log /tmp/abp-traj.jsonl --h
 - `docs/ARCHITECTURE.md` — mermaid, nouns, layers
 - `docs/architecture.html` — dark architecture diagram
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
+- `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
+- `docs/GIST.md` — idea file; public gist is the same, not the room script
 
 MIT licensed. Built as a companion extension for Autonomous OS Week 5.
