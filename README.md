@@ -2,7 +2,7 @@
 
 Software talks to a body. This lamp thinks. It looks at you, then it hops.
 
-Agent Body Protocol, built by Rage Industries, for the Autonomous Labs lamp.
+Built by Rage Industries, for the Autonomous Labs lamp.
 
 Nine events in. Body language out. Power is a parallel contract, not a 10th event.
 
