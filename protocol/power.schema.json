@@ -22,10 +22,8 @@
     "docked": {"type": "boolean"},
     "low": {"type": "boolean"},
     "power_w": {
-      "anyOf": [
-        {"type": "number", "minimum": 0},
-        {"type": "null"}
-      ]
+      "type": ["number", "null"],
+      "minimum": 0
     }
   },
   "allOf": [

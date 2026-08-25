@@ -8,7 +8,7 @@ Every sample is labeled `origin=sim` or `origin=hal`. Canned 12.0 / 11.1 / 5.0 V
 
 ## 30-second script (no hardware)
 
-Lead demo: unplug / walk / pad / thinking stays blue / low dims the head. No Lamp, no pad, no network. Runnable copy: `scripts/demo_power.sh`.
+Lead demo: unplug / walk / pad / thinking stays blue / low dims the head. Call Sam is not first. No Lamp, no pad, no network. Runnable copy: `scripts/demo_power.sh`.
 
 ```bash
 python3 -m pip install -e '.[test]'
@@ -20,15 +20,15 @@ agent-body power --sim mains --record /tmp/power-mains.json
 # 2. Walk — 3S-ish pack sim, healthy 11.1 V, origin=sim. This is NOT low.
 agent-body power --sim battery --record /tmp/power-battery.json
 
-# 3. Pad — drop on Qi. Healthy Qi is quiet (not started-white). origin=sim.
+# 3. Pad — drop on Qi. Healthy Qi/USB emit no LED (not white breathing, not dim green). origin=sim.
 agent-body power --sim qi --record /tmp/power-qi.json
-agent-body power --sim coil-miss --record /tmp/power-coil-miss.json
 
 # 4. Thinking stays blue. Power does not steal the agent LED.
 agent-body post --event thinking --record /tmp/thinking.json
 
 # 5. Low dims the head. Reaches fixtures/golden/power-battery-low.json.
 agent-body power --sim low --record /tmp/power-battery-low.json
+# alias: agent-body power --sim battery-low
 ```
 
 Say this out loud:
@@ -50,11 +50,11 @@ agent-body skill --name dance --sim qi
 
 ## What shipped (Phase 0)
 
-- `protocol/power.schema.json` — required `{v, kind, ts, voltage_v, source, origin}`. Nullable `power_w`. Per-source `voltage_v` ranges from `VOLTAGE_RANGE`.
-- `mapper/power.py` — validate (consults `VOLTAGE_RANGE`), simulate, map to **existing** `/led/*` markers only.
+- `protocol/power.schema.json` — required `{v, kind, ts, voltage_v, source, origin, power_w}`. `power_w` is number or null. Per-source `voltage_v` ranges from `VOLTAGE_RANGE`.
+- `mapper/power.py` — validate (consults `VOLTAGE_RANGE`, rejects 5 V mains), simulate (`--sim mains|battery|qi|low`), map to **existing** `/led/*` markers only. Healthy Qi/USB = no LED.
 - `get_power()` is a **GET**. `dispatch()` stays POST-only and **refuses** `POST /power`.
-- `agent-body power --sim SOURCE` / `--record FILE` / `--hal URL`. `--sim low` reaches `power-battery-low.json`.
-- Golden fixtures: `power-mains.json`, `power-battery-low.json`, `power-qi.json` (JSON, not a 10th `.markers.txt` event golden).
+- `agent-body power --sim SOURCE` / `--record FILE` / `--hal URL`. `--sim low` or `--sim battery-low` reaches `power-battery-low.json`.
+- Golden fixtures: `power-mains.json`, `power-battery-low.json`, `power-qi.json` (JSON, not a 10th `.markers.txt` event golden). All include `power_w`.
 - Loopback `GET /power` returns the latest posted sample. Bind stays loopback. HAL URLs are loopback-only.
 
 ## Hardware path (not this PR)
@@ -80,7 +80,7 @@ agent-body skill --name dance --sim qi
 
 ### Qi wattage (do not oversell)
 
-Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Coil-miss: `docked: true`, `charging: false`, `power_w: 0`. Mains `power_w` may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). A work session still wants the pad underneath or USB-C.
+Stock Qi is about **5–15 W**. Sim uses **5 or 10 W**. Coil-miss: `docked: true`, `charging: false`, `power_w: 0`. Mains `power_w` is required and may be null. Enough to hold idle LEDs and trickle a pack. **Not** enough for continuous servo dance, Follow, or `happy_wiggle` as a primary load. Mapper **refuses the wiggle** when `source=qi` (`completed` and `skill --name dance`). A work session still wants the pad underneath or USB-C.
 
 ### Safety (do not ship fiction)
 

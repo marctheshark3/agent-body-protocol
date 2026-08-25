@@ -1,40 +1,42 @@
 # Demo
 
-## 30-second power body (no hardware)
+No FaceTime. No Isaac. Two HAL copies + this mapper.
 
-Unplug / walk / pad / coil-miss / thinking stays blue / low dims the head. **Not** a 10th agent event. `HAL_SIMULATE` has no `/power`. Lead script: `scripts/demo_power.sh`.
+## Lead: Power body (~30s, no hardware)
+
+Unplug / walk / pad / thinking stays blue / low dims the head. **This is the lead script.** Call Sam is not first. **Not** a 10th agent event. `HAL_SIMULATE` has no `/power`. Runnable copy: `scripts/demo_power.sh`.
 
 ```bash
-python3 -m pip install -e '.[test]'
-python3 -m unittest tests.test_power tests.test_help_rails tests.test_schema tests.test_map -q
-
-agent-body power --sim mains --record /tmp/power-mains.json
-agent-body power --sim battery --record /tmp/power-battery.json
-agent-body power --sim qi --record /tmp/power-qi.json
-agent-body power --sim coil-miss --record /tmp/power-coil-miss.json
-agent-body post --event thinking --record /tmp/thinking.json
-agent-body power --sim low --record /tmp/power-battery-low.json
+PYTHONPATH=. python3 -m mapper.agent_body power --sim mains --record /tmp/power-mains.json
+PYTHONPATH=. python3 -m mapper.agent_body power --sim battery --record /tmp/power-battery.json
+PYTHONPATH=. python3 -m mapper.agent_body power --sim qi --record /tmp/power-qi.json
+PYTHONPATH=. python3 -m mapper.agent_body post --event thinking --record /tmp/thinking.json
+PYTHONPATH=. python3 -m mapper.agent_body power --sim low --record /tmp/power-battery-low.json
 ```
 
-1. **Unplug** — mains quiet. The body does not nag about wall power.
-2. **Walk** — healthy 11.1 V is **not** low. `--sim low` is the overlay.
-3. **Pad** — healthy Qi/USB emit no LED. `--sim coil-miss` is docked + `power_w: 0` (no LED).
-4. **Thinking stays blue** — `[0,80,255]` breathing. Agent events still win.
-5. **Low** — slow dim `[48,16,0]`, **not** `waiting_for_user` amber, **no look-at-user**.
+1. **Unplug** — mains quiet. Healthy power emits no LED.
+2. **Walk** — healthy 11.1 V is **not** low (`--sim battery`).
+3. **Pad** — healthy Qi/USB emit no LED (not white breathing, not dim green). Coil-miss is `docked` + `power_w: 0`.
+4. **Thinking stays blue** — agent events still win the LED.
+5. **Low dims the head** — `--sim low` (or `--sim battery-low`) is `[48,16,0]`, not amber, no look-at-user.
 
 **Stock Qi is ~5-15 W** and cannot dance (`completed` and `skill --name dance` refuse `happy_wiggle` on Qi). Full path: `docs/POWER.md`.
 
-## 90-second demo
+```bash
+PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --sim qi
+```
 
-No FaceTime. No Isaac. Two HAL copies + this mapper.
+## Call Sam (not first)
 
-## Nouns
+Optional two-sim ring **after** the power script.
+
+### Nouns
 
 - HAL = robot driver (HTTP), not a sensor
 - Pat = `:5001` · Sam = `:5002`
 - `/simulator` = 3D preview of that driver
 
-## Start (already running on Spark)
+### Start (already running on Spark)
 
 ```bash
 # Autonomous OS HAL_SIMULATE on :5001 and :5002
@@ -47,12 +49,12 @@ Open:
 2. Pat `http://127.0.0.1:5001/simulator`
 3. Sam `http://127.0.0.1:5002/simulator`
 
-## Script
+### Script
 
 1. **CI pass** — Pat goes green.
 2. **Call Sam** → **Accept** — paired screens open (not the shade).
 3. Type a note → **Send to Sam's screen**.
-4. **Dance** — Pat plays `happy_wiggle` (watch the official sim).
+4. **Dance** — Pat plays `happy_wiggle` (watch the official sim). On Qi this refuses.
 5. **Look** — named `/servo/aim user`.
 6. **Follow** — official `/servo/track`. Sim often **500** (no person). That is the honest demo.
 7. **Stop**.
@@ -65,14 +67,13 @@ python3 -m unittest discover -s tests -q
 PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --hal http://127.0.0.1:5001
 # follow exits 1 on the official sim — camera missing
 PYTHONPATH=. python3 -m mapper.agent_body power --sim qi --record /tmp/power-qi.json
-PYTHONPATH=. python3 -m mapper.agent_body power --sim coil-miss --record /tmp/power-coil-miss.json
 PYTHONPATH=. python3 -m mapper.agent_body power --sim low --record /tmp/power-battery-low.json
 PYTHONPATH=. python3 -m mapper.agent_body skill --name dance --sim qi
 ```
 
 ## What to say in the thread
 
-Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym. Power is a parallel contract so he can move the lamp bench to bench later — protocol now, pack in the base later.
+Nine events + four verbs. USB-C into HAL they already shipped. Transfer exam is Pat → Sam JSONL, not a gym. Power is a parallel contract so he can move the lamp bench to bench later — protocol now, pack in the base later. Lead the room with unplug / walk / pad / thinking-stays-blue / low-dims-head, not Call Sam.
 
 Gist: https://gist.github.com/marctheshark3/c7dd087833d3038ad78e593667bca34f
 
