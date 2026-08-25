@@ -15,7 +15,9 @@ python3 -m mapper.agent_body serve --host 127.0.0.1 --port 5051 --hal http://127
 
 Open `http://127.0.0.1:5001/simulator`.
 
-Hatch CLI: `python3 -m mapper.agent_body skill --name hatch`
+Hatch CLI: `python3 -m mapper.agent_body skill --name hatch --hal http://127.0.0.1:5001`
+
+After the loop, a hop and a look. Same five joints. Character, not a status light.
 
 It hops. Then it looks at you.
 
@@ -78,9 +80,9 @@ After the loop, a hop and a look. Same five joints. Character, not a status ligh
 bash scripts/demo_hatch.sh
 ```
 
-When the work is done, it hops and looks at you.
-
 It hops. Then it looks at you.
+
+Script #5 closer (not `completed`, not the CLI one-liner): When the work is done, it hops and looks at you.
 
 Hatch is a **skill**, not a 10th event. `completed` still plays `happy_wiggle`. Hatch is script #5, not the done beat. On Qi: no hop, `markers=[]`, `reason=qi-cannot-hatch`. Joints-moved is VirtualBody/tests until a HAL_SIMULATE `wake_up` recapture exists. Do not claim camera hatch.
 

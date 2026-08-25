@@ -30,9 +30,9 @@ Menu: [`docs/DEMO.md`](docs/DEMO.md)
 5. **Hatch** — After the loop, a hop and a look. Same five joints. Character, not a status light. `scripts/demo_hatch.sh`
 6. **USB-C** — Unplug it and take it with you. `scripts/demo_usbc.sh`
 
-Hatch CLI: `python3 -m mapper.agent_body skill --name hatch`
+Hatch CLI: `python3 -m mapper.agent_body skill --name hatch --hal http://127.0.0.1:5001`
 
-When the work is done, it hops and looks at you.
+After the loop, a hop and a look. Same five joints. Character, not a status light.
 
 It hops. Then it looks at you.
 
