@@ -90,11 +90,15 @@ Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomou
 
 ## Marks
 
-Red, black, gray, white. Fun marks, not the packet. Not official Teenage Engineering.
+Red, black, gray, white. Autonomous Labs lamp. Fun marks, not the packet.
+
+<img src="docs/brand/sequencer.png" alt="Agent Body Protocol sequencer sheet" width="640">
 
 <img src="docs/brand/hanko.png" alt="It looks at you." width="400">
 
 <img src="docs/brand/ofuda.png" alt="It hops. Then it looks at you." width="400">
+
+<img src="docs/brand/hinomaru.png" alt="Software talks to a body." width="640">
 
 ## The contract
 
@@ -207,6 +211,6 @@ Old VO `docs/demo/old/abp-story.mp4` and `docs/demo/old/story-vo.txt` stay in th
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
 - `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
 - `docs/GIST.md` — idea file; public gist is the same, not the room script
-- `docs/brand/` — hanko seal and ofuda hop. Fun marks, not the lamp packet.
+- `docs/brand/` — sequencer, hanko, ofuda, hinomaru marks. Fun, not the lamp packet.
 
 MIT licensed.
