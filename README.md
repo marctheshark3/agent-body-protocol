@@ -1,6 +1,6 @@
 # Agent Body Protocol
 
-Software talks to a body. This lamp thinks. It looks at you, then it hops.
+Software talks to a body. This lamp thinks. It looks at you.
 
 Agent Body Protocol, built by Rage Industries, for the Autonomous Labs lamp.
 
