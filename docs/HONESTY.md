@@ -40,4 +40,6 @@ This validates the live HAL route/payload contract and simulator execution. The 
 - `docs/demo/abp-look.mp4` is the look + Qi hero: named `/servo/aim` `user`, held, then qi-cannot-dance same pose. Named aim, not tracking. Camera orbited onto the user axis so the look is at the viewer (into the shade opening), not the default 3/4 studio. Not the full 90s room (no fail/pass/help). Not hatch.
 - `docs/demo/old/abp-room.mp4` is a dashboard take / frozen-pose LED slideshow. Appendix only. Named aim on HAL_SIMULATE interpolates via `/servo/aim`; that is not tracking.
 - **HAL_SIMULATE has no `/power`.** A GET 404s; the CLI falls back to labeled `origin=sim`. Do not claim HAL already has a battery.
+- **Phase 1** is divider math + GET + a loopback ADC stub (`scripts/hal_power_stub.py`). It is not a soldered ADC in a household Lamp. `--sim adc` stays `origin=sim`. Canned 12.0 / 11.1 / 5.0 V stay `origin=sim`.
+- **Phase 2/3 are drawings.** This repo did not ship a pack or Qi hardware. Cells and a UL-listed 3S BMS are TBD.
 - **Stock Qi is ~5–15 W** and cannot dance or hatch. Idle/trickle only. Work sessions still want the pad or USB-C. `soc_from_voltage` is a 3S OCV table, not a BMS. `low` is an LED overlay, not a pack cutoff.

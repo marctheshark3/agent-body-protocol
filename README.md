@@ -90,7 +90,7 @@ Companion extension for the Autonomous Labs / Autonomous OS hackathon (Autonomou
 
 **Started.** Nine agent events → lamp body language so you can see think / stuck / fail / pass / done from across the desk. Power as a parallel contract so a wall-plugged lamp can someday leave the brick (voltage track, pack in the base, Qi pad). For this stretch: production-ready docs, lamp-only packet clips, Hatch as a skill (hop then look), not a 10th event.
 
-**Now.** Nine events + hatch skill + power Phase 0 sim (protocol + simulation + LED mapping). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL has no `/power`. No pack, no Qi coil, no ADC in hardware. Sim sources mains | battery | qi | low. Loopback only. Tests prove LED policy — they do not size a cell.
+**Now.** Nine events + hatch skill + power Phase 1 (12 V rail divider drawing + GET `{hal}/power` + tests). Packet clips: loop, help, low, look, hatch (facing the lens). Lamp is still wall-plugged; HAL_SIMULATE has no `/power`. No pack, no Qi coil soldered by this repo. Sim sources mains | battery | qi | low | adc. Loopback only. Tests prove divider math and LED policy — they do not size a cell.
 
 It is meant to go with you, offline: a battery in the base so it can leave the wall, then a pad it sits down on to charge. That path is still a simulation. On a charger, it will not dance (`docs/POWER.md`).
 
@@ -140,9 +140,7 @@ The record contains the exact markers that would be dispatched. Golden files for
 
 ## Power body
 
-Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th agent event. HAL is a robot driver and does not currently expose a battery. Today's Lamp is wall-plugged. This repo ships protocol + simulation; it does not claim HAL already has a pack.
-
-No-hardware table proof: `scripts/demo_power.sh`. Same lamp: `--sim low --hal` dims the head, `skill --name dance --sim qi` and `skill --name hatch --sim qi` refuse. Healthy Qi/USB emit no LED. Path and wattage (~5–15 W idle/trickle): `docs/POWER.md`.
+Voltage is a **parallel** contract (`protocol/power.schema.json`), not a 10th agent event. Phase 1 is a 12 V rail divider into a 3.3 V ADC in the **base**, GET `{hal}/power`, and tests. HAL_SIMULATE still has no `/power`; 404 stays `origin=sim`. Live HAL numbers stay live. There is no pack and no Qi coil in hardware. Rage Industries built the protocol, not the lamp. Drawings, divider values, and wattage: [`docs/POWER.md`](docs/POWER.md).
 
 ## Live HAL validation
 
@@ -223,7 +221,8 @@ Old VO `docs/demo/old/abp-story.mp4` and `docs/demo/old/story-vo.txt` stay in th
 - `docs/ARCHITECTURE.md` — mermaid, nouns, layers
 - `docs/architecture.html` — dark architecture diagram
 - `docs/SIM-TO-REAL.md` — API replay, not Isaac
-- `docs/POWER.md` — voltage telemetry, battery/Qi path, table proof via `scripts/demo_power.sh`
+- `docs/POWER.md` — Phase 1 divider + GET, Phase 2/3 drawings, table proof via `scripts/demo_power.sh`
+- `docs/hardware/base-exploded.scad` — exploded base occupancy (drawing only)
 - `docs/GIST.md` — idea file; public gist is the same, not the room script
 - `docs/brand/` — sequencer, hanko, ofuda, hinomaru marks. Fun, not the lamp packet.
 

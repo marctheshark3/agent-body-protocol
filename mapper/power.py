@@ -22,6 +22,97 @@ VOLTAGE_RANGE = {
     "qi": (4.5, 5.5),         # 5 V Qi RX
 }
 
+# Phase 1 voltage divider on the existing 12 V wall rail, in the BASE (not the head).
+# First principles: Vadc = Vin * R_low / (R_high + R_low).
+# 30 kΩ / 10 kΩ is the class (tens of kΩ, ~3:1). At 14 V that is 3.50 V, which
+# exceeds a 3.3 V ADC. Tighten to E96 1% 39.2 kΩ / 10.0 kΩ:
+#   ratio = 10 / 49.2 ≈ 0.203252
+#   12.0 V → 2.439 V
+#   14.0 V → 2.846 V  (0.454 V margin below 3.3 V)
+# ESP ADC is not trusted (nonlinear). Named ADC: Adafruit ADS1115 1085.
+# PGA FS ±4.096 V; analog pin must still stay under VDD (3.3 V on the Lamp MCU).
+R_HIGH_OHM = 39200.0
+R_LOW_OHM = 10000.0
+ADC_VREF_V = 3.3
+ADS1115_FSR_V = 4.096
+ADS1115_POS_MAX = 32768  # 2**15
+ADS1115_LSB_V = ADS1115_FSR_V / ADS1115_POS_MAX  # 125 µV
+# Nominal 12.0 V rail through one ADS1115 LSB. Reconstructed voltage is 11.99988, not canned 12.0.
+ADC_SIM_COUNT = 19512
+# HAL stub default: a live-looking 12.37 V so origin=hal is not a canned 12.0.
+HAL_STUB_COUNT = 20114
+
+
+def divider_ratio() -> float:
+    return R_LOW_OHM / (R_HIGH_OHM + R_LOW_OHM)
+
+
+def vadc_from_vin(vin_v: float) -> float:
+    return float(vin_v) * divider_ratio()
+
+
+def vin_from_vadc(vadc_v: float) -> float:
+    return float(vadc_v) * (R_HIGH_OHM + R_LOW_OHM) / R_LOW_OHM
+
+
+def ads1115_count_from_vadc(vadc_v: float) -> int:
+    return int(round(float(vadc_v) / ADS1115_LSB_V))
+
+
+def vadc_from_ads1115_count(count: int) -> float:
+    return int(count) * ADS1115_LSB_V
+
+
+def ads1115_count_from_vin(vin_v: float) -> int:
+    return ads1115_count_from_vadc(vadc_from_vin(vin_v))
+
+
+def vin_from_ads1115_count(count: int) -> float:
+    return vin_from_vadc(vadc_from_ads1115_count(count))
+
+
+def divider_trace(count: int) -> dict[str, Any]:
+    vadc = vadc_from_ads1115_count(count)
+    return {
+        "count": int(count),
+        "vadc_v": vadc,
+        "voltage_v": vin_from_vadc(vadc),
+        "r_high_ohm": R_HIGH_OHM,
+        "r_low_ohm": R_LOW_OHM,
+        "fsr_v": ADS1115_FSR_V,
+    }
+
+
+def sample_from_adc_count(
+    count: int,
+    *,
+    ts: str | None = None,
+    origin: str = "hal",
+    source: str = "mains",
+) -> dict[str, Any]:
+    """Reconstruct a power sample from an ADS1115 count through the Phase 1 divider.
+
+    origin=hal is for a HAL that actually returned a count/voltage.
+    --sim adc still labels origin=sim. Never substitute canned 12.0.
+    """
+    voltage = vin_from_ads1115_count(count)
+    stamp = ts or utc_now()
+    sample = {
+        "v": 1,
+        "kind": "power",
+        "ts": stamp,
+        "voltage_v": voltage,
+        "source": source,
+        "origin": origin,
+        "soc_pct": None,
+        "charging": False,
+        "docked": True,
+        "low": False,
+        "power_w": None,
+    }
+    return validate_power(sample)
+
+
 # Approximate 3S Li-ion open-circuit points (pack volts → SOC %).
 # This is an OCV lookup for sim/demos. Not a BMS. No current. No temperature.
 _SOC_TABLE = (
@@ -191,6 +282,10 @@ def simulate_power(source: str, *, ts: str | None = None) -> dict[str, Any]:
             "low": False,
             "power_w": 5.0,
         }
+    elif name == "adc":
+        # Phase 1 divider reconstruction. Still origin=sim — this is not HAL.
+        # HAL_SIMULATE has no GET /power. Use scripts/hal_power_stub.py for origin=hal.
+        return sample_from_adc_count(ADC_SIM_COUNT, ts=stamp, origin="sim", source="mains")
     else:
         raise ValueError(f"unsupported sim source: {source}")
     return validate_power(sample)

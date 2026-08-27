@@ -14,13 +14,25 @@ from mapper.agent_body import main
 from mapper.hal_client import dispatch, get_power
 from mapper.map import map_event
 from mapper.power import (
+    ADC_SIM_COUNT,
+    ADC_VREF_V,
+    ADS1115_LSB_V,
+    HAL_STUB_COUNT,
+    R_HIGH_OHM,
+    R_LOW_OHM,
     VOLTAGE_RANGE,
+    ads1115_count_from_vin,
+    divider_ratio,
     effective_low,
     map_power,
+    sample_from_adc_count,
     simulate_power,
     soc_from_voltage,
     stamp_hal_origin,
+    vadc_from_vin,
     validate_power,
+    vin_from_ads1115_count,
+    vin_from_vadc,
 )
 from mapper.serve import EventHandler, ThreadingHTTPServer
 from mapper.skills import markers_for
@@ -461,6 +473,158 @@ class PowerClientTests(unittest.TestCase):
         finally:
             server.shutdown()
             server.server_close()
+
+
+class DividerMathTests(unittest.TestCase):
+    def test_thirty_ten_class_at_fourteen_exceeds_3v3(self):
+        # 30 kΩ / 10 kΩ is the class. At 14 V it is 3.50 V — too high for a 3.3 V ADC.
+        self.assertGreater(14.0 * 10_000 / (30_000 + 10_000), ADC_VREF_V)
+        self.assertEqual(39200.0, R_HIGH_OHM)
+        self.assertEqual(10000.0, R_LOW_OHM)
+        self.assertLess(divider_ratio(), 10 / 40)
+
+    def test_fourteen_volt_worst_case_stays_under_3v3_with_margin(self):
+        vadc = vadc_from_vin(14.0)
+        self.assertLess(vadc, ADC_VREF_V)
+        self.assertGreater(ADC_VREF_V - vadc, 0.4)
+        self.assertAlmostEqual(2.845528455284553, vadc, places=9)
+
+    def test_known_vin_to_vadc_to_voltage_v(self):
+        lsb_vin = ADS1115_LSB_V * (R_HIGH_OHM + R_LOW_OHM) / R_LOW_OHM
+        for vin in (11.0, 12.0, 12.37, 13.8, 14.0):
+            with self.subTest(vin=vin):
+                vadc = vadc_from_vin(vin)
+                recon = vin_from_vadc(vadc)
+                self.assertAlmostEqual(vin, recon, places=9)
+                count = ads1115_count_from_vin(vin)
+                through_adc = vin_from_ads1115_count(count)
+                self.assertAlmostEqual(vin, through_adc, delta=lsb_vin)
+                self.assertLess(vadc_from_vin(vin), ADC_VREF_V)
+
+    def test_nominal_12v_count_is_not_a_substituted_literal_inside_math(self):
+        self.assertEqual(19512, ADC_SIM_COUNT)
+        self.assertEqual(ADC_SIM_COUNT, ads1115_count_from_vin(12.0))
+        reconstructed = vin_from_ads1115_count(ADC_SIM_COUNT)
+        self.assertAlmostEqual(11.99988, reconstructed, places=5)
+        self.assertNotEqual(12.0, reconstructed)
+
+    def test_sample_from_adc_count_keeps_live_voltage_origin_hal(self):
+        sample = sample_from_adc_count(HAL_STUB_COUNT, ts="2026-08-25T15:00:00Z", origin="hal")
+        self.assertEqual("hal", sample["origin"])
+        self.assertEqual("mains", sample["source"])
+        self.assertAlmostEqual(12.37011, sample["voltage_v"], places=5)
+        self.assertNotEqual(12.0, sample["voltage_v"])
+        self.assertEqual((), map_power(sample).markers)
+        POWER_VALIDATOR.validate(sample)
+
+    def test_sim_adc_is_labeled_sim(self):
+        sample = simulate_power("adc", ts="2026-08-25T15:00:00Z")
+        self.assertEqual("sim", sample["origin"])
+        self.assertEqual("mains", sample["source"])
+        self.assertAlmostEqual(vin_from_ads1115_count(ADC_SIM_COUNT), sample["voltage_v"], places=9)
+        self.assertEqual((), map_power(sample).markers)
+
+
+def _adc_hal_handler(count):
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            path = self.path.split("?", 1)[0].rstrip("/") or "/"
+            if path not in {"/power", "/sensing/power"}:
+                self.send_error(404)
+                return
+            sample = sample_from_adc_count(count, ts="2026-08-25T15:00:00Z", origin="hal")
+            body = json.dumps(sample).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_POST(self):
+            self.send_error(405, "power is read telemetry")
+
+        def log_message(self, format, *args):
+            return
+
+    return Handler
+
+
+class HalAdcOriginTests(unittest.TestCase):
+    def test_hal_stub_get_power_is_origin_hal_not_canned_12(self):
+        server = HTTPServer(("127.0.0.1", 0), _adc_hal_handler(HAL_STUB_COUNT))
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            got = get_power(url)
+            labeled = stamp_hal_origin(got)
+            self.assertEqual("hal", labeled["origin"])
+            self.assertAlmostEqual(12.37011, labeled["voltage_v"], places=5)
+            self.assertNotEqual(12.0, labeled["voltage_v"])
+            self.assertEqual((), map_power(labeled).markers)
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_cli_hal_stub_keeps_live_voltage(self):
+        server = HTTPServer(("127.0.0.1", 0), _adc_hal_handler(HAL_STUB_COUNT))
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            with tempfile.TemporaryDirectory() as directory:
+                record = Path(directory) / "out.json"
+                self.assertEqual(0, main(["power", "--hal", url, "--sim", "mains", "--record", str(record)]))
+                payload = json.loads(record.read_text())
+                self.assertEqual("hal", payload["origin"])
+                self.assertEqual("hal", payload["sample"]["origin"])
+                self.assertAlmostEqual(12.37011, payload["sample"]["voltage_v"], places=5)
+                self.assertNotEqual(12.0, payload["sample"]["voltage_v"])
+                self.assertNotIn("fallback", payload)
+                self.assertEqual([], payload["markers"])
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_cli_sim_adc_record_is_origin_sim(self):
+        with tempfile.TemporaryDirectory() as directory:
+            record = Path(directory) / "adc.json"
+            self.assertEqual(0, main(["power", "--sim", "adc", "--record", str(record)]))
+            payload = json.loads(record.read_text())
+            self.assertEqual("sim", payload["origin"])
+            self.assertEqual("sim", payload["sample"]["origin"])
+            self.assertEqual("mains", payload["sample"]["source"])
+            self.assertAlmostEqual(vin_from_ads1115_count(ADC_SIM_COUNT), payload["sample"]["voltage_v"], places=9)
+            self.assertEqual(ADC_SIM_COUNT, payload["adc"]["count"])
+            self.assertEqual([], payload["markers"])
+
+    def test_stub_post_power_is_405_and_dispatch_still_refuses(self):
+        from mapper.hal_client import refuse_power_write
+        from urllib.error import HTTPError
+        from urllib.request import Request
+
+        with self.assertRaises(ValueError):
+            refuse_power_write("/power")
+        server = HTTPServer(("127.0.0.1", 0), _adc_hal_handler(HAL_STUB_COUNT))
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            request = Request(url + "/power", data=b"{}", headers={"Content-Type": "application/json"}, method="POST")
+            with self.assertRaises(HTTPError) as ctx:
+                urlopen(request, timeout=2)
+            self.assertEqual(405, ctx.exception.code)
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_thinking_stays_blue_on_hal_adc_mains(self):
+        sample = sample_from_adc_count(HAL_STUB_COUNT, ts="2026-08-25T15:00:00Z", origin="hal")
+        output = map_event({"v": 1, "event": "thinking", "ts": "2026-08-25T15:00:00Z"}, power=sample)
+        blob = "".join(output.markers)
+        self.assertIn("[0,80,255]", blob)
+        self.assertIn("breathing", blob)
+        self.assertNotIn("[48,16,0]", blob)
 
 
 if __name__ == "__main__":

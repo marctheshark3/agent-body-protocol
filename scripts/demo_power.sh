@@ -8,6 +8,9 @@ export PYTHONPATH="${PYTHONPATH:-.}"
 echo "==> 1. Unplug (mains, no LED)"
 python3 -m mapper.agent_body power --sim mains --record /tmp/power-mains.json
 
+echo "==> 1b. Phase 1 divider reconstruction (still origin=sim)"
+python3 -m mapper.agent_body power --sim adc --record /tmp/power-adc.json
+
 echo "==> 2. Walk (healthy 11.1 V battery is not low)"
 python3 -m mapper.agent_body power --sim battery --record /tmp/power-battery.json
 

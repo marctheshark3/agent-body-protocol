@@ -12,7 +12,7 @@ from .hal_client import dispatch, get_power
 from .map import map_event
 from .motion import ALLOWED_DIRECTIONS, aim
 from .policy import BodyPolicy
-from .power import map_power, simulate_power, stamp_hal_origin
+from .power import ADC_SIM_COUNT, divider_trace, map_power, simulate_power, stamp_hal_origin
 from .serve import serve
 from .skills import SKILLS, dispatch_soft, markers_for, qi_refuse_reason
 from .trajectory import read_body, record
@@ -74,6 +74,8 @@ def _run_power(args: argparse.Namespace) -> int:
     }
     if fallback:
         payload["fallback"] = fallback
+    if sample["origin"] == "sim" and (args.sim or "mains") == "adc":
+        payload["adc"] = divider_trace(ADC_SIM_COUNT)
     if args.hal and output.markers:
         payload["dispatched"] = dispatch(output.markers, args.hal)
     if args.record:
@@ -116,11 +118,11 @@ def build_parser() -> argparse.ArgumentParser:
     skill.add_argument("--name", required=True, choices=sorted(SKILLS))
     skill.add_argument("--hal")
     skill.add_argument("--house", default="pat")
-    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Consult simulated power; dance and hatch refuse on qi")
+    skill.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low", "adc"), help="Consult simulated power; dance and hatch refuse on qi")
     power = sub.add_parser("power", help="Read power telemetry (parallel contract, not a 10th event)")
     power.add_argument("--record", type=Path, help="Write sample + mapped markers")
     power.add_argument("--hal", help="HAL base URL; GET /power, 404 falls back to sim")
-    power.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low"), help="Golden demo source (default mains). low or battery-low reaches power-battery-low.json")
+    power.add_argument("--sim", choices=("mains", "battery", "qi", "low", "battery-low", "adc"), help="Golden demo source (default mains). low or battery-low reaches power-battery-low.json. adc reconstructs mains through the Phase 1 divider (still origin=sim)")
     return parser
 
 
